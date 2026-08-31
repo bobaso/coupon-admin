@@ -139,21 +139,22 @@ async function apiFetch(
    キャンペーン取得
 ========================================= */
 
-async function loadCampaign() {
+await apiFetch(
+    "/admin/campaign",
+    {
 
-    const data =
-        await apiFetch(
-            "/admin/campaign"
-        );
+        method: "PUT",
 
+        body: JSON.stringify({
 
-    startDate.value =
-        data.campaign.start_date;
+            start_date: start,
 
-    endDate.value =
-        data.campaign.end_date;
+            end_date: end
 
-}
+        })
+
+    }
+);
 
 
 /* =========================================
