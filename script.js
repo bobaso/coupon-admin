@@ -41,12 +41,7 @@ const message =
     document.getElementById("message");
 
 
-/* =========================================
-   現在の賞品データ
-========================================= */
 
-let coupons = [];
-let historyData = [];
 
 /* =========================================
    発券状況DOM
@@ -298,7 +293,6 @@ async function loadCoupons() {
 
 
 renderCoupons();
-renderCouponStats();
 }
 
 
@@ -1798,69 +1792,55 @@ saveCampaignButton.addEventListener(
 loadAll();
 
 /* =========================================
-   発券状況更新
+   発券状況 更新ボタン
 ========================================= */
 
-if (
-    reloadStatsButton
-) {
+if (reloadStatsButton) {
 
     reloadStatsButton.addEventListener(
         "click",
-        async () => {
+        async function () {
 
-            reloadStatsButton.disabled =
-                true;
+            reloadStatsButton.disabled = true;
 
             reloadStatsButton.textContent =
                 "更新中...";
 
-
             try {
 
-                /*
-                 * 最新の賞品情報
-                 */
-
-                await loadCoupons();
-
-
-                /*
-                 * 最新の発券履歴
-                 */
-
-                await loadHistory();
-
+                await loadAll();
 
                 showMessage(
                     "発券状況を更新しました"
                 );
 
-
             } catch (error) {
 
                 console.error(
+                    "発券状況更新エラー:",
                     error
                 );
 
                 showMessage(
-                    error.message,
+                    "更新に失敗しました",
                     true
                 );
 
+            } finally {
+
+                reloadStatsButton.disabled = false;
+
+                reloadStatsButton.textContent =
+                    "更新";
+
             }
-
-
-            reloadStatsButton.disabled =
-                false;
-
-            reloadStatsButton.textContent =
-                "更新";
 
         }
     );
 
 }
+let coupons = [];
+let historyData = [];
 /* =========================================
    発券状況の表示期間
 ========================================= */
