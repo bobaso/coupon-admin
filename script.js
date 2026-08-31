@@ -347,18 +347,30 @@ function createCouponHTML(
             data-index="${index}"
         >
 
-            <div class="coupon-rank-label">
-                等級
-            </div>
+  <div class="coupon-rank-label">
+    等級
+</div>
 
+<div class="rank-input-area">
 
-            <input
-                type="text"
-                class="coupon-input coupon-rank-input"
-                value="${escapeHTML(coupon.rank)}"
-                data-index="${index}"
-                placeholder="例：1等"
-            >
+    <input
+        type="number"
+        class="coupon-input coupon-rank-input"
+        value="${escapeHTML(
+            String(coupon.rank)
+                .replace("等", "")
+        )}"
+        data-index="${index}"
+        placeholder="例：1"
+        min="1"
+        step="1"
+    >
+
+    <span class="rank-suffix">
+        等
+    </span>
+
+</div>
 
 
             <div class="coupon-rank-label">
@@ -454,17 +466,17 @@ couponList.addEventListener(
         }
 
 
-        if (
-            event.target.classList.contains(
-                "coupon-rank-input"
-            )
-        ) {
+       if (
+    event.target.classList.contains(
+        "coupon-rank-input"
+    )
+) {
 
-            coupons[index].rank =
-                event.target.value;
+    coupons[index].rank =
+        event.target.value
+            .replace("等", "");
 
-        }
-
+}
 
         if (
             event.target.classList.contains(
@@ -883,7 +895,7 @@ async function saveAllCoupons() {
                                     coupon.id,
 
                                 rank:
-                                    coupon.rank.trim(),
+    `${String(coupon.rank).replace("等", "").trim()}等`,
 
                                 name:
                                     coupon.name.trim(),
