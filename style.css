@@ -794,7 +794,7 @@ button:disabled {
         grid-template-columns:
             1fr 1fr;
 
-```css
+}
 /* =========================================
    発券履歴 フィルター
    Google系タブ風・角丸デザイン
@@ -960,8 +960,5 @@ button:disabled {
     }
 
 }
-
-}
-    }
 
 }
