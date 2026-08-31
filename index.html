@@ -213,6 +213,88 @@
 
     </section>
 
+```html
+<!-- =========================================
+     発券状況
+========================================== -->
+
+<section class="admin-card">
+
+    <div class="section-title">
+
+        <div>
+
+            <h2>
+                発券状況
+            </h2>
+
+            <p>
+                賞品ごとの残り枚数と本日の発券数を確認できます。
+            </p>
+
+        </div>
+
+        <button
+            type="button"
+            class="add-button"
+            id="reloadStatsButton"
+        >
+            更新
+        </button>
+
+    </div>
+
+
+    <!-- =====================================
+         発券状況テーブル
+    ====================================== -->
+
+    <div class="stats-table-wrap">
+
+        <table class="stats-table">
+
+            <thead>
+
+                <tr>
+
+                    <th>ID</th>
+
+                    <th>等級</th>
+
+                    <th>賞品</th>
+
+                    <th>確率</th>
+
+                    <th>残り枚数</th>
+
+                    <th>本日の発券数</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody id="couponStatsBody">
+
+                <tr>
+
+                    <td
+                        colspan="6"
+                        class="loading"
+                    >
+                        読み込み中...
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>
+```
 
 
 <!-- =========================================
