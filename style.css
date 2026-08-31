@@ -794,6 +794,92 @@ button:disabled {
         grid-template-columns:
             1fr 1fr;
 
+/* =========================================
+   発券履歴 フィルター
+========================================= */
+
+.history-filter {
+
+    display: flex;
+
+    gap: 8px;
+
+    margin-bottom: 18px;
+
+    padding: 4px;
+
+    background: #f3f5f8;
+
+    border-radius: 9px;
+
+}
+
+
+.history-filter-button {
+
+    flex: 1;
+
+    min-height: 42px;
+
+    padding: 8px 12px;
+
+    border-radius: 7px;
+
+    background: transparent;
+
+    color: #666;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    transition:
+        background 0.2s,
+        color 0.2s,
+        box-shadow 0.2s;
+
+}
+
+
+/* 選択中 */
+
+.history-filter-button.active {
+
+    background: #fff;
+
+    color: #1677ff;
+
+    box-shadow:
+        0 1px 4px rgba(0, 0, 0, 0.12);
+
+}
+
+
+/* =========================================
+   スマホ
+========================================= */
+
+@media (max-width: 767px) {
+
+    .history-filter {
+
+        gap: 5px;
+
+    }
+
+
+    .history-filter-button {
+
+        min-height: 40px;
+
+        padding: 7px 5px;
+
+        font-size: 13px;
+
+    }
+
+}
+
     }
 
 }
