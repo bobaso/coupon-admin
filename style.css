@@ -1,4 +1,3 @@
-
 /* =========================================
    全体
 ========================================= */
@@ -77,15 +76,13 @@ body {
 }
 
 
-.admin-header h1 span {
+.admin-header span {
 
     display: block;
 
-    font-size: 15px;
-
     color: #777;
 
-    font-weight: 500;
+    font-size: 14px;
 
     margin-top: 3px;
 
@@ -103,6 +100,15 @@ button {
     cursor: pointer;
 
     font-family: inherit;
+
+}
+
+
+button:disabled {
+
+    opacity: 0.5;
+
+    cursor: not-allowed;
 
 }
 
@@ -150,51 +156,6 @@ button {
     background: #1677ff;
 
     color: #fff;
-
-    font-weight: 700;
-
-}
-
-
-.edit-button {
-
-    padding: 9px 16px;
-
-    border-radius: 7px;
-
-    background: #333;
-
-    color: #fff;
-
-    font-weight: 700;
-
-}
-
-
-.delete-button {
-
-    padding: 9px 16px;
-
-    border-radius: 7px;
-
-    background: #e53935;
-
-    color: #fff;
-
-    font-weight: 700;
-
-}
-
-
-.cancel-button {
-
-    padding: 12px 18px;
-
-    border-radius: 8px;
-
-    background: #ddd;
-
-    color: #333;
 
     font-weight: 700;
 
@@ -340,6 +301,10 @@ button {
 }
 
 
+/* =========================================
+   キャンペーン
+========================================= */
+
 .campaign-form {
 
     display: flex;
@@ -368,6 +333,69 @@ button {
 
 
 /* =========================================
+   確率合計
+========================================= */
+
+.probability-summary {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 15px 18px;
+
+    margin-bottom: 20px;
+
+    border-radius: 9px;
+
+    background: #f5f7fa;
+
+}
+
+
+.probability-summary span {
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    color: #555;
+
+}
+
+
+.probability-summary strong {
+
+    font-size: 24px;
+
+}
+
+
+/* 100% */
+
+.probability-summary.is-valid {
+
+    background: #e8f5e9;
+
+    color: #2e7d32;
+
+}
+
+
+/* 100%以外 */
+
+.probability-summary.is-invalid {
+
+    background: #fff3e0;
+
+    color: #ef6c00;
+
+}
+
+
+/* =========================================
    賞品一覧
 ========================================= */
 
@@ -391,33 +419,59 @@ button {
 
     padding: 18px;
 
+    position: relative;
+
 }
 
 
-.coupon-rank {
+.coupon-item.new-item {
 
-    display: inline-block;
+    border-color: #1677ff;
 
-    padding: 5px 10px;
+    background: #f8fbff;
 
-    border-radius: 20px;
+}
 
-    background: #f0f2f5;
+
+.coupon-rank-label {
 
     font-size: 13px;
 
     font-weight: 700;
 
+    color: #555;
+
+    margin-bottom: 6px;
+
 }
 
 
-.coupon-name {
+.coupon-input {
 
-    font-size: 18px;
+    width: 100%;
 
-    font-weight: 700;
+    height: 42px;
 
-    margin: 13px 0 18px;
+    padding: 0 10px;
+
+    border: 1px solid #d5d9df;
+
+    border-radius: 7px;
+
+    background: #fff;
+
+    font-size: 15px;
+
+    margin-bottom: 13px;
+
+}
+
+
+.coupon-input:focus {
+
+    outline: none;
+
+    border-color: #1677ff;
 
 }
 
@@ -431,56 +485,108 @@ button {
 
     gap: 10px;
 
-    margin-bottom: 18px;
+}
+
+
+.coupon-stat {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 6px;
 
 }
 
 
-.stat {
-
-    padding: 10px;
-
-    background: #f6f7f9;
-
-    border-radius: 7px;
-
-}
-
-
-.stat-label {
-
-    display: block;
-
-    color: #777;
+.coupon-stat-label {
 
     font-size: 12px;
 
-    margin-bottom: 4px;
-
-}
-
-
-.stat-value {
-
-    font-size: 19px;
+    color: #777;
 
     font-weight: 700;
 
 }
 
 
-.coupon-actions {
+.coupon-number-input {
 
-    display: flex;
+    width: 100%;
 
-    gap: 8px;
+    height: 40px;
+
+    padding: 0 9px;
+
+    border: 1px solid #d5d9df;
+
+    border-radius: 7px;
+
+    font-size: 15px;
 
 }
 
 
-.coupon-actions button {
+.coupon-number-input:focus {
 
-    flex: 1;
+    outline: none;
+
+    border-color: #1677ff;
+
+}
+
+
+.coupon-delete-button {
+
+    width: 100%;
+
+    margin-top: 14px;
+
+    padding: 9px;
+
+    border-radius: 7px;
+
+    background: #fcebea;
+
+    color: #d32f2f;
+
+    font-weight: 700;
+
+}
+
+
+/* =========================================
+   一括保存
+========================================= */
+
+.coupon-save-area {
+
+    margin-top: 25px;
+
+    padding-top: 20px;
+
+    border-top: 1px solid #e5e7eb;
+
+}
+
+
+.save-coupons-button {
+
+    width: 100%;
+
+    min-height: 54px;
+
+    padding: 13px 20px;
+
+    border-radius: 9px;
+
+    background: #1677ff;
+
+    color: #fff;
+
+    font-size: 17px;
+
+    font-weight: 700;
 
 }
 
@@ -583,110 +689,6 @@ button {
 
 
 /* =========================================
-   モーダル
-========================================= */
-
-.modal {
-
-    position: fixed;
-
-    inset: 0;
-
-    z-index: 1000;
-
-}
-
-
-.modal-overlay {
-
-    position: absolute;
-
-    inset: 0;
-
-    background: rgba(0, 0, 0, 0.45);
-
-}
-
-
-.modal-content {
-
-    position: relative;
-
-    width: calc(100% - 30px);
-
-    max-width: 500px;
-
-    max-height: calc(100vh - 30px);
-
-    overflow-y: auto;
-
-    margin: 15px auto;
-
-    padding: 22px;
-
-    background: #fff;
-
-    border-radius: 12px;
-
-}
-
-
-.modal-header {
-
-    display: flex;
-
-    justify-content: space-between;
-
-    align-items: center;
-
-    margin-bottom: 20px;
-
-}
-
-
-.modal-header h2 {
-
-    font-size: 21px;
-
-}
-
-
-.modal-close {
-
-    width: 35px;
-
-    height: 35px;
-
-    border-radius: 50%;
-
-    background: #eee;
-
-    font-size: 25px;
-
-    line-height: 1;
-
-}
-
-
-.modal-buttons {
-
-    display: flex;
-
-    gap: 10px;
-
-    margin-top: 25px;
-
-}
-
-
-.modal-buttons button {
-
-    flex: 1;
-
-}
-
-
-/* =========================================
    PC
 ========================================= */
 
@@ -748,7 +750,7 @@ button {
 
     .section-title {
 
-        align-items: flex-start;
+        align-items: stretch;
 
         flex-direction: column;
 
@@ -787,9 +789,10 @@ button {
     }
 
 
-    .coupon-actions {
+    .coupon-stats {
 
-        flex-direction: column;
+        grid-template-columns:
+            1fr 1fr;
 
     }
 
