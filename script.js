@@ -3,7 +3,7 @@
 ========================================= */
 
 const API_URL =
-      https://coupon-api.yoshioka-mwork.workers.dev;
+    "https://coupon-api.yoshioka-mwork.workers.dev";
 
 
 /* =========================================
