@@ -794,26 +794,34 @@ button:disabled {
         grid-template-columns:
             1fr 1fr;
 
+```css
 /* =========================================
    発券履歴 フィルター
+   Google系タブ風・角丸デザイン
 ========================================= */
 
 .history-filter {
 
     display: flex;
 
-    gap: 8px;
+    width: 100%;
+
+    gap: 6px;
+
+    padding: 5px;
 
     margin-bottom: 18px;
 
-    padding: 4px;
+    background: #f1f3f4;
 
-    background: #f3f5f8;
-
-    border-radius: 9px;
+    border-radius: 10px;
 
 }
 
+
+/* =========================================
+   タブボタン
+========================================= */
 
 .history-filter-button {
 
@@ -823,34 +831,101 @@ button:disabled {
 
     padding: 8px 12px;
 
+    border: none;
+
     border-radius: 7px;
 
     background: transparent;
 
-    color: #666;
+    color: #5f6368;
 
     font-size: 14px;
 
-    font-weight: 700;
+    font-weight: 500;
+
+    cursor: pointer;
 
     transition:
-        background 0.2s,
-        color 0.2s,
-        box-shadow 0.2s;
+        background 0.2s ease,
+        color 0.2s ease,
+        box-shadow 0.2s ease;
 
 }
 
 
-/* 選択中 */
+/* =========================================
+   未選択
+========================================= */
+
+.history-filter-button:not(.active) {
+
+    background: #e1e3e6;
+
+    color: #5f6368;
+
+}
+
+
+/* =========================================
+   選択中
+========================================= */
 
 .history-filter-button.active {
 
-    background: #fff;
+    background: #ffffff;
 
-    color: #1677ff;
+    color: #202124;
+
+    font-weight: 600;
 
     box-shadow:
-        0 1px 4px rgba(0, 0, 0, 0.12);
+        0 1px 3px rgba(60, 64, 67, 0.15);
+
+}
+
+
+/* =========================================
+   ホバー
+========================================= */
+
+.history-filter-button:not(.active):hover {
+
+    background: #d9dce0;
+
+}
+
+
+/* =========================================
+   選択中ホバー
+========================================= */
+
+.history-filter-button.active:hover {
+
+    background: #ffffff;
+
+}
+
+
+/* =========================================
+   クリック
+========================================= */
+
+.history-filter-button:active {
+
+    transform: scale(0.98);
+
+}
+
+
+/* =========================================
+   フォーカス
+========================================= */
+
+.history-filter-button:focus-visible {
+
+    outline: 2px solid #1a73e8;
+
+    outline-offset: 1px;
 
 }
 
@@ -865,6 +940,10 @@ button:disabled {
 
         gap: 5px;
 
+        padding: 4px;
+
+        border-radius: 9px;
+
     }
 
 
@@ -874,11 +953,14 @@ button:disabled {
 
         padding: 7px 5px;
 
+        border-radius: 6px;
+
         font-size: 13px;
 
     }
 
 }
+
 
     }
 
