@@ -964,11 +964,92 @@ async function loadHistory() {
         );
 
 
-    const history =
+    /*
+     * 履歴を保存
+     *
+     * フィルター変更時は
+     * このデータを使って画面だけ変更する
+     */
+
+    historyData =
         data.history || [];
 
 
-    if (history.length === 0) {
+    renderHistory();
+
+}
+
+
+/* =========================================
+   発券履歴表示
+========================================= */
+
+function renderHistory() {
+
+    let filteredHistory;
+
+
+    /* =====================================
+       フィルター
+    ====================================== */
+
+    if (historyFilter === "unused") {
+
+        filteredHistory =
+            historyData.filter(
+                item =>
+                    Number(item.used) !== 1
+            );
+
+    } else if (
+        historyFilter === "used"
+    ) {
+
+        filteredHistory =
+            historyData.filter(
+                item =>
+                    Number(item.used) === 1
+            );
+
+    } else {
+
+        filteredHistory =
+            historyData;
+
+    }
+
+
+    /* =====================================
+       データなし
+    ====================================== */
+
+    if (
+        filteredHistory.length === 0
+    ) {
+
+        let messageText =
+            "発券履歴がありません。";
+
+
+        if (
+            historyFilter === "unused"
+        ) {
+
+            messageText =
+                "未使用のクーポンはありません。";
+
+        }
+
+
+        if (
+            historyFilter === "used"
+        ) {
+
+            messageText =
+                "使用済みのクーポンはありません。";
+
+        }
+
 
         historyBody.innerHTML = `
             <tr>
@@ -976,7 +1057,7 @@ async function loadHistory() {
                     colspan="6"
                     class="loading"
                 >
-                    発券履歴がありません。
+                    ${messageText}
                 </td>
             </tr>
         `;
@@ -986,8 +1067,12 @@ async function loadHistory() {
     }
 
 
+    /* =====================================
+       表示
+    ====================================== */
+
     historyBody.innerHTML =
-        history
+        filteredHistory
             .map(
                 createHistoryHTML
             )
@@ -1014,17 +1099,21 @@ function createHistoryHTML(item) {
                 ${Number(item.id)}
             </td>
 
+
             <td>
                 ${escapeHTML(item.rank)}
             </td>
+
 
             <td>
                 ${escapeHTML(item.name)}
             </td>
 
+
             <td>
                 ${formatDate(item.issued_at)}
             </td>
+
 
             <td>
 
@@ -1046,12 +1135,15 @@ function createHistoryHTML(item) {
 
             </td>
 
+
             <td>
+
                 ${
                     item.used_at
                     ? formatDate(item.used_at)
                     : "-"
                 }
+
             </td>
 
         </tr>
@@ -1059,6 +1151,66 @@ function createHistoryHTML(item) {
     `;
 
 }
+
+
+/* =========================================
+   履歴フィルター
+========================================= */
+
+document
+    .querySelectorAll(
+        ".history-filter-button"
+    )
+    .forEach(button => {
+
+        button.addEventListener(
+            "click",
+            () => {
+
+                /*
+                 * 選択中ボタン変更
+                 */
+
+                document
+                    .querySelectorAll(
+                        ".history-filter-button"
+                    )
+                    .forEach(
+                        item => {
+
+                            item.classList.remove(
+                                "active"
+                            );
+
+                        }
+                    );
+
+
+                button.classList.add(
+                    "active"
+                );
+
+
+                /*
+                 * フィルター変更
+                 */
+
+                historyFilter =
+                    button.dataset.filter;
+
+
+                /*
+                 * 再表示
+                 */
+
+                renderHistory();
+
+            }
+        );
+
+    });
+
+
 
 
 /* =========================================
