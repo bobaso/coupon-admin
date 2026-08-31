@@ -248,43 +248,37 @@
     <!-- =====================================
          発券期間切り替え
     ====================================== -->
+<div class="stats-period-filter">
 
-    <div class="history-filter">
+    <button
+        class="stats-period-button active"
+        data-stats-period="today"
+    >
+        今日
+    </button>
 
-        <button
-            type="button"
-            class="filter-button active"
-            data-stats-period="today"
-        >
-            本日
-        </button>
+    <button
+        class="stats-period-button"
+        data-stats-period="week"
+    >
+        1週間
+    </button>
 
-        <button
-            type="button"
-            class="filter-button"
-            data-stats-period="week"
-        >
-            1週間
-        </button>
+    <button
+        class="stats-period-button"
+        data-stats-period="month"
+    >
+        1ヶ月
+    </button>
 
-        <button
-            type="button"
-            class="filter-button"
-            data-stats-period="month"
-        >
-            1ヶ月
-        </button>
+    <button
+        class="stats-period-button"
+        data-stats-period="all"
+    >
+        全期間
+    </button>
 
-        <button
-            type="button"
-            class="filter-button"
-            data-stats-period="all"
-        >
-            全期間
-        </button>
-
-    </div>
-
+</div>
 
     <!-- =====================================
          発券状況テーブル
