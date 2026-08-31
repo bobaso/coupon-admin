@@ -192,11 +192,11 @@ async function saveCampaign() {
 
     try {
 
-        await apiFetch(
-            "/admin/campaign",
-            {
+    await apiFetch(
+    "/admin/coupons",
+    {
 
-                method: "PUT",
+        method: "POST",
 
                 body: JSON.stringify({
 
