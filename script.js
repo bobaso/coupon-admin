@@ -46,7 +46,9 @@ const message =
 ========================================= */
 
 let coupons = [];
+let historyData = [];
 
+let historyFilter = "all";
 
 /* =========================================
    メッセージ
