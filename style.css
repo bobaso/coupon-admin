@@ -962,4 +962,38 @@ button:disabled {
 
 }
 
+/* =========================================
+   等級入力
+========================================= */
 
+.rank-input-area {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+}
+
+
+.rank-input-area .coupon-rank-input {
+
+    flex: 1;
+
+    margin-bottom: 0;
+
+}
+
+
+.rank-suffix {
+
+    flex-shrink: 0;
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+    color: #555;
+
+}
