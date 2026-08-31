@@ -48,6 +48,21 @@ const message =
 let coupons = [];
 let historyData = [];
 
+/* =========================================
+   発券状況DOM
+========================================= */
+
+const couponStatsBody =
+    document.getElementById(
+        "couponStatsBody"
+    );
+
+const reloadStatsButton =
+    document.getElementById(
+        "reloadStatsButton"
+    );
+
+
 let historyFilter = "all";
 
 /* =========================================
@@ -282,8 +297,8 @@ async function loadCoupons() {
             }));
 
 
-    renderCoupons();
-
+renderCoupons();
+renderCouponStats();
 }
 
 
@@ -976,21 +991,264 @@ async function loadHistory() {
         );
 
 
-    /*
-     * 履歴を保存
-     *
-     * フィルター変更時は
-     * このデータを使って画面だけ変更する
-     */
 
-    historyData =
-        data.history || [];
+historyData =
+    data.history || [];
+
+renderHistory();
+
+/*
+ * 発券状況も更新
+ */
+
+renderCouponStats();
 
 
-    renderHistory();
 
 }
 
+/* =========================================
+   本日の発券数をIDごとに集計
+========================================= */
+
+function getTodayIssuedCount(couponId) {
+
+    /*
+     * 現在の日付を取得
+     *
+     * 日本時間として扱う
+     */
+
+    const now =
+        new Date();
+
+    const today =
+        now.toLocaleDateString(
+            "ja-JP",
+            {
+                timeZone: "Asia/Tokyo"
+            }
+        );
+
+
+    /*
+     * 対象IDだけ抽出
+     */
+
+    return historyData.filter(
+        item => {
+
+            if (
+                Number(item.coupon_id) !==
+                Number(couponId)
+            ) {
+                return false;
+            }
+
+
+            if (!item.issued_at) {
+                return false;
+            }
+
+
+            /*
+             * issued_at
+             *
+             * 例：
+             * 2026-08-31 10:25:30
+             */
+
+            const issuedDate =
+                new Date(
+                    item.issued_at.replace(
+                        " ",
+                        "T"
+                    )
+                );
+
+
+            if (
+                Number.isNaN(
+                    issuedDate.getTime()
+                )
+            ) {
+                return false;
+            }
+
+
+            const issuedDay =
+                issuedDate.toLocaleDateString(
+                    "ja-JP",
+                    {
+                        timeZone:
+                            "Asia/Tokyo"
+                    }
+                );
+
+
+            return (
+                issuedDay ===
+                today
+            );
+
+        }
+    ).length;
+
+}
+
+
+/* =========================================
+   発券状況表示
+========================================= */
+
+function renderCouponStats() {
+
+    if (
+        !couponStatsBody
+    ) {
+        return;
+    }
+
+
+    /*
+     * 賞品がない場合
+     */
+
+    if (
+        coupons.length === 0
+    ) {
+
+        couponStatsBody.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="6"
+                    class="loading"
+                >
+                    賞品がありません。
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+
+    }
+
+
+    /*
+     * 賞品ごとに表示
+     */
+
+    couponStatsBody.innerHTML =
+        coupons
+            .map(
+                coupon => {
+
+                    const todayIssued =
+                        getTodayIssuedCount(
+                            coupon.id
+                        );
+
+
+                    return `
+
+                        <tr>
+
+                            <!-- ID -->
+
+                            <td>
+                                ${Number(coupon.id)}
+                            </td>
+
+
+                            <!-- 等級 -->
+
+                            <td>
+
+                                <span
+                                    class="stats-rank"
+                                >
+                                    ${escapeHTML(
+                                        coupon.rank
+                                    )}
+                                </span>
+
+                            </td>
+
+
+                            <!-- 賞品 -->
+
+                            <td>
+
+                                <span
+                                    class="stats-name"
+                                >
+                                    ${escapeHTML(
+                                        coupon.name
+                                    )}
+                                </span>
+
+                            </td>
+
+
+                            <!-- 確率 -->
+
+                            <td>
+
+                                ${Number(
+                                    coupon.probability
+                                )}%
+
+                            </td>
+
+
+                            <!-- 残り枚数 -->
+
+                            <td>
+
+                                <strong
+                                    class="stats-stock"
+                                >
+                                    ${Number(
+                                        coupon.stock
+                                    )}
+                                </strong>
+
+                                <span>
+                                    枚
+                                </span>
+
+                            </td>
+
+
+                            <!-- 本日の発券数 -->
+
+                            <td>
+
+                                <strong
+                                    class="stats-issued"
+                                >
+                                    ${todayIssued}
+                                </strong>
+
+                                <span>
+                                    枚
+                                </span>
+
+                            </td>
+
+                        </tr>
+
+                    `;
+
+                }
+            )
+            .join("");
+
+}
 
 /* =========================================
    発券履歴表示
@@ -1388,3 +1646,69 @@ saveCampaignButton.addEventListener(
 ========================================= */
 
 loadAll();
+
+/* =========================================
+   発券状況更新
+========================================= */
+
+if (
+    reloadStatsButton
+) {
+
+    reloadStatsButton.addEventListener(
+        "click",
+        async () => {
+
+            reloadStatsButton.disabled =
+                true;
+
+            reloadStatsButton.textContent =
+                "更新中...";
+
+
+            try {
+
+                /*
+                 * 最新の賞品情報
+                 */
+
+                await loadCoupons();
+
+
+                /*
+                 * 最新の発券履歴
+                 */
+
+                await loadHistory();
+
+
+                showMessage(
+                    "発券状況を更新しました"
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    error
+                );
+
+                showMessage(
+                    error.message,
+                    true
+                );
+
+            }
+
+
+            reloadStatsButton.disabled =
+                false;
+
+            reloadStatsButton.textContent =
+                "更新";
+
+        }
+    );
+
+}
+
