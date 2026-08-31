@@ -134,29 +134,40 @@ async function apiFetch(
 
 }
 
-
 /* =========================================
    キャンペーン取得
 ========================================= */
 
-await apiFetch(
-    "/admin/campaign",
-    {
+async function loadCampaign() {
 
-        method: "PUT",
+    const data =
+        await apiFetch(
+            "/admin/campaign"
+        );
 
-        body: JSON.stringify({
 
-            start_date: start,
+    if (
+        data.campaign &&
+        data.campaign.start_date
+    ) {
 
-            end_date: end
-
-        })
+        startDate.value =
+            data.campaign.start_date;
 
     }
-);
 
 
+    if (
+        data.campaign &&
+        data.campaign.end_date
+    ) {
+
+        endDate.value =
+            data.campaign.end_date;
+
+    }
+
+}
 /* =========================================
    キャンペーン保存
 ========================================= */
@@ -203,22 +214,22 @@ async function saveCampaign() {
 
     try {
 
-    await apiFetch(
-    "/admin/coupons",
+await apiFetch(
+    "/admin/campaign",
     {
 
-        method: "POST",
+        method: "PUT",
 
-                body: JSON.stringify({
+        body: JSON.stringify({
 
-                    start_date: start,
+            start_date: start,
 
-                    end_date: end
+            end_date: end
 
-                })
+        })
 
-            }
-        );
+    }
+);
 
 
         showMessage(
