@@ -1,5 +1,5 @@
 /* =========================================
-   Cloudflare Worker URL
+   Cloudflare Worker
 ========================================= */
 
 const API_URL =
@@ -25,44 +25,27 @@ const reloadButton =
 const couponList =
     document.getElementById("couponList");
 
-const historyBody =
-    document.getElementById("historyBody");
+const probabilityTotal =
+    document.getElementById("probabilityTotal");
+
+const saveCouponsButton =
+    document.getElementById("saveCouponsButton");
 
 const addCouponButton =
     document.getElementById("addCouponButton");
 
-const couponModal =
-    document.getElementById("couponModal");
-
-const modalTitle =
-    document.getElementById("modalTitle");
-
-const modalCloseButton =
-    document.getElementById("modalCloseButton");
-
-const modalCancelButton =
-    document.getElementById("modalCancelButton");
-
-const couponForm =
-    document.getElementById("couponForm");
-
-const couponId =
-    document.getElementById("couponId");
-
-const couponRank =
-    document.getElementById("couponRank");
-
-const couponName =
-    document.getElementById("couponName");
-
-const couponProbability =
-    document.getElementById("couponProbability");
-
-const couponStock =
-    document.getElementById("couponStock");
+const historyBody =
+    document.getElementById("historyBody");
 
 const message =
     document.getElementById("message");
+
+
+/* =========================================
+   現在の賞品データ
+========================================= */
+
+let coupons = [];
 
 
 /* =========================================
@@ -80,10 +63,6 @@ function showMessage(text, error = false) {
         error
     );
 
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
 
     setTimeout(() => {
 
@@ -110,11 +89,14 @@ async function apiFetch(
                 ...options,
 
                 headers: {
+
                     "Content-Type":
                         "application/json",
 
                     ...(options.headers || {})
+
                 }
+
             }
         );
 
@@ -123,7 +105,10 @@ async function apiFetch(
         await response.json();
 
 
-    if (!response.ok || data.success === false) {
+    if (
+        !response.ok ||
+        data.success === false
+    ) {
 
         throw new Error(
             data.error ||
@@ -196,7 +181,8 @@ async function saveCampaign() {
     }
 
 
-    saveCampaignButton.disabled = true;
+    saveCampaignButton.disabled =
+        true;
 
     saveCampaignButton.textContent =
         "保存中...";
@@ -207,12 +193,17 @@ async function saveCampaign() {
         await apiFetch(
             "/admin/campaign",
             {
+
                 method: "PUT",
 
                 body: JSON.stringify({
+
                     start_date: start,
+
                     end_date: end
+
                 })
+
             }
         );
 
@@ -232,7 +223,8 @@ async function saveCampaign() {
     }
 
 
-    saveCampaignButton.disabled = false;
+    saveCampaignButton.disabled =
+        false;
 
     saveCampaignButton.textContent =
         "開催期間を保存";
@@ -259,17 +251,55 @@ async function loadCoupons() {
         );
 
 
-    const coupons =
-        data.coupons || [];
+    coupons =
+        (data.coupons || [])
+            .map(coupon => ({
 
+                id:
+                    coupon.id,
+
+                rank:
+                    coupon.rank,
+
+                name:
+                    coupon.name,
+
+                probability:
+                    Number(
+                        coupon.probability
+                    ),
+
+                stock:
+                    Number(
+                        coupon.stock
+                    ),
+
+                created_at:
+                    coupon.created_at
+
+            }));
+
+
+    renderCoupons();
+
+}
+
+
+/* =========================================
+   賞品表示
+========================================= */
+
+function renderCoupons() {
 
     if (coupons.length === 0) {
 
         couponList.innerHTML = `
             <div class="loading">
-                賞品が登録されていません。
+                賞品がありません。
             </div>
         `;
+
+        updateProbabilityTotal();
 
         return;
 
@@ -278,8 +308,17 @@ async function loadCoupons() {
 
     couponList.innerHTML =
         coupons
-            .map(createCouponHTML)
+            .map(
+                (coupon, index) =>
+                    createCouponHTML(
+                        coupon,
+                        index
+                    )
+            )
             .join("");
+
+
+    updateProbabilityTotal();
 
 }
 
@@ -288,72 +327,99 @@ async function loadCoupons() {
    賞品HTML
 ========================================= */
 
-function createCouponHTML(coupon) {
+function createCouponHTML(
+    coupon,
+    index
+) {
+
+    const newClass =
+        coupon.isNew
+            ? "new-item"
+            : "";
+
 
     return `
 
-        <div class="coupon-item">
+        <div
+            class="coupon-item ${newClass}"
+            data-index="${index}"
+        >
 
-            <span class="coupon-rank">
-                ${escapeHTML(coupon.rank)}
-            </span>
-
-
-            <div class="coupon-name">
-                ${escapeHTML(coupon.name)}
+            <div class="coupon-rank-label">
+                等級
             </div>
+
+
+            <input
+                type="text"
+                class="coupon-input coupon-rank-input"
+                value="${escapeHTML(coupon.rank)}"
+                data-index="${index}"
+                placeholder="例：1等"
+            >
+
+
+            <div class="coupon-rank-label">
+                賞品名
+            </div>
+
+
+            <input
+                type="text"
+                class="coupon-input coupon-name-input"
+                value="${escapeHTML(coupon.name)}"
+                data-index="${index}"
+                placeholder="賞品名"
+            >
 
 
             <div class="coupon-stats">
 
-                <div class="stat">
+                <div class="coupon-stat">
 
-                    <span class="stat-label">
-                        当選確率
+                    <span class="coupon-stat-label">
+                        当選確率（%）
                     </span>
 
-                    <span class="stat-value">
-                        ${Number(coupon.probability)}%
-                    </span>
+                    <input
+                        type="number"
+                        class="coupon-number-input coupon-probability-input"
+                        value="${coupon.probability}"
+                        min="0"
+                        step="1"
+                        data-index="${index}"
+                    >
 
                 </div>
 
 
-                <div class="stat">
+                <div class="coupon-stat">
 
-                    <span class="stat-label">
+                    <span class="coupon-stat-label">
                         残り枚数
                     </span>
 
-                    <span class="stat-value">
-                        ${Number(coupon.stock)}枚
-                    </span>
+                    <input
+                        type="number"
+                        class="coupon-number-input coupon-stock-input"
+                        value="${coupon.stock}"
+                        min="0"
+                        step="1"
+                        data-index="${index}"
+                    >
 
                 </div>
 
             </div>
 
 
-            <div class="coupon-actions">
-
-                <button
-                    type="button"
-                    class="edit-button"
-                    data-edit-id="${coupon.id}"
-                >
-                    編集
-                </button>
-
-
-                <button
-                    type="button"
-                    class="delete-button"
-                    data-delete-id="${coupon.id}"
-                >
-                    削除
-                </button>
-
-            </div>
+            <button
+                type="button"
+                class="coupon-delete-button"
+                data-delete-index="${index}"
+            >
+                この賞品を削除
+            </button>
 
         </div>
 
@@ -363,137 +429,287 @@ function createCouponHTML(coupon) {
 
 
 /* =========================================
-   賞品編集モーダル
+   入力変更
 ========================================= */
 
-function openEditModal(coupon) {
+couponList.addEventListener(
+    "input",
+    event => {
 
-    modalTitle.textContent =
-        "賞品編集";
+        const index =
+            Number(
+                event.target.dataset.index
+            );
 
-    couponId.value =
-        coupon.id;
 
-    couponRank.value =
-        coupon.rank;
+        if (
+            !Number.isInteger(index) ||
+            !coupons[index]
+        ) {
 
-    couponName.value =
-        coupon.name;
+            return;
 
-    couponProbability.value =
-        coupon.probability;
+        }
 
-    couponStock.value =
-        coupon.stock;
 
-    couponModal.hidden = false;
+        if (
+            event.target.classList.contains(
+                "coupon-rank-input"
+            )
+        ) {
 
-    document.body.style.overflow =
-        "hidden";
+            coupons[index].rank =
+                event.target.value;
 
-}
+        }
+
+
+        if (
+            event.target.classList.contains(
+                "coupon-name-input"
+            )
+        ) {
+
+            coupons[index].name =
+                event.target.value;
+
+        }
+
+
+        if (
+            event.target.classList.contains(
+                "coupon-probability-input"
+            )
+        ) {
+
+            coupons[index].probability =
+                Number(
+                    event.target.value
+                ) || 0;
+
+            updateProbabilityTotal();
+
+        }
+
+
+        if (
+            event.target.classList.contains(
+                "coupon-stock-input"
+            )
+        ) {
+
+            coupons[index].stock =
+                Number(
+                    event.target.value
+                ) || 0;
+
+        }
+
+    }
+);
 
 
 /* =========================================
-   賞品追加モーダル
+   賞品削除
 ========================================= */
 
-function openAddModal() {
+couponList.addEventListener(
+    "click",
+    event => {
 
-    modalTitle.textContent =
-        "賞品追加";
-
-    couponId.value = "";
-
-    couponRank.value = "";
-
-    couponName.value = "";
-
-    couponProbability.value = 0;
-
-    couponStock.value = 0;
-
-    couponModal.hidden = false;
-
-    document.body.style.overflow =
-        "hidden";
-
-}
+        const button =
+            event.target.closest(
+                "[data-delete-index]"
+            );
 
 
-/* =========================================
-   モーダル閉じる
-========================================= */
+        if (!button) {
 
-function closeModal() {
+            return;
 
-    couponModal.hidden = true;
-
-    document.body.style.overflow =
-        "";
-
-}
+        }
 
 
-/* =========================================
-   賞品保存
-========================================= */
-
-async function saveCoupon(event) {
-
-    event.preventDefault();
+        const index =
+            Number(
+                button.dataset.deleteIndex
+            );
 
 
-    const id =
-        couponId.value;
+        if (
+            !Number.isInteger(index) ||
+            !coupons[index]
+        ) {
 
-    const rank =
-        couponRank.value.trim();
+            return;
 
-    const name =
-        couponName.value.trim();
-
-    const probability =
-        Number(couponProbability.value);
-
-    const stock =
-        Number(couponStock.value);
+        }
 
 
-    if (!rank || !name) {
+        const coupon =
+            coupons[index];
 
-        showMessage(
-            "等級と賞品名を入力してください",
-            true
+
+        const confirmed =
+            confirm(
+                `${coupon.rank}「${coupon.name}」を削除しますか？\n\n「クーポン設定を保存」を押すまでD1からは削除されません。`
+            );
+
+
+        if (!confirmed) {
+
+            return;
+
+        }
+
+
+        coupons.splice(
+            index,
+            1
         );
 
-        return;
+
+        renderCoupons();
+
+    }
+);
+
+
+/* =========================================
+   賞品追加
+========================================= */
+
+addCouponButton.addEventListener(
+    "click",
+    () => {
+
+        coupons.push({
+
+            id: null,
+
+            rank: "",
+
+            name: "",
+
+            probability: 0,
+
+            stock: 0,
+
+            isNew: true
+
+        });
+
+
+        renderCoupons();
+
+
+        const items =
+            couponList.querySelectorAll(
+                ".coupon-item"
+            );
+
+
+        const lastItem =
+            items[items.length - 1];
+
+
+        if (lastItem) {
+
+            lastItem.scrollIntoView({
+                behavior: "smooth",
+                block: "center"
+            });
+
+
+            const rankInput =
+                lastItem.querySelector(
+                    ".coupon-rank-input"
+                );
+
+
+            if (rankInput) {
+
+                setTimeout(() => {
+
+                    rankInput.focus();
+
+                }, 300);
+
+            }
+
+        }
+
+    }
+);
+
+
+/* =========================================
+   確率合計
+========================================= */
+
+function updateProbabilityTotal() {
+
+    const total =
+        coupons.reduce(
+            (sum, coupon) =>
+                sum +
+                Number(
+                    coupon.probability
+                ),
+            0
+        );
+
+
+    probabilityTotal.textContent =
+        `${total}%`;
+
+
+    probabilityTotal.parentElement
+        .classList.remove(
+            "is-valid",
+            "is-invalid"
+        );
+
+
+    if (total === 100) {
+
+        probabilityTotal.parentElement
+            .classList.add(
+                "is-valid"
+            );
+
+    } else {
+
+        probabilityTotal.parentElement
+            .classList.add(
+                "is-invalid"
+            );
 
     }
 
+}
 
-    if (
-        !Number.isFinite(probability) ||
-        probability < 0
-    ) {
+
+/* =========================================
+   クーポン一括保存
+========================================= */
+
+saveCouponsButton.addEventListener(
+    "click",
+    saveAllCoupons
+);
+
+
+async function saveAllCoupons() {
+
+    /*
+     * 賞品が0件
+     */
+
+    if (coupons.length === 0) {
 
         showMessage(
-            "当選確率を正しく入力してください",
-            true
-        );
-
-        return;
-
-    }
-
-
-    if (
-        !Number.isFinite(stock) ||
-        stock < 0
-    ) {
-
-        showMessage(
-            "残り枚数を正しく入力してください",
+            "賞品を1つ以上登録してください",
             true
         );
 
@@ -503,47 +719,110 @@ async function saveCoupon(event) {
 
 
     /*
-     * 確率合計チェック
+     * 入力チェック
      */
 
-    const couponData =
-        await apiFetch(
-            "/admin/coupons"
-        );
+    for (
+        let i = 0;
+        i < coupons.length;
+        i++
+    ) {
 
+        const coupon =
+            coupons[i];
 
-    const coupons =
-        couponData.coupons || [];
-
-
-    let probabilityTotal = 0;
-
-
-    for (const coupon of coupons) {
 
         if (
-            id &&
-            String(coupon.id) === String(id)
+            !coupon.rank.trim()
         ) {
 
-            continue;
+            showMessage(
+                `${i + 1}番目の賞品の等級を入力してください`,
+                true
+            );
+
+            return;
 
         }
 
-        probabilityTotal +=
-            Number(coupon.probability);
+
+        if (
+            !coupon.name.trim()
+        ) {
+
+            showMessage(
+                `${coupon.rank}の賞品名を入力してください`,
+                true
+            );
+
+            return;
+
+        }
+
+
+        if (
+            !Number.isFinite(
+                Number(
+                    coupon.probability
+                )
+            ) ||
+            Number(
+                coupon.probability
+            ) < 0
+        ) {
+
+            showMessage(
+                `${coupon.rank}の当選確率を確認してください`,
+                true
+            );
+
+            return;
+
+        }
+
+
+        if (
+            !Number.isFinite(
+                Number(
+                    coupon.stock
+                )
+            ) ||
+            Number(
+                coupon.stock
+            ) < 0
+        ) {
+
+            showMessage(
+                `${coupon.rank}の残り枚数を確認してください`,
+                true
+            );
+
+            return;
+
+        }
 
     }
 
 
-    probabilityTotal +=
-        probability;
+    /*
+     * 確率合計
+     */
+
+    const total =
+        coupons.reduce(
+            (sum, coupon) =>
+                sum +
+                Number(
+                    coupon.probability
+                ),
+            0
+        );
 
 
-    if (probabilityTotal !== 100) {
+    if (total !== 100) {
 
         showMessage(
-            `当選確率の合計が ${probabilityTotal}% になります。100%にしてください。`,
+            `当選確率の合計が ${total}% です。100%にしてください。`,
             true
         );
 
@@ -552,108 +831,95 @@ async function saveCoupon(event) {
     }
 
 
-    try {
+    /*
+     * 保存確認
+     */
 
-        if (id) {
-
-            await apiFetch(
-                `/admin/coupons/${id}`,
-                {
-                    method: "PUT",
-
-                    body: JSON.stringify({
-                        rank,
-                        name,
-                        probability,
-                        stock
-                    })
-                }
-            );
-
-
-            showMessage(
-                "賞品を更新しました"
-            );
-
-        } else {
-
-            await apiFetch(
-                "/admin/coupons",
-                {
-                    method: "POST",
-
-                    body: JSON.stringify({
-                        rank,
-                        name,
-                        probability,
-                        stock
-                    })
-                }
-            );
-
-
-            showMessage(
-                "賞品を追加しました"
-            );
-
-        }
-
-
-        closeModal();
-
-        await loadCoupons();
-
-
-    } catch (error) {
-
-        showMessage(
-            error.message,
-            true
-        );
-
-    }
-
-}
-
-
-/* =========================================
-   賞品削除
-========================================= */
-
-async function deleteCoupon(id) {
-
-    const result =
+    const confirmed =
         confirm(
-            "この賞品を削除しますか？\n\n発券履歴がある賞品は削除できません。"
+            "現在のクーポン設定をすべて保存しますか？"
         );
 
 
-    if (!result) {
+    if (!confirmed) {
 
         return;
 
     }
 
 
+    /*
+     * 保存中
+     */
+
+    saveCouponsButton.disabled =
+        true;
+
+    saveCouponsButton.textContent =
+        "保存中...";
+
+
     try {
+
+        /*
+         * Workerへ一括送信
+         */
 
         await apiFetch(
-            `/admin/coupons/${id}`,
+            "/admin/coupons",
             {
-                method: "DELETE"
+
+                method: "PUT",
+
+                body: JSON.stringify({
+
+                    coupons:
+                        coupons.map(
+                            coupon => ({
+
+                                id:
+                                    coupon.id,
+
+                                rank:
+                                    coupon.rank.trim(),
+
+                                name:
+                                    coupon.name.trim(),
+
+                                probability:
+                                    Number(
+                                        coupon.probability
+                                    ),
+
+                                stock:
+                                    Number(
+                                        coupon.stock
+                                    )
+
+                            })
+                        )
+
+                })
+
             }
         );
 
 
         showMessage(
-            "賞品を削除しました"
+            "クーポン設定を保存しました"
         );
 
+
+        /*
+         * 最新データを再取得
+         */
 
         await loadCoupons();
 
 
     } catch (error) {
+
+        console.error(error);
 
         showMessage(
             error.message,
@@ -661,6 +927,13 @@ async function deleteCoupon(id) {
         );
 
     }
+
+
+    saveCouponsButton.disabled =
+        false;
+
+    saveCouponsButton.textContent =
+        "クーポン設定を保存";
 
 }
 
@@ -713,14 +986,16 @@ async function loadHistory() {
 
     historyBody.innerHTML =
         history
-            .map(createHistoryHTML)
+            .map(
+                createHistoryHTML
+            )
             .join("");
 
 }
 
 
 /* =========================================
-   履歴HTML
+   発券履歴HTML
 ========================================= */
 
 function createHistoryHTML(item) {
@@ -737,21 +1012,17 @@ function createHistoryHTML(item) {
                 ${Number(item.id)}
             </td>
 
-
             <td>
                 ${escapeHTML(item.rank)}
             </td>
-
 
             <td>
                 ${escapeHTML(item.name)}
             </td>
 
-
             <td>
                 ${formatDate(item.issued_at)}
             </td>
-
 
             <td>
 
@@ -773,7 +1044,6 @@ function createHistoryHTML(item) {
 
             </td>
 
-
             <td>
                 ${
                     item.used_at
@@ -790,7 +1060,7 @@ function createHistoryHTML(item) {
 
 
 /* =========================================
-   日付表示
+   日付
 ========================================= */
 
 function formatDate(value) {
@@ -804,7 +1074,10 @@ function formatDate(value) {
 
     const date =
         new Date(
-            value.replace(" ", "T")
+            value.replace(
+                " ",
+                "T"
+            )
         );
 
 
@@ -822,11 +1095,17 @@ function formatDate(value) {
     return date.toLocaleString(
         "ja-JP",
         {
+
             year: "numeric",
+
             month: "2-digit",
+
             day: "2-digit",
+
             hour: "2-digit",
+
             minute: "2-digit"
+
         }
     );
 
@@ -834,17 +1113,37 @@ function formatDate(value) {
 
 
 /* =========================================
-   XSS対策
+   HTMLエスケープ
 ========================================= */
 
 function escapeHTML(value) {
 
     return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
 
 }
 
@@ -858,11 +1157,14 @@ async function loadAll() {
     try {
 
         await Promise.all([
-            loadCampaign(),
-            loadCoupons(),
-            loadHistory()
-        ]);
 
+            loadCampaign(),
+
+            loadCoupons(),
+
+            loadHistory()
+
+        ]);
 
     } catch (error) {
 
@@ -879,120 +1181,39 @@ async function loadAll() {
 
 
 /* =========================================
-   イベント
+   データ更新
+========================================= */
+
+reloadButton.addEventListener(
+    "click",
+    async () => {
+
+        const confirmed =
+            confirm(
+                "現在画面上で変更している内容は破棄されます。\nデータを再読み込みしますか？"
+            );
+
+
+        if (!confirmed) {
+
+            return;
+
+        }
+
+
+        await loadAll();
+
+    }
+);
+
+
+/* =========================================
+   キャンペーン保存
 ========================================= */
 
 saveCampaignButton.addEventListener(
     "click",
     saveCampaign
-);
-
-
-reloadButton.addEventListener(
-    "click",
-    loadAll
-);
-
-
-addCouponButton.addEventListener(
-    "click",
-    openAddModal
-);
-
-
-modalCloseButton.addEventListener(
-    "click",
-    closeModal
-);
-
-
-modalCancelButton.addEventListener(
-    "click",
-    closeModal
-);
-
-
-couponForm.addEventListener(
-    "submit",
-    saveCoupon
-);
-
-
-/* =========================================
-   賞品一覧のボタン
-========================================= */
-
-couponList.addEventListener(
-    "click",
-    async (event) => {
-
-        const editButton =
-            event.target.closest(
-                "[data-edit-id]"
-            );
-
-
-        const deleteButton =
-            event.target.closest(
-                "[data-delete-id]"
-            );
-
-
-        if (editButton) {
-
-            const id =
-                editButton.dataset.editId;
-
-
-            try {
-
-                const data =
-                    await apiFetch(
-                        "/admin/coupons"
-                    );
-
-
-                const coupon =
-                    data.coupons.find(
-                        item =>
-                            String(item.id) ===
-                            String(id)
-                    );
-
-
-                if (!coupon) {
-
-                    throw new Error(
-                        "賞品が見つかりません"
-                    );
-
-                }
-
-
-                openEditModal(coupon);
-
-
-            } catch (error) {
-
-                showMessage(
-                    error.message,
-                    true
-                );
-
-            }
-
-        }
-
-
-        if (deleteButton) {
-
-            await deleteCoupon(
-                deleteButton.dataset.deleteId
-            );
-
-        }
-
-    }
 );
 
 
