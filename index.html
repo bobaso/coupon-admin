@@ -229,7 +229,7 @@
             </h2>
 
             <p>
-                賞品ごとの残り枚数と本日の発券数を確認できます。
+                賞品ごとの残り枚数と発券数を確認できます。
             </p>
 
         </div>
@@ -240,6 +240,47 @@
             id="reloadStatsButton"
         >
             更新
+        </button>
+
+    </div>
+
+
+    <!-- =====================================
+         発券期間切り替え
+    ====================================== -->
+
+    <div class="history-filter">
+
+        <button
+            type="button"
+            class="filter-button active"
+            data-stats-period="today"
+        >
+            本日
+        </button>
+
+        <button
+            type="button"
+            class="filter-button"
+            data-stats-period="week"
+        >
+            1週間
+        </button>
+
+        <button
+            type="button"
+            class="filter-button"
+            data-stats-period="month"
+        >
+            1ヶ月
+        </button>
+
+        <button
+            type="button"
+            class="filter-button"
+            data-stats-period="all"
+        >
+            全期間
         </button>
 
     </div>
@@ -267,7 +308,7 @@
 
                     <th>残り枚数</th>
 
-                    <th>本日の発券数</th>
+                    <th>発券枚数</th>
 
                 </tr>
 
