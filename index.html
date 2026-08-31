@@ -30,10 +30,18 @@
 
     <header class="admin-header">
 
-        <h1>
-            クーポン抽選
-            <span>管理画面</span>
-        </h1>
+        <div>
+
+            <h1>
+                クーポン抽選
+            </h1>
+
+            <span>
+                管理画面
+            </span>
+
+        </div>
+
 
         <button
             type="button"
@@ -47,7 +55,7 @@
 
 
     <!-- =========================================
-         エラー表示
+         メッセージ
     ========================================== -->
 
     <div
@@ -66,8 +74,15 @@
         <div class="section-title">
 
             <div>
-                <h2>キャンペーン設定</h2>
-                <p>開催期間を変更できます。</p>
+
+                <h2>
+                    キャンペーン設定
+                </h2>
+
+                <p>
+                    開催期間を変更できます。
+                </p>
+
             </div>
 
         </div>
@@ -130,11 +145,17 @@
         <div class="section-title">
 
             <div>
-                <h2>賞品管理</h2>
+
+                <h2>
+                    賞品管理
+                </h2>
+
                 <p>
-                    賞品名・当選確率・残り枚数を管理します。
+                    賞品情報を変更し、最後にまとめて保存します。
                 </p>
+
             </div>
+
 
             <button
                 type="button"
@@ -147,6 +168,23 @@
         </div>
 
 
+        <!-- 確率合計 -->
+
+        <div class="probability-summary">
+
+            <span>
+                当選確率合計
+            </span>
+
+            <strong id="probabilityTotal">
+                0%
+            </strong>
+
+        </div>
+
+
+        <!-- 賞品一覧 -->
+
         <div
             id="couponList"
             class="coupon-list"
@@ -155,6 +193,21 @@
             <div class="loading">
                 読み込み中...
             </div>
+
+        </div>
+
+
+        <!-- 一括保存 -->
+
+        <div class="coupon-save-area">
+
+            <button
+                type="button"
+                class="save-coupons-button"
+                id="saveCouponsButton"
+            >
+                クーポン設定を保存
+            </button>
 
         </div>
 
@@ -170,8 +223,15 @@
         <div class="section-title">
 
             <div>
-                <h2>発券履歴</h2>
-                <p>最新の発券履歴から表示します。</p>
+
+                <h2>
+                    発券履歴
+                </h2>
+
+                <p>
+                    最新の発券履歴を表示します。
+                </p>
+
             </div>
 
         </div>
@@ -186,10 +246,15 @@
                     <tr>
 
                         <th>ID</th>
+
                         <th>等級</th>
+
                         <th>賞品</th>
+
                         <th>発券日時</th>
+
                         <th>状態</th>
+
                         <th>使用日時</th>
 
                     </tr>
@@ -217,138 +282,6 @@
         </div>
 
     </section>
-
-
-    <!-- =========================================
-         賞品編集モーダル
-    ========================================== -->
-
-    <div
-        id="couponModal"
-        class="modal"
-        hidden
-    >
-
-        <div class="modal-overlay"></div>
-
-
-        <div class="modal-content">
-
-            <div class="modal-header">
-
-                <h2 id="modalTitle">
-                    賞品編集
-                </h2>
-
-                <button
-                    type="button"
-                    class="modal-close"
-                    id="modalCloseButton"
-                >
-                    ×
-                </button>
-
-            </div>
-
-
-            <form id="couponForm">
-
-                <input
-                    type="hidden"
-                    id="couponId"
-                >
-
-
-                <div class="form-group">
-
-                    <label for="couponRank">
-                        等級
-                    </label>
-
-                    <input
-                        type="text"
-                        id="couponRank"
-                        placeholder="例：1等"
-                        required
-                    >
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label for="couponName">
-                        賞品名
-                    </label>
-
-                    <input
-                        type="text"
-                        id="couponName"
-                        placeholder="例：ドリンク一杯無料券"
-                        required
-                    >
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label for="couponProbability">
-                        当選確率（％）
-                    </label>
-
-                    <input
-                        type="number"
-                        id="couponProbability"
-                        min="0"
-                        step="1"
-                        required
-                    >
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label for="couponStock">
-                        残り枚数
-                    </label>
-
-                    <input
-                        type="number"
-                        id="couponStock"
-                        min="0"
-                        step="1"
-                        required
-                    >
-
-                </div>
-
-
-                <div class="modal-buttons">
-
-                    <button
-                        type="button"
-                        class="cancel-button"
-                        id="modalCancelButton"
-                    >
-                        キャンセル
-                    </button>
-
-                    <button
-                        type="submit"
-                        class="primary-button"
-                    >
-                        保存する
-                    </button>
-
-                </div>
-
-            </form>
-
-        </div>
-
-    </div>
 
 
 </div>
