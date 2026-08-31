@@ -1008,57 +1008,155 @@ renderCouponStats();
 }
 
 /* =========================================
-   本日の発券数をIDごとに集計
+   発券数を期間別に取得
 ========================================= */
 
-function getTodayIssuedCount(couponId) {
+function getIssuedCount(
+    couponId,
+    period
+) {
 
     /*
-     * 現在の日付を取得
-     *
-     * 日本時間として扱う
+     * 現在時刻
      */
 
     const now =
         new Date();
 
-    const today =
-        now.toLocaleDateString(
-            "ja-JP",
-            {
-                timeZone: "Asia/Tokyo"
-            }
+
+    /*
+     * 全期間
+     */
+
+    if (period === "all") {
+
+        return historyData.filter(
+            item =>
+                Number(item.coupon_id) ===
+                Number(couponId)
+        ).length;
+
+    }
+
+
+    /*
+     * 日本時間の現在時刻
+     */
+
+    const currentTime =
+        new Date(
+            now.toLocaleString(
+                "en-US",
+                {
+                    timeZone:
+                        "Asia/Tokyo"
+                }
+            )
         );
 
 
     /*
-     * 対象IDだけ抽出
+     * 集計開始日時
+     */
+
+    let startTime =
+        new Date(currentTime);
+
+
+    /*
+     * 本日
+     */
+
+    if (period === "today") {
+
+        startTime.setHours(
+            0,
+            0,
+            0,
+            0
+        );
+
+    }
+
+
+    /*
+     * 1週間
+     *
+     * 今日を含めた過去7日間
+     */
+
+    else if (period === "week") {
+
+        startTime.setDate(
+            startTime.getDate() - 6
+        );
+
+        startTime.setHours(
+            0,
+            0,
+            0,
+            0
+        );
+
+    }
+
+
+    /*
+     * 1ヶ月
+     *
+     * 今日を含めた過去1ヶ月
+     */
+
+    else if (period === "month") {
+
+        startTime.setMonth(
+            startTime.getMonth() - 1
+        );
+
+    }
+
+
+    /*
+     * ID + 日付で集計
      */
 
     return historyData.filter(
         item => {
 
+            /*
+             * IDが違う
+             */
+
             if (
                 Number(item.coupon_id) !==
                 Number(couponId)
             ) {
-                return false;
-            }
 
-
-            if (!item.issued_at) {
                 return false;
+
             }
 
 
             /*
-             * issued_at
+             * 発券日時がない
+             */
+
+            if (!item.issued_at) {
+
+                return false;
+
+            }
+
+
+            /*
+             * 発券日時をDate化
              *
-             * 例：
+             * Cloudflare側：
+             *
              * 2026-08-31 10:25:30
              */
 
-            const issuedDate =
+            const issuedTime =
                 new Date(
                     item.issued_at.replace(
                         " ",
@@ -1067,28 +1165,46 @@ function getTodayIssuedCount(couponId) {
                 );
 
 
+            /*
+             * 日付として認識できない
+             */
+
             if (
                 Number.isNaN(
-                    issuedDate.getTime()
+                    issuedTime.getTime()
                 )
             ) {
+
                 return false;
+
             }
 
 
-            const issuedDay =
-                issuedDate.toLocaleDateString(
-                    "ja-JP",
-                    {
-                        timeZone:
-                            "Asia/Tokyo"
-                    }
+            /*
+             * 日本時間に変換
+             */
+
+            const issuedJapanTime =
+                new Date(
+                    issuedTime.toLocaleString(
+                        "en-US",
+                        {
+                            timeZone:
+                                "Asia/Tokyo"
+                        }
+                    )
                 );
 
 
+            /*
+             * 指定期間内か確認
+             */
+
             return (
-                issuedDay ===
-                today
+                issuedJapanTime >=
+                startTime &&
+                issuedJapanTime <=
+                currentTime
             );
 
         }
@@ -1103,10 +1219,10 @@ function getTodayIssuedCount(couponId) {
 
 function renderCouponStats() {
 
-    if (
-        !couponStatsBody
-    ) {
+    if (!couponStatsBody) {
+
         return;
+
     }
 
 
@@ -1147,10 +1263,42 @@ function renderCouponStats() {
             .map(
                 coupon => {
 
-                    const todayIssued =
-                        getTodayIssuedCount(
-                            coupon.id
+                    /*
+                     * 選択中の期間で発券数を取得
+                     */
+
+                    const issuedCount =
+                        getIssuedCount(
+                            coupon.id,
+                            statsPeriod
                         );
+
+
+                    /*
+                     * 3等以下は3等デザイン
+                     */
+
+                    let designClass =
+                        "rank-3";
+
+
+                    if (
+                        coupon.rank ===
+                        "1等"
+                    ) {
+
+                        designClass =
+                            "rank-1";
+
+                    } else if (
+                        coupon.rank ===
+                        "2等"
+                    ) {
+
+                        designClass =
+                            "rank-2";
+
+                    }
 
 
                     return `
@@ -1160,7 +1308,9 @@ function renderCouponStats() {
                             <!-- ID -->
 
                             <td>
-                                ${Number(coupon.id)}
+                                ${Number(
+                                    coupon.id
+                                )}
                             </td>
 
 
@@ -1169,7 +1319,7 @@ function renderCouponStats() {
                             <td>
 
                                 <span
-                                    class="stats-rank"
+                                    class="stats-rank ${designClass}"
                                 >
                                     ${escapeHTML(
                                         coupon.rank
@@ -1224,14 +1374,14 @@ function renderCouponStats() {
                             </td>
 
 
-                            <!-- 本日の発券数 -->
+                            <!-- 発券枚数 -->
 
                             <td>
 
                                 <strong
                                     class="stats-issued"
                                 >
-                                    ${todayIssued}
+                                    ${issuedCount}
                                 </strong>
 
                                 <span>
@@ -1711,4 +1861,65 @@ if (
     );
 
 }
+/* =========================================
+   発券状況の表示期間
+========================================= */
+
+let statsPeriod = "today";
+/* =========================================
+   発券状況 期間切り替え
+========================================= */
+
+const statsPeriodButtons =
+    document.querySelectorAll(
+        "[data-stats-period]"
+    );
+
+
+statsPeriodButtons.forEach(
+    button => {
+
+        button.addEventListener(
+            "click",
+            function () {
+
+                /*
+                 * 選択期間を変更
+                 */
+
+                statsPeriod =
+                    this.dataset.statsPeriod;
+
+
+                /*
+                 * ボタンの選択状態を変更
+                 */
+
+                statsPeriodButtons.forEach(
+                    btn => {
+
+                        btn.classList.remove(
+                            "active"
+                        );
+
+                    }
+                );
+
+
+                this.classList.add(
+                    "active"
+                );
+
+
+                /*
+                 * 発券状況を再表示
+                 */
+
+                renderCouponStats();
+
+            }
+        );
+
+    }
+);
 
