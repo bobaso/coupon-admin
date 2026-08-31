@@ -997,3 +997,140 @@ button:disabled {
     color: #555;
 
 }
+
+/* =========================================
+   発券状況
+========================================= */
+
+.stats-table-wrap {
+
+    width: 100%;
+
+    overflow-x: auto;
+
+    margin-top: 20px;
+
+}
+
+
+.stats-table {
+
+    width: 100%;
+
+    min-width: 680px;
+
+    border-collapse: collapse;
+
+    background: #fff;
+
+}
+
+
+.stats-table th,
+.stats-table td {
+
+    padding: 14px 12px;
+
+    border-bottom:
+        1px solid #e5e7eb;
+
+    text-align: center;
+
+    white-space: nowrap;
+
+}
+
+
+.stats-table th {
+
+    background: #f5f7fa;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    color: #374151;
+
+}
+
+
+.stats-table td {
+
+    font-size: 14px;
+
+    color: #374151;
+
+}
+
+
+.stats-table tbody tr:hover {
+
+    background: #f9fafb;
+
+}
+
+
+/* =========================================
+   ID
+========================================= */
+
+.stats-table td:first-child {
+
+    font-weight: 700;
+
+    color: #6b7280;
+
+}
+
+
+/* =========================================
+   等級
+========================================= */
+
+.stats-rank {
+
+    font-weight: 700;
+
+}
+
+
+/* =========================================
+   賞品名
+========================================= */
+
+.stats-name {
+
+    display: inline-block;
+
+    text-align: left;
+
+    min-width: 180px;
+
+}
+
+
+/* =========================================
+   残り枚数
+========================================= */
+
+.stats-stock {
+
+    font-size: 20px;
+
+    font-weight: 700;
+
+}
+
+
+/* =========================================
+   本日の発券数
+========================================= */
+
+.stats-issued {
+
+    font-size: 20px;
+
+    font-weight: 700;
+
+}
+
