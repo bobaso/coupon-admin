@@ -1372,32 +1372,71 @@ button:disabled {
     white-space: nowrap;
 
 }
+```css
 /* =========================================
-   発券状況：1週間
-   ID・等級・賞品をコンパクトにする
+   発券状況テーブル
+   列幅を統一
 ========================================= */
 
+.stats-table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+
+
+/* ID */
 .stats-table th:nth-child(1),
 .stats-table td:nth-child(1) {
-    width: 32px;
+    width: 40px;
 }
 
+
+/* 等級 */
 .stats-table th:nth-child(2),
 .stats-table td:nth-child(2) {
-    width: 48px;
+    width: 55px;
 }
 
+
+/* 賞品 */
 .stats-table th:nth-child(3),
 .stats-table td:nth-child(3) {
-    width: 140px;
+    width: auto;
+    text-align: left;
 }
 
+
+/* 残り枚数 */
 .stats-table th:nth-child(4),
 .stats-table td:nth-child(4) {
-    width: 68px;
+    width: 75px;
 }
 
-.stats-table th:nth-child(n+5),
-.stats-table td:nth-child(n+5) {
-    width: 38px;
+
+/* 発券枚数 */
+.stats-table th:nth-child(5),
+.stats-table td:nth-child(5) {
+    width: 75px;
 }
+
+
+/* セル */
+.stats-table th,
+.stats-table td {
+    padding: 10px 5px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+
+/* 賞品名 */
+.stats-table .stats-name {
+    display: block;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+```
+
