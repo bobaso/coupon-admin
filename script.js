@@ -2927,5 +2927,94 @@ statsPeriodButtons.forEach(
             }
         );
 
+       /* =========================================
+   管理カテゴリー切り替え
+========================================= */
+
+const adminCategoryButtons =
+    document.querySelectorAll(
+        ".admin-category-button"
+    );
+
+
+const adminCategoryContents =
+    document.querySelectorAll(
+        ".admin-category-content"
+    );
+
+
+function switchAdminCategory(
+    category
+) {
+
+    /*
+     * ボタンの選択状態
+     */
+
+    adminCategoryButtons.forEach(
+        button => {
+
+            button.classList.toggle(
+                "active",
+                button.dataset.category === category
+            );
+
+        }
+    );
+
+
+    /*
+     * コンテンツ表示切り替え
+     */
+
+    adminCategoryContents.forEach(
+        content => {
+
+            content.classList.toggle(
+                "is-hidden",
+                content.dataset.categoryContent !== category
+            );
+
+        }
+    );
+
+}
+
+
+/*
+ * カテゴリーボタン クリック
+ */
+
+adminCategoryButtons.forEach(
+    button => {
+
+        button.addEventListener(
+            "click",
+            () => {
+
+                const category =
+                    button.dataset.category;
+
+                switchAdminCategory(
+                    category
+                );
+
+            }
+        );
+
+    }
+);
+
+
+/*
+ * 初期表示
+ *
+ * 発券データを表示
+ */
+
+switchAdminCategory(
+    "stats"
+);
+
     }
 );
