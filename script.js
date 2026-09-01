@@ -1059,6 +1059,27 @@ async function loadHistory() {
  * JavaScriptのDateオブジェクトを作ります。
  */
 
+/* =========================================
+   D1保存日時 → 日本時間としてDate化
+========================================= */
+
+/*
+ * Worker / D1には、
+ *
+ * 2026-09-01 17:02:08
+ *
+ * のように「日本時間そのもの」が保存されています。
+ *
+ * そのため、
+ *
+ * UTC → JST
+ *
+ * の変換は行いません。
+ *
+ * D1の年月日・時刻をそのまま
+ * 日本時間のカレンダー日時として扱います。
+ */
+
 function parseJapanDate(value) {
 
     if (!value) {
@@ -1071,6 +1092,16 @@ function parseJapanDate(value) {
     const dateString =
         String(value).trim();
 
+
+    /*
+     * D1形式
+     *
+     * 2026-09-01 17:02:08
+     *
+     * または
+     *
+     * 2026-09-01T17:02:08
+     */
 
     const match =
         dateString.match(
@@ -1105,10 +1136,8 @@ function parseJapanDate(value) {
 
 
     /*
-     * このDateは「日本時間のカレンダー日時」
-     * として利用します。
-     *
-     * 表示・年月・曜日・日付判定のために使用します。
+     * D1に保存された時刻を
+     * そのままローカルDateとして扱う。
      */
 
     return new Date(
@@ -1122,10 +1151,18 @@ function parseJapanDate(value) {
 
 }
 
-
 /* =========================================
    現在の日本時間
 ========================================= */
+
+/*
+ * 現在時刻を日本時間として取得します。
+ *
+ * このDateは「日本時間の年月日・時刻」を
+ * カレンダー上の値として扱うために使用します。
+ *
+ * D1の日時との比較専用です。
+ */
 
 function getJapanNow() {
 
@@ -1133,18 +1170,48 @@ function getJapanNow() {
         new Date();
 
 
-    const japanString =
-        now.toLocaleString(
+    const parts =
+        new Intl.DateTimeFormat(
             "en-US",
             {
-                timeZone:
-                    "Asia/Tokyo"
+                timeZone: "Asia/Tokyo",
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+                hour12: false
             }
-        );
+        ).formatToParts(now);
+
+
+    const values = {};
+
+
+    parts.forEach(
+        part => {
+
+            if (
+                part.type !== "literal"
+            ) {
+
+                values[part.type] =
+                    Number(part.value);
+
+            }
+
+        }
+    );
 
 
     return new Date(
-        japanString
+        values.year,
+        values.month - 1,
+        values.day,
+        values.hour,
+        values.minute,
+        values.second
     );
 
 }
@@ -2610,30 +2677,12 @@ document
 
 /* =========================================
    日付表示
-   ★重要
+   D1 → 管理画面
 ========================================= */
 
 /*
- * Cloudflare Worker / D1側ですでに
- * 日本時間として保存されている日時を
- * そのまま表示します。
- *
- * 例：
- *
- * D1
- * 2026-09-01 08:02:04
- *
- * ↓
- *
- * 管理画面
- * 2026/09/01 08:02:04
- *
- *
- * 「Z」を付けません。
- *
- * Asia/Tokyoへの変換もしません。
- *
- * これにより9時間の二重加算を防ぎます。
+ * D1には日本時間が保存されています。
+ * D1の文字列をそのまま表示用に整形します。
  */
 
 function formatDate(value) {
@@ -2649,6 +2698,12 @@ function formatDate(value) {
         String(value).trim();
 
 
+    /*
+     * D1形式
+     *
+     * 2026-09-01 17:02:08
+     */
+
     const match =
         dateString.match(
             /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?/
@@ -2657,7 +2712,14 @@ function formatDate(value) {
 
     if (!match) {
 
-        return value;
+        /*
+         * 想定外の形式の場合は
+         * 元の値をそのまま表示
+         */
+
+        return escapeHTML(
+            dateString
+        );
 
     }
 
@@ -2681,10 +2743,12 @@ function formatDate(value) {
         match[6] || "00";
 
 
-    return `${year}/${month}/${day} ${hour}:${minute}:${second}`;
+    return (
+        `${year}/${month}/${day} ` +
+        `${hour}:${minute}:${second}`
+    );
 
 }
-
 
 /* =========================================
    HTMLエスケープ
