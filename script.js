@@ -1979,7 +1979,7 @@ function renderStatsWeek() {
                                 >
                                     ${monday}
                                 </strong>
-                                枚
+                           
                             </td>
 
                             <td>
@@ -1988,7 +1988,7 @@ function renderStatsWeek() {
                                 >
                                     ${tuesday}
                                 </strong>
-                                枚
+                                
                             </td>
 
                             <td>
@@ -1997,7 +1997,7 @@ function renderStatsWeek() {
                                 >
                                     ${wednesday}
                                 </strong>
-                                枚
+                                
                             </td>
 
                             <td>
@@ -2006,7 +2006,7 @@ function renderStatsWeek() {
                                 >
                                     ${thursday}
                                 </strong>
-                                枚
+                                
                             </td>
 
                             <td>
@@ -2015,7 +2015,7 @@ function renderStatsWeek() {
                                 >
                                     ${friday}
                                 </strong>
-                                枚
+                                
                             </td>
 
                             <td>
@@ -2024,7 +2024,7 @@ function renderStatsWeek() {
                                 >
                                     ${saturday}
                                 </strong>
-                                枚
+                                
                             </td>
 
                             <td>
@@ -2033,7 +2033,7 @@ function renderStatsWeek() {
                                 >
                                     ${sunday}
                                 </strong>
-                                枚
+                                
                             </td>
 
                             <td>
@@ -2042,7 +2042,7 @@ function renderStatsWeek() {
                                 >
                                     ${total}
                                 </strong>
-                                枚
+                                
                             </td>
 
                             <td>
@@ -2053,7 +2053,7 @@ function renderStatsWeek() {
                                         coupon.stock
                                     )}
                                 </strong>
-                                枚
+                                
                             </td>
 
                         </tr>
