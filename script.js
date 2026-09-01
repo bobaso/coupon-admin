@@ -1,4 +1,4 @@
-
+```javascript
 /* =========================================
    Cloudflare Worker
 ========================================= */
@@ -300,31 +300,33 @@ async function loadCoupons() {
 
     coupons =
         (data.coupons || [])
-            .map(coupon => ({
+            .map(
+                coupon => ({
 
-                id:
-                    coupon.id,
+                    id:
+                        coupon.id,
 
-                rank:
-                    coupon.rank,
+                    rank:
+                        coupon.rank,
 
-                name:
-                    coupon.name,
+                    name:
+                        coupon.name,
 
-                probability:
-                    Number(
-                        coupon.probability
-                    ),
+                    probability:
+                        Number(
+                            coupon.probability
+                        ),
 
-                stock:
-                    Number(
-                        coupon.stock
-                    ),
+                    stock:
+                        Number(
+                            coupon.stock
+                        ),
 
-                created_at:
-                    coupon.created_at
+                    created_at:
+                        coupon.created_at
 
-            }));
+                })
+            );
 
 
     renderCoupons();
@@ -676,13 +678,8 @@ addCouponButton.addEventListener(
         if (lastItem) {
 
             lastItem.scrollIntoView({
-
-                behavior:
-                    "smooth",
-
-                block:
-                    "center"
-
+                behavior: "smooth",
+                block: "center"
             });
 
 
@@ -767,10 +764,6 @@ saveCouponsButton.addEventListener(
 
 async function saveAllCoupons() {
 
-    /*
-     * 賞品が0件
-     */
-
     if (coupons.length === 0) {
 
         showMessage(
@@ -783,9 +776,9 @@ async function saveAllCoupons() {
     }
 
 
-    /*
-     * 入力チェック
-     */
+    /* =====================================
+       入力チェック
+    ====================================== */
 
     for (
         let i = 0;
@@ -869,9 +862,9 @@ async function saveAllCoupons() {
     }
 
 
-    /*
-     * 確率合計
-     */
+    /* =====================================
+       確率合計
+    ====================================== */
 
     const total =
         coupons.reduce(
@@ -896,9 +889,9 @@ async function saveAllCoupons() {
     }
 
 
-    /*
-     * 保存確認
-     */
+    /* =====================================
+       保存確認
+    ====================================== */
 
     const confirmed =
         confirm(
@@ -913,9 +906,9 @@ async function saveAllCoupons() {
     }
 
 
-    /*
-     * 保存中
-     */
+    /* =====================================
+       保存中
+    ====================================== */
 
     saveCouponsButton.disabled =
         true;
@@ -925,10 +918,6 @@ async function saveAllCoupons() {
 
 
     try {
-
-        /*
-         * Workerへ一括送信
-         */
 
         await apiFetch(
             "/admin/coupons",
@@ -949,15 +938,14 @@ async function saveAllCoupons() {
                                     `${String(
                                         coupon.rank
                                     )
-                                        .replace(
-                                            "等",
-                                            ""
-                                        )
-                                        .trim()}等`,
+                                    .replace(
+                                        "等",
+                                        ""
+                                    )
+                                    .trim()}等`,
 
                                 name:
-                                    coupon.name
-                                        .trim(),
+                                    coupon.name.trim(),
 
                                 probability:
                                     Number(
@@ -982,10 +970,6 @@ async function saveAllCoupons() {
             "クーポン設定を保存しました"
         );
 
-
-        /*
-         * 最新データを再取得
-         */
 
         await loadCoupons();
 
@@ -1052,6 +1036,122 @@ async function loadHistory() {
 
 
 /* =========================================
+   日本時間の日時をDate相当として扱う
+========================================= */
+
+/*
+ * Cloudflare Worker / D1では、
+ *
+ * issued_at
+ * used_at
+ *
+ * を以下のように保存しています。
+ *
+ * 2026-09-01 08:02:04
+ *
+ * これは「日本時間」です。
+ *
+ * UTCではありません。
+ *
+ * そのため「Z」を付けたり、
+ * Asia/Tokyoへ変換したりしません。
+ *
+ * 以下では、日時文字列を分解して
+ * JavaScriptのDateオブジェクトを作ります。
+ */
+
+function parseJapanDate(value) {
+
+    if (!value) {
+
+        return null;
+
+    }
+
+
+    const dateString =
+        String(value).trim();
+
+
+    const match =
+        dateString.match(
+            /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?/
+        );
+
+
+    if (!match) {
+
+        return null;
+
+    }
+
+
+    const year =
+        Number(match[1]);
+
+    const month =
+        Number(match[2]);
+
+    const day =
+        Number(match[3]);
+
+    const hour =
+        Number(match[4]);
+
+    const minute =
+        Number(match[5]);
+
+    const second =
+        Number(match[6] || 0);
+
+
+    /*
+     * このDateは「日本時間のカレンダー日時」
+     * として利用します。
+     *
+     * 表示・年月・曜日・日付判定のために使用します。
+     */
+
+    return new Date(
+        year,
+        month - 1,
+        day,
+        hour,
+        minute,
+        second
+    );
+
+}
+
+
+/* =========================================
+   現在の日本時間
+========================================= */
+
+function getJapanNow() {
+
+    const now =
+        new Date();
+
+
+    const japanString =
+        now.toLocaleString(
+            "en-US",
+            {
+                timeZone:
+                    "Asia/Tokyo"
+            }
+        );
+
+
+    return new Date(
+        japanString
+    );
+
+}
+
+
+/* =========================================
    開催期間内の月一覧
 ========================================= */
 
@@ -1069,24 +1169,18 @@ function getCampaignMonths() {
 
     const start =
         new Date(
-            startDate.value +
-            "T00:00:00"
+            startDate.value + "T00:00:00"
         );
 
     const end =
         new Date(
-            endDate.value +
-            "T00:00:00"
+            endDate.value + "T00:00:00"
         );
 
 
     if (
-        Number.isNaN(
-            start.getTime()
-        ) ||
-        Number.isNaN(
-            end.getTime()
-        )
+        Number.isNaN(start.getTime()) ||
+        Number.isNaN(end.getTime())
     ) {
 
         return [];
@@ -1142,93 +1236,6 @@ function getCampaignMonths() {
 
 
 /* =========================================
-   ★ 日本時間として日時を取得
-   D1には日本時間で保存されている前提
-========================================= */
-
-function parseJapanDate(value) {
-
-    if (!value) {
-
-        return null;
-
-    }
-
-
-    const dateString =
-        String(value).trim();
-
-
-    /*
-     * D1の日時
-     *
-     * 例：
-     * 2026-09-01 15:30:00
-     *
-     * ↓
-     * 2026-09-01T15:30:00+09:00
-     *
-     * として解釈
-     */
-
-    if (
-        /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}/.test(
-            dateString
-        )
-    ) {
-
-        const date =
-            new Date(
-                dateString.replace(
-                    " ",
-                    "T"
-                ) + "+09:00"
-            );
-
-
-        if (
-            Number.isNaN(
-                date.getTime()
-            )
-        ) {
-
-            return null;
-
-        }
-
-
-        return date;
-
-    }
-
-
-    /*
-     * その他の形式
-     */
-
-    const date =
-        new Date(
-            dateString
-        );
-
-
-    if (
-        Number.isNaN(
-            date.getTime()
-        )
-    ) {
-
-        return null;
-
-    }
-
-
-    return date;
-
-}
-
-
-/* =========================================
    指定月の発券数
 ========================================= */
 
@@ -1267,7 +1274,9 @@ function getMonthlyIssuedCount(
 
 
             /*
-             * ★ 日本時間として取得
+             * D1に保存されている日時は
+             * すでに日本時間なので、
+             * UTC変換はしない。
              */
 
             const issuedJapanTime =
@@ -1308,24 +1317,8 @@ function getWeeklyIssuedCounts(
     couponId
 ) {
 
-    const now =
-        new Date();
-
-
-    /*
-     * 現在の日本時間
-     */
-
     const currentTime =
-        new Date(
-            now.toLocaleString(
-                "en-US",
-                {
-                    timeZone:
-                        "Asia/Tokyo"
-                }
-            )
-        );
+        getJapanNow();
 
 
     /*
@@ -1351,18 +1344,6 @@ function getWeeklyIssuedCounts(
     );
 
 
-    /*
-     * 曜日ごとの発券数
-     *
-     * 0 = 日曜日
-     * 1 = 月曜日
-     * 2 = 火曜日
-     * 3 = 水曜日
-     * 4 = 木曜日
-     * 5 = 金曜日
-     * 6 = 土曜日
-     */
-
     const counts = {
 
         0: 0,
@@ -1375,10 +1356,6 @@ function getWeeklyIssuedCounts(
 
     };
 
-
-    /*
-     * 発券履歴を確認
-     */
 
     historyData.forEach(
         item => {
@@ -1399,10 +1376,6 @@ function getWeeklyIssuedCounts(
 
             }
 
-
-            /*
-             * ★ 日本時間として取得
-             */
 
             const issuedJapanTime =
                 parseJapanDate(
@@ -1432,10 +1405,6 @@ function getWeeklyIssuedCounts(
 
             }
 
-
-            /*
-             * 曜日を取得
-             */
 
             const day =
                 issuedJapanTime.getDay();
@@ -1468,17 +1437,9 @@ function renderCouponStats() {
     }
 
 
-    /*
-     * キャンペーン期間の月一覧
-     */
-
     const campaignMonths =
         getCampaignMonths();
 
-
-    /*
-     * キャンペーン期間未設定
-     */
 
     if (
         !startDate.value ||
@@ -1512,10 +1473,6 @@ function renderCouponStats() {
     }
 
 
-    /*
-     * 今日
-     */
-
     if (
         statsPeriod === "today"
     ) {
@@ -1527,10 +1484,6 @@ function renderCouponStats() {
     }
 
 
-    /*
-     * 1週間
-     */
-
     if (
         statsPeriod === "week"
     ) {
@@ -1541,10 +1494,6 @@ function renderCouponStats() {
 
     }
 
-
-    /*
-     * 1ヶ月
-     */
 
     if (
         statsPeriod === "month"
@@ -1558,10 +1507,6 @@ function renderCouponStats() {
 
     }
 
-
-    /*
-     * 全期間
-     */
 
     if (
         statsPeriod === "all"
@@ -1584,25 +1529,13 @@ function getTodayIssuedCount(
     couponId
 ) {
 
-    const now =
-        new Date();
+    const japanNow =
+        getJapanNow();
 
 
     /*
-     * 日本時間の現在時刻
+     * 今日の0:00
      */
-
-    const japanNow =
-        new Date(
-            now.toLocaleString(
-                "en-US",
-                {
-                    timeZone:
-                        "Asia/Tokyo"
-                }
-            )
-        );
-
 
     const todayStart =
         new Date(
@@ -1617,6 +1550,10 @@ function getTodayIssuedCount(
         0
     );
 
+
+    /*
+     * 今日の23:59:59
+     */
 
     const todayEnd =
         new Date(
@@ -1653,7 +1590,7 @@ function getTodayIssuedCount(
 
 
             /*
-             * ★ 日本時間として取得
+             * D1の日時は日本時間
              */
 
             const issuedJapanTime =
@@ -1690,24 +1627,12 @@ function getWeekdayIssuedCounts(
     couponId
 ) {
 
-    const now =
-        new Date();
-
-
     const currentTime =
-        new Date(
-            now.toLocaleString(
-                "en-US",
-                {
-                    timeZone:
-                        "Asia/Tokyo"
-                }
-            )
-        );
+        getJapanNow();
 
 
     /*
-     * 今日
+     * 今日の23:59:59
      */
 
     const today =
@@ -1725,7 +1650,7 @@ function getWeekdayIssuedCounts(
 
 
     /*
-     * 6日前
+     * 6日前の0:00
      */
 
     const startTime =
@@ -1746,18 +1671,6 @@ function getWeekdayIssuedCounts(
         0
     );
 
-
-    /*
-     * 曜日別
-     *
-     * 0 = 日
-     * 1 = 月
-     * 2 = 火
-     * 3 = 水
-     * 4 = 木
-     * 5 = 金
-     * 6 = 土
-     */
 
     const counts = {
 
@@ -1793,7 +1706,7 @@ function getWeekdayIssuedCounts(
 
 
             /*
-             * ★ 日本時間として取得
+             * D1の日時は日本時間
              */
 
             const issuedJapanTime =
@@ -2147,7 +2060,7 @@ function renderStatsMonth(
             <tr>
                 <td
                     colspan="${
-                        6 +
+                        5 +
                         campaignMonths.length
                     }"
                     class="loading"
@@ -2183,8 +2096,7 @@ function renderStatsMonth(
                                         );
 
 
-                                    total +=
-                                        count;
+                                    total += count;
 
 
                                     return `
@@ -2469,9 +2381,9 @@ function renderHistory() {
     let filteredHistory;
 
 
-    /*
-     * フィルター
-     */
+    /* =====================================
+       フィルター
+    ====================================== */
 
     if (
         historyFilter === "unused"
@@ -2501,9 +2413,9 @@ function renderHistory() {
     }
 
 
-    /*
-     * データなし
-     */
+    /* =====================================
+       データなし
+    ====================================== */
 
     if (
         filteredHistory.length === 0
@@ -2549,9 +2461,9 @@ function renderHistory() {
     }
 
 
-    /*
-     * 表示
-     */
+    /* =====================================
+       表示
+    ====================================== */
 
     historyBody.innerHTML =
         filteredHistory
@@ -2567,7 +2479,9 @@ function renderHistory() {
    発券履歴HTML
 ========================================= */
 
-function createHistoryHTML(item) {
+function createHistoryHTML(
+    item
+) {
 
     const used =
         Number(item.used) === 1;
@@ -2593,9 +2507,7 @@ function createHistoryHTML(item) {
 
 
             <td>
-                ${formatDate(
-                    item.issued_at
-                )}
+                ${formatDate(item.issued_at)}
             </td>
 
 
@@ -2624,9 +2536,7 @@ function createHistoryHTML(item) {
 
                 ${
                     item.used_at
-                    ? formatDate(
-                        item.used_at
-                    )
+                    ? formatDate(item.used_at)
                     : "-"
                 }
 
@@ -2647,61 +2557,85 @@ document
     .querySelectorAll(
         ".history-filter-button"
     )
-    .forEach(button => {
+    .forEach(
+        button => {
 
-        button.addEventListener(
-            "click",
-            () => {
+            button.addEventListener(
+                "click",
+                () => {
 
-                /*
-                 * 選択中ボタン変更
-                 */
+                    /*
+                     * 選択中ボタン変更
+                     */
 
-                document
-                    .querySelectorAll(
-                        ".history-filter-button"
-                    )
-                    .forEach(
-                        item => {
+                    document
+                        .querySelectorAll(
+                            ".history-filter-button"
+                        )
+                        .forEach(
+                            item => {
 
-                            item.classList.remove(
-                                "active"
-                            );
+                                item.classList.remove(
+                                    "active"
+                                );
 
-                        }
+                            }
+                        );
+
+
+                    button.classList.add(
+                        "active"
                     );
 
 
-                button.classList.add(
-                    "active"
-                );
+                    /*
+                     * フィルター変更
+                     */
+
+                    historyFilter =
+                        button.dataset.filter;
 
 
-                /*
-                 * フィルター変更
-                 */
+                    /*
+                     * 再表示
+                     */
 
-                historyFilter =
-                    button.dataset.filter;
+                    renderHistory();
 
+                }
+            );
 
-                /*
-                 * 再表示
-                 */
-
-                renderHistory();
-
-            }
-        );
-
-    });
+        }
+    );
 
 
 /* =========================================
-   日付
-   Cloudflare Worker / D1に保存された
-   日本時間をそのまま日本時間で表示
+   日付表示
+   ★重要
 ========================================= */
+
+/*
+ * Cloudflare Worker / D1側ですでに
+ * 日本時間として保存されている日時を
+ * そのまま表示します。
+ *
+ * 例：
+ *
+ * D1
+ * 2026-09-01 08:02:04
+ *
+ * ↓
+ *
+ * 管理画面
+ * 2026/09/01 08:02:04
+ *
+ *
+ * 「Z」を付けません。
+ *
+ * Asia/Tokyoへの変換もしません。
+ *
+ * これにより9時間の二重加算を防ぎます。
+ */
 
 function formatDate(value) {
 
@@ -2716,12 +2650,6 @@ function formatDate(value) {
         String(value).trim();
 
 
-    /*
-     * =====================================
-     * D1に保存されている日時
-     * =====================================
-     */
-
     const match =
         dateString.match(
             /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?/
@@ -2730,63 +2658,10 @@ function formatDate(value) {
 
     if (!match) {
 
-        /*
-         * ISO形式などの場合
-         */
-
-        const date =
-            new Date(
-                dateString
-            );
-
-
-        if (
-            Number.isNaN(
-                date.getTime()
-            )
-        ) {
-
-            return value;
-
-        }
-
-
-        return date.toLocaleString(
-            "ja-JP",
-            {
-
-                timeZone:
-                    "Asia/Tokyo",
-
-                year:
-                    "numeric",
-
-                month:
-                    "2-digit",
-
-                day:
-                    "2-digit",
-
-                hour:
-                    "2-digit",
-
-                minute:
-                    "2-digit",
-
-                second:
-                    "2-digit"
-
-            }
-        );
+        return value;
 
     }
 
-
-    /*
-     * =====================================
-     * 日本時間としてそのまま表示
-     * =====================================
-     */
 
     const year =
         match[1];
@@ -2816,7 +2691,9 @@ function formatDate(value) {
    HTMLエスケープ
 ========================================= */
 
-function escapeHTML(value) {
+function escapeHTML(
+    value
+) {
 
     return String(value)
 
@@ -3048,7 +2925,6 @@ const adminCategoryButtons =
         ".admin-category-button"
     );
 
-
 const adminCategoryContents =
     document.querySelectorAll(
         ".admin-category-content"
@@ -3133,3 +3009,4 @@ adminCategoryButtons.forEach(
 renderAdminCategory(
     "stats"
 );
+```
