@@ -2926,6 +2926,11 @@ statsPeriodButtons.forEach(
 
             }
         );
+
+    }
+);
+
+
 /* =========================================
    管理カテゴリ切り替え
 ========================================= */
@@ -2949,9 +2954,9 @@ function renderAdminCategory(
     category
 ) {
 
-    /* =====================================
-       ボタン
-    ====================================== */
+    /*
+     * ボタン
+     */
 
     adminCategoryButtons.forEach(
         button => {
@@ -2965,9 +2970,9 @@ function renderAdminCategory(
     );
 
 
-    /* =====================================
-       コンテンツ
-    ====================================== */
+    /*
+     * コンテンツ
+     */
 
     adminCategoryContents.forEach(
         content => {
@@ -3014,4 +3019,3 @@ adminCategoryButtons.forEach(
 ========================================= */
 
 renderAdminCategory("stats");
-}
