@@ -1681,8 +1681,6 @@ button:disabled {
 ========================================= */
 
 .admin-category-content.is-hidden {
-
-    display: none;
-
+    display: none !important;
 }
 }
