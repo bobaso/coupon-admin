@@ -3014,3 +3014,4 @@ adminCategoryButtons.forEach(
 ========================================= */
 
 renderAdminCategory("stats");
+}
