@@ -1,3 +1,4 @@
+
 /* =========================================
    Cloudflare Worker
 ========================================= */
@@ -40,6 +41,7 @@ const historyBody =
 const message =
     document.getElementById("message");
 
+
 /* =========================================
    発券状況DOM
 ========================================= */
@@ -48,10 +50,12 @@ const couponStatsBody =
     document.getElementById(
         "couponStatsBody"
     );
+
 const couponStatsHead =
     document.getElementById(
         "couponStatsHead"
     );
+
 const reloadStatsButton =
     document.getElementById(
         "reloadStatsButton"
@@ -70,11 +74,15 @@ let historyFilter = "all";
 
 let statsPeriod = "month";
 
+
 /* =========================================
    メッセージ
 ========================================= */
 
-function showMessage(text, error = false) {
+function showMessage(
+    text,
+    error = false
+) {
 
     message.textContent = text;
 
@@ -144,6 +152,7 @@ async function apiFetch(
 
 }
 
+
 /* =========================================
    キャンペーン取得
 ========================================= */
@@ -178,6 +187,8 @@ async function loadCampaign() {
     }
 
 }
+
+
 /* =========================================
    キャンペーン保存
 ========================================= */
@@ -224,22 +235,24 @@ async function saveCampaign() {
 
     try {
 
-await apiFetch(
-    "/admin/campaign",
-    {
+        await apiFetch(
+            "/admin/campaign",
+            {
 
-        method: "PUT",
+                method: "PUT",
 
-        body: JSON.stringify({
+                body: JSON.stringify({
 
-            start_date: start,
+                    start_date:
+                        start,
 
-            end_date: end
+                    end_date:
+                        end
 
-        })
+                })
 
-    }
-);
+            }
+        );
 
 
         showMessage(
@@ -314,7 +327,8 @@ async function loadCoupons() {
             }));
 
 
-renderCoupons();
+    renderCoupons();
+
 }
 
 
@@ -378,30 +392,30 @@ function createCouponHTML(
             data-index="${index}"
         >
 
-  <div class="coupon-rank-label">
-    等級
-</div>
+            <div class="coupon-rank-label">
+                等級
+            </div>
 
-<div class="rank-input-area">
+            <div class="rank-input-area">
 
-    <input
-        type="number"
-        class="coupon-input coupon-rank-input"
-        value="${escapeHTML(
-            String(coupon.rank)
-                .replace("等", "")
-        )}"
-        data-index="${index}"
-        placeholder="例：1"
-        min="1"
-        step="1"
-    >
+                <input
+                    type="number"
+                    class="coupon-input coupon-rank-input"
+                    value="${escapeHTML(
+                        String(coupon.rank)
+                            .replace("等", "")
+                    )}"
+                    data-index="${index}"
+                    placeholder="例：1"
+                    min="1"
+                    step="1"
+                >
 
-    <span class="rank-suffix">
-        等
-    </span>
+                <span class="rank-suffix">
+                    等
+                </span>
 
-</div>
+            </div>
 
 
             <div class="coupon-rank-label">
@@ -497,17 +511,18 @@ couponList.addEventListener(
         }
 
 
-       if (
-    event.target.classList.contains(
-        "coupon-rank-input"
-    )
-) {
+        if (
+            event.target.classList.contains(
+                "coupon-rank-input"
+            )
+        ) {
 
-    coupons[index].rank =
-        event.target.value
-            .replace("等", "");
+            coupons[index].rank =
+                event.target.value
+                    .replace("等", "");
 
-}
+        }
+
 
         if (
             event.target.classList.contains(
@@ -661,8 +676,13 @@ addCouponButton.addEventListener(
         if (lastItem) {
 
             lastItem.scrollIntoView({
-                behavior: "smooth",
-                block: "center"
+
+                behavior:
+                    "smooth",
+
+                block:
+                    "center"
+
             });
 
 
@@ -926,10 +946,18 @@ async function saveAllCoupons() {
                                     coupon.id,
 
                                 rank:
-    `${String(coupon.rank).replace("等", "").trim()}等`,
+                                    `${String(
+                                        coupon.rank
+                                    )
+                                        .replace(
+                                            "等",
+                                            ""
+                                        )
+                                        .trim()}等`,
 
                                 name:
-                                    coupon.name.trim(),
+                                    coupon.name
+                                        .trim(),
 
                                 probability:
                                     Number(
@@ -1007,21 +1035,21 @@ async function loadHistory() {
         );
 
 
-
-historyData =
-    data.history || [];
-
-renderHistory();
-
-/*
- * 発券状況も更新
- */
-
-renderCouponStats();
+    historyData =
+        data.history || [];
 
 
+    renderHistory();
+
+
+    /*
+     * 発券状況も更新
+     */
+
+    renderCouponStats();
 
 }
+
 
 /* =========================================
    開催期間内の月一覧
@@ -1041,18 +1069,24 @@ function getCampaignMonths() {
 
     const start =
         new Date(
-            startDate.value + "T00:00:00"
+            startDate.value +
+            "T00:00:00"
         );
 
     const end =
         new Date(
-            endDate.value + "T00:00:00"
+            endDate.value +
+            "T00:00:00"
         );
 
 
     if (
-        Number.isNaN(start.getTime()) ||
-        Number.isNaN(end.getTime())
+        Number.isNaN(
+            start.getTime()
+        ) ||
+        Number.isNaN(
+            end.getTime()
+        )
     ) {
 
         return [];
@@ -1108,6 +1142,93 @@ function getCampaignMonths() {
 
 
 /* =========================================
+   ★ 日本時間として日時を取得
+   D1には日本時間で保存されている前提
+========================================= */
+
+function parseJapanDate(value) {
+
+    if (!value) {
+
+        return null;
+
+    }
+
+
+    const dateString =
+        String(value).trim();
+
+
+    /*
+     * D1の日時
+     *
+     * 例：
+     * 2026-09-01 15:30:00
+     *
+     * ↓
+     * 2026-09-01T15:30:00+09:00
+     *
+     * として解釈
+     */
+
+    if (
+        /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}/.test(
+            dateString
+        )
+    ) {
+
+        const date =
+            new Date(
+                dateString.replace(
+                    " ",
+                    "T"
+                ) + "+09:00"
+            );
+
+
+        if (
+            Number.isNaN(
+                date.getTime()
+            )
+        ) {
+
+            return null;
+
+        }
+
+
+        return date;
+
+    }
+
+
+    /*
+     * その他の形式
+     */
+
+    const date =
+        new Date(
+            dateString
+        );
+
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return null;
+
+    }
+
+
+    return date;
+
+}
+
+
+/* =========================================
    指定月の発券数
 ========================================= */
 
@@ -1146,32 +1267,39 @@ function getMonthlyIssuedCount(
 
 
             /*
-             * 発券日時をDate化
+             * ★ 日本時間として取得
              */
 
- const issuedJapanTime =
-    parseJapanDate(
-        item.issued_at
-    );
+            const issuedJapanTime =
+                parseJapanDate(
+                    item.issued_at
+                );
 
 
-if (!issuedJapanTime) {
+            if (!issuedJapanTime) {
 
-    return false;
+                return false;
+
+            }
+
+
+            /*
+             * 指定された年月か確認
+             */
+
+            return (
+                issuedJapanTime.getFullYear() ===
+                    year &&
+                issuedJapanTime.getMonth() ===
+                    month
+            );
+
+        }
+    ).length;
 
 }
 
 
-/*
- * 指定された年月か確認
- */
-
-return (
-    issuedJapanTime.getFullYear() ===
-        year &&
-    issuedJapanTime.getMonth() ===
-        month
-);
 /* =========================================
    1週間：曜日別発券数
 ========================================= */
@@ -1185,7 +1313,7 @@ function getWeeklyIssuedCounts(
 
 
     /*
-     * 日本時間の現在時刻
+     * 現在の日本時間
      */
 
     const currentTime =
@@ -1205,7 +1333,9 @@ function getWeeklyIssuedCounts(
      */
 
     const startTime =
-        new Date(currentTime);
+        new Date(
+            currentTime
+        );
 
 
     startTime.setDate(
@@ -1227,7 +1357,9 @@ function getWeeklyIssuedCounts(
      * 0 = 日曜日
      * 1 = 月曜日
      * 2 = 火曜日
-     * ...
+     * 3 = 水曜日
+     * 4 = 木曜日
+     * 5 = 金曜日
      * 6 = 土曜日
      */
 
@@ -1251,10 +1383,6 @@ function getWeeklyIssuedCounts(
     historyData.forEach(
         item => {
 
-            /*
-             * クーポンID
-             */
-
             if (
                 Number(item.coupon_id) !==
                 Number(couponId)
@@ -1265,10 +1393,6 @@ function getWeeklyIssuedCounts(
             }
 
 
-            /*
-             * 発券日時がない
-             */
-
             if (!item.issued_at) {
 
                 return;
@@ -1277,20 +1401,21 @@ function getWeeklyIssuedCounts(
 
 
             /*
-             * 日時変換
+             * ★ 日本時間として取得
              */
 
-const issuedJapanTime =
-    parseJapanDate(
-        item.issued_at
-    );
+            const issuedJapanTime =
+                parseJapanDate(
+                    item.issued_at
+                );
 
 
-if (!issuedJapanTime) {
+            if (!issuedJapanTime) {
 
-    return;
+                return;
 
-}
+            }
+
 
             /*
              * 過去7日間のみ
@@ -1298,9 +1423,9 @@ if (!issuedJapanTime) {
 
             if (
                 issuedJapanTime <
-                startTime ||
+                    startTime ||
                 issuedJapanTime >
-                currentTime
+                    currentTime
             ) {
 
                 return;
@@ -1327,8 +1452,6 @@ if (!issuedJapanTime) {
 }
 
 
-
-
 /* =========================================
    発券状況表示
 ========================================= */
@@ -1345,17 +1468,17 @@ function renderCouponStats() {
     }
 
 
-    /* =====================================
-       キャンペーン期間の月一覧
-    ====================================== */
+    /*
+     * キャンペーン期間の月一覧
+     */
 
     const campaignMonths =
         getCampaignMonths();
 
 
-    /* =====================================
-       キャンペーン期間未設定
-    ====================================== */
+    /*
+     * キャンペーン期間未設定
+     */
 
     if (
         !startDate.value ||
@@ -1389,9 +1512,9 @@ function renderCouponStats() {
     }
 
 
-    /* =====================================
-       今日
-    ====================================== */
+    /*
+     * 今日
+     */
 
     if (
         statsPeriod === "today"
@@ -1404,9 +1527,9 @@ function renderCouponStats() {
     }
 
 
-    /* =====================================
-       1週間
-    ====================================== */
+    /*
+     * 1週間
+     */
 
     if (
         statsPeriod === "week"
@@ -1419,9 +1542,9 @@ function renderCouponStats() {
     }
 
 
-    /* =====================================
-       1ヶ月
-    ====================================== */
+    /*
+     * 1ヶ月
+     */
 
     if (
         statsPeriod === "month"
@@ -1436,9 +1559,9 @@ function renderCouponStats() {
     }
 
 
-    /* =====================================
-       全期間
-    ====================================== */
+    /*
+     * 全期間
+     */
 
     if (
         statsPeriod === "all"
@@ -1464,6 +1587,10 @@ function getTodayIssuedCount(
     const now =
         new Date();
 
+
+    /*
+     * 日本時間の現在時刻
+     */
 
     const japanNow =
         new Date(
@@ -1525,17 +1652,21 @@ function getTodayIssuedCount(
             }
 
 
-const issuedJapanTime =
-    parseJapanDate(
-        item.issued_at
-    );
+            /*
+             * ★ 日本時間として取得
+             */
+
+            const issuedJapanTime =
+                parseJapanDate(
+                    item.issued_at
+                );
 
 
-if (!issuedJapanTime) {
+            if (!issuedJapanTime) {
 
-    return false;
+                return false;
 
-}
+            }
 
 
             return (
@@ -1661,17 +1792,22 @@ function getWeekdayIssuedCounts(
             }
 
 
-const issuedJapanTime =
-    parseJapanDate(
-        item.issued_at
-    );
+            /*
+             * ★ 日本時間として取得
+             */
+
+            const issuedJapanTime =
+                parseJapanDate(
+                    item.issued_at
+                );
 
 
-if (!issuedJapanTime) {
+            if (!issuedJapanTime) {
 
-    return;
+                return;
 
-}
+            }
+
 
             if (
                 issuedJapanTime <
@@ -1888,7 +2024,6 @@ function renderStatsWeek() {
                                 >
                                     ${monday}
                                 </strong>
-                           
                             </td>
 
                             <td>
@@ -1897,7 +2032,6 @@ function renderStatsWeek() {
                                 >
                                     ${tuesday}
                                 </strong>
-                                
                             </td>
 
                             <td>
@@ -1906,7 +2040,6 @@ function renderStatsWeek() {
                                 >
                                     ${wednesday}
                                 </strong>
-                                
                             </td>
 
                             <td>
@@ -1915,7 +2048,6 @@ function renderStatsWeek() {
                                 >
                                     ${thursday}
                                 </strong>
-                                
                             </td>
 
                             <td>
@@ -1924,7 +2056,6 @@ function renderStatsWeek() {
                                 >
                                     ${friday}
                                 </strong>
-                                
                             </td>
 
                             <td>
@@ -1933,7 +2064,6 @@ function renderStatsWeek() {
                                 >
                                     ${saturday}
                                 </strong>
-                                
                             </td>
 
                             <td>
@@ -1942,7 +2072,6 @@ function renderStatsWeek() {
                                 >
                                     ${sunday}
                                 </strong>
-                                
                             </td>
 
                             <td>
@@ -1951,7 +2080,6 @@ function renderStatsWeek() {
                                 >
                                     ${total}
                                 </strong>
-                                
                             </td>
 
                             <td>
@@ -1962,7 +2090,6 @@ function renderStatsWeek() {
                                         coupon.stock
                                     )}
                                 </strong>
-                                
                             </td>
 
                         </tr>
@@ -2056,7 +2183,8 @@ function renderStatsMonth(
                                         );
 
 
-                                    total += count;
+                                    total +=
+                                        count;
 
 
                                     return `
@@ -2067,7 +2195,6 @@ function renderStatsMonth(
                                             >
                                                 ${count}
                                             </strong>
-                                            
 
                                         </td>
                                     `;
@@ -2107,7 +2234,6 @@ function renderStatsMonth(
                                 >
                                     ${total}
                                 </strong>
-                                
                             </td>
 
                             <td>
@@ -2118,7 +2244,6 @@ function renderStatsMonth(
                                         coupon.stock
                                     )}
                                 </strong>
-                                
                             </td>
 
                         </tr>
@@ -2224,7 +2349,6 @@ function createStatsRow(
                         >
                             ${count}
                         </strong>
-                        
 
                     </td>
                 `
@@ -2264,7 +2388,6 @@ function createStatsRow(
                         coupon.stock
                     )}
                 </strong>
-                
             </td>
 
         </tr>
@@ -2336,6 +2459,7 @@ function createStatsNameHTML(
 
 }
 
+
 /* =========================================
    発券履歴表示
 ========================================= */
@@ -2345,11 +2469,13 @@ function renderHistory() {
     let filteredHistory;
 
 
-    /* =====================================
-       フィルター
-    ====================================== */
+    /*
+     * フィルター
+     */
 
-    if (historyFilter === "unused") {
+    if (
+        historyFilter === "unused"
+    ) {
 
         filteredHistory =
             historyData.filter(
@@ -2375,9 +2501,9 @@ function renderHistory() {
     }
 
 
-    /* =====================================
-       データなし
-    ====================================== */
+    /*
+     * データなし
+     */
 
     if (
         filteredHistory.length === 0
@@ -2423,9 +2549,9 @@ function renderHistory() {
     }
 
 
-    /* =====================================
-       表示
-    ====================================== */
+    /*
+     * 表示
+     */
 
     historyBody.innerHTML =
         filteredHistory
@@ -2467,7 +2593,9 @@ function createHistoryHTML(item) {
 
 
             <td>
-                ${formatDate(item.issued_at)}
+                ${formatDate(
+                    item.issued_at
+                )}
             </td>
 
 
@@ -2496,7 +2624,9 @@ function createHistoryHTML(item) {
 
                 ${
                     item.used_at
-                    ? formatDate(item.used_at)
+                    ? formatDate(
+                        item.used_at
+                    )
                     : "-"
                 }
 
@@ -2566,9 +2696,11 @@ document
 
     });
 
+
 /* =========================================
-   日付
-   D1に保存されている日本時間をそのまま表示
+   日付表示
+   D1に保存されている日本時間を
+   日本時間として表示
 ========================================= */
 
 function formatDate(value) {
@@ -2579,44 +2711,14 @@ function formatDate(value) {
 
     }
 
-    const dateString =
-        String(value).trim();
-
 
     /*
-     * D1には日本時間として保存されているため
-     *
-     * 例：
-     * 2026-09-01 15:30:00
-     *
-     * ↓
-     * 2026-09-01T15:30:00+09:00
-     *
-     * として解釈する
+     * 日本時間としてDateを作成
      */
 
-    let dateStringWithTimezone =
-        dateString;
-
-
-    if (
-        /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}/.test(
-            dateString
-        )
-    ) {
-
-        dateStringWithTimezone =
-            dateString.replace(
-                " ",
-                "T"
-            ) + "+09:00";
-
-    }
-
-
     const date =
-        new Date(
-            dateStringWithTimezone
+        parseJapanDate(
+            value
         );
 
 
@@ -2624,11 +2726,7 @@ function formatDate(value) {
      * 日付として認識できない場合
      */
 
-    if (
-        Number.isNaN(
-            date.getTime()
-        )
-    ) {
+    if (!date) {
 
         return value;
 
@@ -2668,85 +2766,8 @@ function formatDate(value) {
     );
 
 }
-/* =========================================
-   日本時間として日時を取得
-   D1には日本時間で保存されている前提
-========================================= */
-
-function parseJapanDate(value) {
-
-    if (!value) {
-
-        return null;
-
-    }
 
 
-    const dateString =
-        String(value).trim();
-
-
-    /*
-     * 2026-09-01 15:30:00
-     * ↓
-     * 2026-09-01T15:30:00+09:00
-     */
-
-    if (
-        /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}/.test(
-            dateString
-        )
-    ) {
-
-        const date =
-            new Date(
-                dateString.replace(
-                    " ",
-                    "T"
-                ) + "+09:00"
-            );
-
-
-        if (
-            Number.isNaN(
-                date.getTime()
-            )
-        ) {
-
-            return null;
-
-        }
-
-
-        return date;
-
-    }
-
-
-    /*
-     * その他の形式
-     */
-
-    const date =
-        new Date(
-            dateString
-        );
-
-
-    if (
-        Number.isNaN(
-            date.getTime()
-        )
-    ) {
-
-        return null;
-
-    }
-
-
-    return date;
-
-}
 /* =========================================
    HTMLエスケープ
 ========================================= */
@@ -2858,6 +2879,7 @@ saveCampaignButton.addEventListener(
 
 loadAll();
 
+
 /* =========================================
    発券状況 更新ボタン
 ========================================= */
@@ -2868,18 +2890,22 @@ if (reloadStatsButton) {
         "click",
         async function () {
 
-            reloadStatsButton.disabled = true;
+            reloadStatsButton.disabled =
+                true;
 
             reloadStatsButton.textContent =
                 "更新中...";
+
 
             try {
 
                 await loadAll();
 
+
                 showMessage(
                     "発券状況を更新しました"
                 );
+
 
             } catch (error) {
 
@@ -2888,14 +2914,17 @@ if (reloadStatsButton) {
                     error
                 );
 
+
                 showMessage(
                     "更新に失敗しました",
                     true
                 );
 
+
             } finally {
 
-                reloadStatsButton.disabled = false;
+                reloadStatsButton.disabled =
+                    false;
 
                 reloadStatsButton.textContent =
                     "更新";
@@ -2906,6 +2935,7 @@ if (reloadStatsButton) {
     );
 
 }
+
 
 /* =========================================
    発券状況 期間切り替え
@@ -2974,6 +3004,7 @@ const adminCategoryButtons =
         ".admin-category-button"
     );
 
+
 const adminCategoryContents =
     document.querySelectorAll(
         ".admin-category-content"
@@ -2997,7 +3028,8 @@ function renderAdminCategory(
 
             button.classList.toggle(
                 "active",
-                button.dataset.category === category
+                button.dataset.category ===
+                    category
             );
 
         }
@@ -3013,7 +3045,8 @@ function renderAdminCategory(
 
             content.classList.toggle(
                 "is-hidden",
-                content.dataset.categoryContent !== category
+                content.dataset.categoryContent !==
+                    category
             );
 
         }
@@ -3036,6 +3069,7 @@ adminCategoryButtons.forEach(
                 const category =
                     button.dataset.category;
 
+
                 renderAdminCategory(
                     category
                 );
@@ -3052,4 +3086,6 @@ adminCategoryButtons.forEach(
    発券データ
 ========================================= */
 
-renderAdminCategory("stats");
+renderAdminCategory(
+    "stats"
+);
