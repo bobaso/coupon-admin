@@ -2711,8 +2711,111 @@ function formatDate(value) {
     );
 
 }
+/* =========================================
+   日付
+   日本時間（Asia/Tokyo）で表示
+========================================= */
+
+function formatDate(value) {
+
+    if (!value) {
+
+        return "-";
+
+    }
 
 
+    /*
+     * APIから取得した日時
+     *
+     * 例：
+     * 2026-09-01 06:30:00
+     *
+     * Cloudflare Worker / D1 の日時は
+     * UTCとして扱う
+     */
+
+    let dateString =
+        String(value).trim();
+
+
+    /*
+     * 「2026-09-01 06:30:00」
+     * ↓
+     * 「2026-09-01T06:30:00Z」
+     *
+     * UTCとして明示
+     */
+
+    if (
+        /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}/.test(
+            dateString
+        )
+    ) {
+
+        dateString =
+            dateString.replace(
+                " ",
+                "T"
+            ) + "Z";
+
+    }
+
+
+    const date =
+        new Date(
+            dateString
+        );
+
+
+    /*
+     * 日付として認識できない場合
+     */
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return value;
+
+    }
+
+
+    /*
+     * 日本時間で表示
+     */
+
+    return date.toLocaleString(
+        "ja-JP",
+        {
+
+            timeZone:
+                "Asia/Tokyo",
+
+            year:
+                "numeric",
+
+            month:
+                "2-digit",
+
+            day:
+                "2-digit",
+
+            hour:
+                "2-digit",
+
+            minute:
+                "2-digit",
+
+            second:
+                "2-digit"
+
+        }
+    );
+
+}
 /* =========================================
    HTMLエスケープ
 ========================================= */
