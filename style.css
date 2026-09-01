@@ -105,7 +105,7 @@ text,
 error = false
 ) {
 
-```
+
 if (!message) {
     return;
 }
@@ -132,7 +132,7 @@ setTimeout(
     },
     4000
 );
-```
+
 
 }
 
@@ -145,7 +145,7 @@ path,
 options = {}
 ) {
 
-```
+
 const response =
     await fetch(
         API_URL + path,
@@ -196,7 +196,7 @@ if (
 
 
 return data;
-```
+
 
 }
 
@@ -206,7 +206,7 @@ return data;
 
 async function loadCampaign() {
 
-```
+
 const data =
     await apiFetch(
         "/admin/campaign"
@@ -233,7 +233,7 @@ if (
         data.campaign.end_date;
 
 }
-```
+
 
 }
 
@@ -243,7 +243,7 @@ if (
 
 async function saveCampaign() {
 
-```
+
 const start =
     startDate.value;
 
@@ -351,7 +351,7 @@ try {
         "開催期間を保存";
 
 }
-```
+
 
 }
 
@@ -361,7 +361,7 @@ try {
 
 async function loadCoupons() {
 
-```
+
 couponList.innerHTML = `
     <div class="loading">
         読み込み中...
@@ -411,7 +411,7 @@ coupons =
 
 
 renderCoupons();
-```
+
 
 }
 
@@ -421,7 +421,7 @@ renderCoupons();
 
 function renderCoupons() {
 
-```
+
 if (
     coupons.length === 0
 ) {
@@ -456,7 +456,7 @@ couponList.innerHTML =
 
 
 updateProbabilityTotal();
-```
+
 
 }
 
@@ -469,7 +469,7 @@ coupon,
 index
 ) {
 
-```
+
 const newClass =
     coupon.isNew
         ? "new-item"
@@ -602,7 +602,7 @@ return `
     </div>
 
 `;
-```
+
 
 }
 
@@ -614,7 +614,7 @@ couponList.addEventListener(
 "input",
 event => {
 
-```
+
     const index =
         Number(
             event.target.dataset.index
@@ -706,7 +706,7 @@ event => {
     }
 
 }
-```
+
 
 );
 
@@ -718,7 +718,7 @@ couponList.addEventListener(
 "click",
 event => {
 
-```
+
     const button =
         event.target.closest(
             "[data-delete-index]"
@@ -774,7 +774,7 @@ event => {
     renderCoupons();
 
 }
-```
+
 
 );
 
@@ -786,7 +786,7 @@ addCouponButton.addEventListener(
 "click",
 () => {
 
-```
+
     coupons.push({
 
         id: null,
@@ -863,7 +863,7 @@ addCouponButton.addEventListener(
     }
 
 }
-```
+
 
 );
 
@@ -873,7 +873,7 @@ addCouponButton.addEventListener(
 
 function updateProbabilityTotal() {
 
-```
+
 if (!probabilityTotal) {
     return;
 }
@@ -921,7 +921,7 @@ if (
         );
 
 }
-```
+
 
 }
 
@@ -936,7 +936,7 @@ saveAllCoupons
 
 async function saveAllCoupons() {
 
-```
+
 /*
  * 賞品数チェック
  */
@@ -1259,7 +1259,7 @@ try {
         "クーポン設定を保存";
 
 }
-```
+
 
 }
 
@@ -1269,7 +1269,7 @@ try {
 
 async function loadHistory() {
 
-```
+
 historyBody.innerHTML = `
     <tr>
         <td
@@ -1304,7 +1304,7 @@ renderHistory();
  */
 
 renderCouponStats();
-```
+
 
 }
 
@@ -1316,7 +1316,7 @@ function getJapanDate(
 value
 ) {
 
-```
+
 if (!value) {
     return null;
 }
@@ -1426,7 +1426,7 @@ return new Date(
     result.minute,
     result.second
 );
-```
+
 
 }
 
@@ -1436,11 +1436,11 @@ return new Date(
 
 function getJapanNow() {
 
-```
+
 return getJapanDate(
     new Date()
 );
-```
+
 
 }
 
@@ -1452,7 +1452,7 @@ function getTodayIssuedCount(
 couponId
 ) {
 
-```
+
 const now =
     getJapanNow();
 
@@ -1517,7 +1517,7 @@ return historyData.filter(
 
     }
 ).length;
-```
+
 
 }
 
@@ -1529,7 +1529,7 @@ function getWeekIssuedCount(
 couponId
 ) {
 
-```
+
 const now =
     getJapanNow();
 
@@ -1600,7 +1600,7 @@ return historyData.filter(
 
     }
 ).length;
-```
+
 
 }
 
@@ -1612,7 +1612,7 @@ function getMonthIssuedCount(
 couponId
 ) {
 
-```
+
 const now =
     getJapanNow();
 
@@ -1678,7 +1678,7 @@ return historyData.filter(
 
     }
 ).length;
-```
+
 
 }
 
@@ -1690,7 +1690,7 @@ function getAllIssuedCount(
 couponId
 ) {
 
-```
+
 return historyData.filter(
     item => {
 
@@ -1703,7 +1703,7 @@ return historyData.filter(
 
     }
 ).length;
-```
+
 
 }
 
@@ -1716,7 +1716,7 @@ couponId,
 period
 ) {
 
-```
+
 switch (
     period
 ) {
@@ -1754,7 +1754,7 @@ switch (
         return 0;
 
 }
-```
+
 
 }
 
@@ -1764,7 +1764,7 @@ switch (
 
 function renderCouponStats() {
 
-```
+
 if (
     !couponStatsBody ||
     !couponStatsHead
@@ -1976,7 +1976,7 @@ couponStatsBody.innerHTML =
             }
         )
         .join("");
-```
+
 
 }
 
@@ -1986,7 +1986,7 @@ couponStatsBody.innerHTML =
 
 function renderHistory() {
 
-```
+
 let filteredHistory;
 
 
@@ -2111,7 +2111,7 @@ historyBody.innerHTML =
             createHistoryHTML
         )
         .join("");
-```
+
 
 }
 
@@ -2123,7 +2123,7 @@ function createHistoryHTML(
 item
 ) {
 
-```
+
 const used =
     Number(
         item.used
@@ -2223,7 +2223,7 @@ return `
     </tr>
 
 `;
-```
+
 
 }
 
@@ -2238,7 +2238,7 @@ document
 .forEach(
 button => {
 
-```
+
         button.addEventListener(
             "click",
             () => {
@@ -2286,7 +2286,7 @@ button => {
 
     }
 );
-```
+
 
 /* =========================================
 日付表示
@@ -2296,7 +2296,7 @@ function formatDate(
 value
 ) {
 
-```
+
 if (!value) {
 
     return "-";
@@ -2340,7 +2340,7 @@ return date.toLocaleString(
 
     }
 );
-```
+
 
 }
 
@@ -2352,7 +2352,7 @@ function escapeHTML(
 value
 ) {
 
-```
+
 return String(
     value ?? ""
 )
@@ -2381,7 +2381,7 @@ return String(
         "'",
         "&#039;"
     );
-```
+
 
 }
 
@@ -2391,7 +2391,6 @@ return String(
 
 async function loadAll() {
 
-```
 try {
 
     /*
@@ -2434,7 +2433,7 @@ try {
     );
 
 }
-```
+
 
 }
 
@@ -2446,7 +2445,7 @@ reloadButton.addEventListener(
 "click",
 async () => {
 
-```
+
     const confirmed =
         confirm(
             "現在画面上で変更している内容は破棄されます。\nデータを再読み込みしますか？"
@@ -2501,7 +2500,7 @@ async () => {
     }
 
 }
-```
+
 
 );
 
@@ -2522,7 +2521,7 @@ if (
 reloadStatsButton
 ) {
 
-```
+
 reloadStatsButton.addEventListener(
     "click",
     async function () {
@@ -2577,7 +2576,7 @@ reloadStatsButton.addEventListener(
 
     }
 );
-```
+
 
 }
 
@@ -2593,7 +2592,7 @@ document.querySelectorAll(
 statsPeriodButtons.forEach(
 button => {
 
-```
+
     button.addEventListener(
         "click",
         function () {
@@ -2636,7 +2635,7 @@ button => {
     );
 
 }
-```
+
 
 );
 
