@@ -1803,7 +1803,7 @@ function renderStatsToday() {
             <th>等級</th>
             <th>賞品</th>
             <th>今日</th>
-            <th>残り枚数</th>
+            <th>残り</th>
         </tr>
     `;
 
@@ -1882,7 +1882,7 @@ function renderStatsWeek() {
 
             <th>合計</th>
 
-            <th>残り枚数</th>
+            <th>残り</th>
 
         </tr>
     `;
@@ -2097,7 +2097,7 @@ function renderStatsMonth(
 
             <th>合計</th>
 
-            <th>残り枚数</th>
+            <th>残り</th>
 
         </tr>
     `;
@@ -2158,7 +2158,7 @@ function renderStatsMonth(
                                             >
                                                 ${count}
                                             </strong>
-                                            枚
+                                            
 
                                         </td>
                                     `;
@@ -2198,7 +2198,7 @@ function renderStatsMonth(
                                 >
                                     ${total}
                                 </strong>
-                                枚
+                                
                             </td>
 
                             <td>
@@ -2209,7 +2209,7 @@ function renderStatsMonth(
                                         coupon.stock
                                     )}
                                 </strong>
-                                枚
+                                
                             </td>
 
                         </tr>
@@ -2240,7 +2240,7 @@ function renderStatsAll() {
 
             <th>全期間</th>
 
-            <th>残り枚数</th>
+            <th>残り</th>
 
         </tr>
     `;
@@ -2315,7 +2315,7 @@ function createStatsRow(
                         >
                             ${count}
                         </strong>
-                        枚
+                        
 
                     </td>
                 `
@@ -2355,7 +2355,7 @@ function createStatsRow(
                         coupon.stock
                     )}
                 </strong>
-                枚
+                
             </td>
 
         </tr>
