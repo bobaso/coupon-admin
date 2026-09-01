@@ -1016,12 +1016,10 @@ button:disabled {
 .stats-table {
 
     width: 100%;
-
-    min-width: 680px;
-
     border-collapse: collapse;
-
     background: #fff;
+    table-layout: fixed;
+    min-width: 0;
 
 }
 
@@ -1299,86 +1297,11 @@ button:disabled {
     }
 
 }
-/* =========================================
-   発券状況テーブル
-========================================= */
 
-.coupon-stats-table {
-    width: 100%;
-    table-layout: fixed;
-    border-collapse: collapse;
-}
-
-
-/* ID */
-.coupon-stats-table th:nth-child(1),
-.coupon-stats-table td:nth-child(1) {
-    width: 38px;
-}
-
-
-/* 等級 */
-.coupon-stats-table th:nth-child(2),
-.coupon-stats-table td:nth-child(2) {
-    width: 55px;
-}
-
-
-/* 賞品 */
-.coupon-stats-table th:nth-child(3),
-.coupon-stats-table td:nth-child(3) {
-    width: auto;
-}
-
-
-/* 残り枚数 */
-.coupon-stats-table th:nth-child(4),
-.coupon-stats-table td:nth-child(4) {
-    width: 75px;
-}
-
-
-/* 発券枚数 */
-.coupon-stats-table th:nth-child(5),
-.coupon-stats-table td:nth-child(5) {
-    width: 75px;
-}
-
-
-/* セル */
-.coupon-stats-table th,
-.coupon-stats-table td {
-    padding: 8px 3px;
-    text-align: center;
-    white-space: nowrap;
-}
-
-
-/* 賞品名だけ左寄せ */
-.coupon-stats-table th:nth-child(3),
-.coupon-stats-table td:nth-child(3) {
-    text-align: left;
-}
-
-
-/* 賞品名が長い場合 */
-.stats-name {
-    display: block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
 /* =========================================
    発券状況テーブル
    ID・等級・賞品をコンパクトにする
 ========================================= */
-
-.stats-table {
-    table-layout: fixed;
-    min-width: 0;
-    width: 100%;
-}
-
 
 /* ID */
 .stats-table th:nth-child(1),
