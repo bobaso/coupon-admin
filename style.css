@@ -1,3 +1,4 @@
+```css
 /* =========================================
    全体
 ========================================= */
@@ -15,7 +16,6 @@ html {
 
 
 body {
-
     font-family:
         -apple-system,
         BlinkMacSystemFont,
@@ -27,7 +27,6 @@ body {
     background: #f3f5f8;
 
     min-height: 100vh;
-
 }
 
 
@@ -36,15 +35,11 @@ body {
 ========================================= */
 
 .admin {
-
     width: 100%;
-
     max-width: 1100px;
 
     margin: 0 auto;
-
     padding: 20px;
-
 }
 
 
@@ -53,31 +48,24 @@ body {
 ========================================= */
 
 .admin-header {
-
     display: flex;
 
     align-items: center;
-
     justify-content: space-between;
 
     gap: 20px;
 
     margin-bottom: 20px;
-
 }
 
 
 .admin-header h1 {
-
     font-size: 28px;
-
     line-height: 1.3;
-
 }
 
 
 .admin-header span {
-
     display: block;
 
     color: #777;
@@ -85,36 +73,34 @@ body {
     font-size: 14px;
 
     margin-top: 3px;
-
 }
 
 
 /* =========================================
-   ボタン
+   ボタン共通
 ========================================= */
 
 button {
-
     border: none;
 
     cursor: pointer;
 
     font-family: inherit;
-
 }
 
 
 button:disabled {
-
     opacity: 0.5;
 
     cursor: not-allowed;
-
 }
 
 
-.reload-button {
+/* =========================================
+   更新ボタン
+========================================= */
 
+.reload-button {
     padding: 10px 16px;
 
     border-radius: 8px;
@@ -124,12 +110,14 @@ button:disabled {
     color: #fff;
 
     font-weight: 700;
-
 }
 
 
-.primary-button {
+/* =========================================
+   青ボタン
+========================================= */
 
+.primary-button {
     width: 100%;
 
     padding: 13px 18px;
@@ -143,12 +131,10 @@ button:disabled {
     font-size: 15px;
 
     font-weight: 700;
-
 }
 
 
 .add-button {
-
     padding: 10px 14px;
 
     border-radius: 8px;
@@ -158,7 +144,6 @@ button:disabled {
     color: #fff;
 
     font-weight: 700;
-
 }
 
 
@@ -167,7 +152,6 @@ button:disabled {
 ========================================= */
 
 .admin-card {
-
     background: #fff;
 
     border-radius: 12px;
@@ -178,40 +162,36 @@ button:disabled {
 
     box-shadow:
         0 2px 12px rgba(0, 0, 0, 0.06);
-
 }
 
 
-.section-title {
+/* =========================================
+   セクションタイトル
+========================================= */
 
+.section-title {
     display: flex;
 
     justify-content: space-between;
-
     align-items: center;
 
     gap: 15px;
 
     margin-bottom: 20px;
-
 }
 
 
 .section-title h2 {
-
     font-size: 21px;
-
 }
 
 
 .section-title p {
-
     color: #777;
 
     font-size: 13px;
 
     margin-top: 5px;
-
 }
 
 
@@ -220,7 +200,6 @@ button:disabled {
 ========================================= */
 
 .message {
-
     padding: 13px 16px;
 
     margin-bottom: 20px;
@@ -232,16 +211,13 @@ button:disabled {
     color: #237a27;
 
     font-weight: 700;
-
 }
 
 
 .message.error {
-
     background: #ffebee;
 
     color: #c62828;
-
 }
 
 
@@ -250,7 +226,6 @@ button:disabled {
 ========================================= */
 
 .form-group {
-
     display: flex;
 
     flex-direction: column;
@@ -258,23 +233,19 @@ button:disabled {
     gap: 7px;
 
     margin-bottom: 17px;
-
 }
 
 
 .form-group label {
-
     font-size: 13px;
 
     font-weight: 700;
 
     color: #555;
-
 }
 
 
 .form-group input {
-
     width: 100%;
 
     height: 44px;
@@ -288,47 +259,38 @@ button:disabled {
     background: #fff;
 
     font-size: 15px;
-
 }
 
 
 .form-group input:focus {
-
     outline: none;
 
     border-color: #1677ff;
-
 }
 
 
 /* =========================================
-   キャンペーン
+   キャンペーン期間
 ========================================= */
 
 .campaign-form {
-
     display: flex;
 
     align-items: flex-end;
 
     gap: 15px;
-
 }
 
 
 .campaign-form .form-group {
-
     flex: 1;
-
 }
 
 
 .period-mark {
-
     padding-bottom: 12px;
 
     font-weight: 700;
-
 }
 
 
@@ -337,11 +299,9 @@ button:disabled {
 ========================================= */
 
 .probability-summary {
-
     display: flex;
 
     align-items: center;
-
     justify-content: space-between;
 
     padding: 15px 18px;
@@ -351,47 +311,36 @@ button:disabled {
     border-radius: 9px;
 
     background: #f5f7fa;
-
 }
 
 
 .probability-summary span {
-
     font-size: 14px;
 
     font-weight: 700;
 
     color: #555;
-
 }
 
 
 .probability-summary strong {
-
     font-size: 24px;
-
 }
 
 
 /* 100% */
-
 .probability-summary.is-valid {
-
     background: #e8f5e9;
 
     color: #2e7d32;
-
 }
 
 
 /* 100%以外 */
-
 .probability-summary.is-invalid {
-
     background: #fff3e0;
 
     color: #ef6c00;
-
 }
 
 
@@ -400,41 +349,34 @@ button:disabled {
 ========================================= */
 
 .coupon-list {
-
     display: grid;
 
     grid-template-columns:
         repeat(3, minmax(0, 1fr));
 
     gap: 15px;
-
 }
 
 
 .coupon-item {
+    position: relative;
+
+    padding: 18px;
 
     border: 1px solid #e1e4e8;
 
     border-radius: 10px;
-
-    padding: 18px;
-
-    position: relative;
-
 }
 
 
 .coupon-item.new-item {
-
     border-color: #1677ff;
 
     background: #f8fbff;
-
 }
 
 
 .coupon-rank-label {
-
     font-size: 13px;
 
     font-weight: 700;
@@ -442,12 +384,14 @@ button:disabled {
     color: #555;
 
     margin-bottom: 6px;
-
 }
 
 
-.coupon-input {
+/* =========================================
+   賞品名入力
+========================================= */
 
+.coupon-input {
     width: 100%;
 
     height: 42px;
@@ -463,55 +407,49 @@ button:disabled {
     font-size: 15px;
 
     margin-bottom: 13px;
-
 }
 
 
 .coupon-input:focus {
-
     outline: none;
 
     border-color: #1677ff;
-
 }
 
 
-.coupon-stats {
+/* =========================================
+   賞品数値入力
+========================================= */
 
+.coupon-stats {
     display: grid;
 
     grid-template-columns:
         repeat(2, 1fr);
 
     gap: 10px;
-
 }
 
 
 .coupon-stat {
-
     display: flex;
 
     flex-direction: column;
 
     gap: 6px;
-
 }
 
 
 .coupon-stat-label {
-
     font-size: 12px;
 
     color: #777;
 
     font-weight: 700;
-
 }
 
 
 .coupon-number-input {
-
     width: 100%;
 
     height: 40px;
@@ -523,21 +461,21 @@ button:disabled {
     border-radius: 7px;
 
     font-size: 15px;
-
 }
 
 
 .coupon-number-input:focus {
-
     outline: none;
 
     border-color: #1677ff;
-
 }
 
 
-.coupon-delete-button {
+/* =========================================
+   賞品削除
+========================================= */
 
+.coupon-delete-button {
     width: 100%;
 
     margin-top: 14px;
@@ -551,7 +489,6 @@ button:disabled {
     color: #d32f2f;
 
     font-weight: 700;
-
 }
 
 
@@ -560,18 +497,15 @@ button:disabled {
 ========================================= */
 
 .coupon-save-area {
-
     margin-top: 25px;
 
     padding-top: 20px;
 
     border-top: 1px solid #e5e7eb;
-
 }
 
 
 .save-coupons-button {
-
     width: 100%;
 
     min-height: 54px;
@@ -587,37 +521,31 @@ button:disabled {
     font-size: 17px;
 
     font-weight: 700;
-
 }
 
 
 /* =========================================
-   履歴
+   発券履歴
 ========================================= */
 
 .history-table-wrap {
-
     width: 100%;
 
     overflow-x: auto;
-
 }
 
 
 .history-table {
-
     width: 100%;
-
-    border-collapse: collapse;
 
     min-width: 700px;
 
+    border-collapse: collapse;
 }
 
 
 .history-table th,
 .history-table td {
-
     padding: 12px;
 
     border-bottom: 1px solid #e8eaed;
@@ -627,21 +555,21 @@ button:disabled {
     font-size: 13px;
 
     white-space: nowrap;
-
 }
 
 
 .history-table th {
-
     background: #f7f8fa;
 
     font-weight: 700;
-
 }
 
 
-.status {
+/* =========================================
+   使用状態
+========================================= */
 
+.status {
     display: inline-block;
 
     padding: 5px 9px;
@@ -651,25 +579,20 @@ button:disabled {
     font-size: 12px;
 
     font-weight: 700;
-
 }
 
 
 .status.used {
-
     background: #e8f5e9;
 
     color: #2e7d32;
-
 }
 
 
 .status.unused {
-
     background: #fff3e0;
 
     color: #ef6c00;
-
 }
 
 
@@ -678,131 +601,19 @@ button:disabled {
 ========================================= */
 
 .loading {
-
     text-align: center;
 
     padding: 30px;
 
     color: #888;
-
 }
 
 
-/* =========================================
-   PC
-========================================= */
-
-@media (min-width: 768px) {
-
-    .admin {
-
-        padding: 30px;
-
-    }
-
-}
-
-
-/* =========================================
-   スマホ
-========================================= */
-
-@media (max-width: 767px) {
-
-    .admin {
-
-        padding: 12px;
-
-    }
-
-
-    .admin-header {
-
-        align-items: flex-start;
-
-    }
-
-
-    .admin-header h1 {
-
-        font-size: 23px;
-
-    }
-
-
-    .reload-button {
-
-        font-size: 12px;
-
-        padding: 9px 11px;
-
-    }
-
-
-    .admin-card {
-
-        padding: 17px;
-
-        border-radius: 10px;
-
-    }
-
-
-    .section-title {
-
-        align-items: stretch;
-
-        flex-direction: column;
-
-    }
-
-
-    .add-button {
-
-        width: 100%;
-
-    }
-
-
-    .campaign-form {
-
-        align-items: stretch;
-
-        flex-direction: column;
-
-        gap: 0;
-
-    }
-
-
-    .period-mark {
-
-        display: none;
-
-    }
-
-
-    .coupon-list {
-
-        grid-template-columns: 1fr;
-
-    }
-
-
-    .coupon-stats {
-
-        grid-template-columns:
-            1fr 1fr;
-
-}
-   }
 /* =========================================
    発券履歴 フィルター
-   Google系タブ風・角丸デザイン
 ========================================= */
 
 .history-filter {
-
     display: flex;
 
     width: 100%;
@@ -816,23 +627,15 @@ button:disabled {
     background: #f1f3f4;
 
     border-radius: 10px;
-
 }
 
 
-/* =========================================
-   タブボタン
-========================================= */
-
 .history-filter-button {
-
     flex: 1;
 
     min-height: 42px;
 
     padding: 8px 12px;
-
-    border: none;
 
     border-radius: 7px;
 
@@ -850,30 +653,20 @@ button:disabled {
         background 0.2s ease,
         color 0.2s ease,
         box-shadow 0.2s ease;
-
 }
 
 
-/* =========================================
-   未選択
-========================================= */
-
+/* 未選択 */
 .history-filter-button:not(.active) {
-
     background: #e1e3e6;
 
     color: #5f6368;
-
 }
 
 
-/* =========================================
-   選択中
-========================================= */
-
+/* 選択中 */
 .history-filter-button.active {
-
-    background: #ffffff;
+    background: #fff;
 
     color: #202124;
 
@@ -881,113 +674,55 @@ button:disabled {
 
     box-shadow:
         0 1px 3px rgba(60, 64, 67, 0.15);
-
 }
 
 
-/* =========================================
-   ホバー
-========================================= */
-
+/* ホバー */
 .history-filter-button:not(.active):hover {
-
     background: #d9dce0;
-
 }
 
-
-/* =========================================
-   選択中ホバー
-========================================= */
 
 .history-filter-button.active:hover {
-
-    background: #ffffff;
-
+    background: #fff;
 }
 
 
-/* =========================================
-   クリック
-========================================= */
-
+/* クリック */
 .history-filter-button:active {
-
     transform: scale(0.98);
-
 }
 
 
-/* =========================================
-   フォーカス
-========================================= */
-
+/* フォーカス */
 .history-filter-button:focus-visible {
-
     outline: 2px solid #1a73e8;
 
     outline-offset: 1px;
-
 }
 
-
-/* =========================================
-   スマホ
-========================================= */
-
-@media (max-width: 767px) {
-
-    .history-filter {
-
-        gap: 5px;
-
-        padding: 4px;
-
-        border-radius: 9px;
-
-    }
-
-
-    .history-filter-button {
-
-        min-height: 40px;
-
-        padding: 7px 5px;
-
-        border-radius: 6px;
-
-        font-size: 13px;
-
-    }
-
-}
 
 /* =========================================
    等級入力
 ========================================= */
 
 .rank-input-area {
-
     display: flex;
 
     align-items: center;
 
     gap: 6px;
-
 }
 
 
 .rank-input-area .coupon-rank-input {
-
     flex: 1;
 
     margin-bottom: 0;
-
 }
 
 
 .rank-suffix {
-
     flex-shrink: 0;
 
     font-size: 15px;
@@ -995,395 +730,40 @@ button:disabled {
     font-weight: 700;
 
     color: #555;
-
 }
+
 
 /* =========================================
    発券状況
 ========================================= */
 
 .stats-table-wrap {
-
     width: 100%;
 
     overflow-x: auto;
 
     margin-top: 20px;
-
 }
 
 
-.stats-table {
+/* =========================================
+   発券状況テーブル
+========================================= */
 
+.stats-table {
     width: 100%;
+
+    table-layout: fixed;
+
     border-collapse: collapse;
+
     background: #fff;
-    table-layout: fixed;
-    min-width: 0;
-
-}
-
-
-.stats-table th,
-.stats-table td {
-
-    padding: 14px 12px;
-
-    border-bottom:
-        1px solid #e5e7eb;
-
-    text-align: center;
-
-    white-space: nowrap;
-
-}
-
-
-.stats-table th {
-
-    background: #f5f7fa;
-
-    font-size: 13px;
-
-    font-weight: 700;
-
-    color: #374151;
-
-}
-
-
-.stats-table td {
-
-    font-size: 14px;
-
-    color: #374151;
-
-}
-
-
-.stats-table tbody tr:hover {
-
-    background: #f9fafb;
-
 }
 
 
 /* =========================================
-   ID
+   列幅
 ========================================= */
-
-.stats-table td:first-child {
-
-    font-weight: 700;
-
-    color: #6b7280;
-
-}
-
-
-/* =========================================
-   等級
-========================================= */
-
-.stats-rank {
-
-    font-weight: 700;
-
-}
-
-
-/* =========================================
-   賞品名
-========================================= */
-
-.stats-name {
-
-    display: inline-block;
-
-    text-align: left;
-
-    min-width: 180px;
-
-}
-
-
-/* =========================================
-   残り枚数
-========================================= */
-
-.stats-stock {
-
-    font-size: 20px;
-
-    font-weight: 700;
-
-}
-
-
-/* =========================================
-   本日の発券数
-========================================= */
-
-.stats-issued {
-
-    font-size: 20px;
-
-    font-weight: 700;
-
-}
-
-/* =========================================
-   発券状況 期間フィルター
-   発券履歴フィルターと同じデザイン
-========================================= */
-
-.stats-period-filter {
-
-    display: flex;
-
-    width: 100%;
-
-    gap: 6px;
-
-    padding: 5px;
-
-    margin-bottom: 18px;
-
-    background: #f1f3f4;
-
-    border-radius: 10px;
-
-}
-
-
-/* =========================================
-   期間ボタン
-========================================= */
-
-.stats-period-button {
-
-    flex: 1;
-
-    min-height: 42px;
-
-    padding: 8px 12px;
-
-    border: none;
-
-    border-radius: 7px;
-
-    background: transparent;
-
-    color: #5f6368;
-
-    font-size: 14px;
-
-    font-weight: 500;
-
-    cursor: pointer;
-
-    transition:
-        background 0.2s ease,
-        color 0.2s ease,
-        box-shadow 0.2s ease;
-
-}
-
-
-/* =========================================
-   未選択
-========================================= */
-
-.stats-period-button:not(.active) {
-
-    background: #e1e3e6;
-
-    color: #5f6368;
-
-}
-
-
-/* =========================================
-   選択中
-========================================= */
-
-.stats-period-button.active {
-
-    background: #ffffff;
-
-    color: #202124;
-
-    font-weight: 600;
-
-    box-shadow:
-        0 1px 3px rgba(60, 64, 67, 0.15);
-
-}
-
-
-/* =========================================
-   ホバー
-========================================= */
-
-.stats-period-button:not(.active):hover {
-
-    background: #d9dce0;
-
-}
-
-
-/* =========================================
-   選択中ホバー
-========================================= */
-
-.stats-period-button.active:hover {
-
-    background: #ffffff;
-
-}
-
-
-/* =========================================
-   クリック
-========================================= */
-
-.stats-period-button:active {
-
-    transform: scale(0.98);
-
-}
-
-
-/* =========================================
-   フォーカス
-========================================= */
-
-.stats-period-button:focus-visible {
-
-    outline: 2px solid #1a73e8;
-
-    outline-offset: 1px;
-
-}
-
-
-/* =========================================
-   スマホ
-========================================= */
-
-@media (max-width: 767px) {
-
-    .stats-period-filter {
-
-        gap: 5px;
-
-        padding: 4px;
-
-        border-radius: 9px;
-
-    }
-
-
-    .stats-period-button {
-
-        min-height: 40px;
-
-        padding: 7px 5px;
-
-        border-radius: 6px;
-
-        font-size: 13px;
-
-    }
-
-}
-
-/* =========================================
-   発券状況テーブル
-   ID・等級・賞品をコンパクトにする
-========================================= */
-
-/* ID */
-.stats-table th:nth-child(1),
-.stats-table td:nth-child(1) {
-
-    width: 32px;
-
-}
-
-
-/* 等級 */
-.stats-table th:nth-child(2),
-.stats-table td:nth-child(2) {
-
-    width: 48px;
-
-}
-
-
-/* 賞品 */
-.stats-table th:nth-child(3),
-.stats-table td:nth-child(3) {
-
-    width: auto;
-
-}
-
-
-/* 残り枚数 */
-.stats-table th:nth-child(4),
-.stats-table td:nth-child(4) {
-
-    width: 68px;
-
-}
-
-
-/* 発券枚数 */
-.stats-table th:nth-child(5),
-.stats-table td:nth-child(5) {
-
-    width: 68px;
-
-}
-
-
-/* セルの左右余白を小さくする */
-.stats-table th,
-.stats-table td {
-
-    padding-left: 3px;
-    padding-right: 3px;
-
-}
-
-
-/* 賞品名 */
-.stats-table .stats-name {
-
-    display: block;
-
-    min-width: 0;
-
-    overflow: hidden;
-
-    text-overflow: ellipsis;
-
-    white-space: nowrap;
-
-}
-```css
-/* =========================================
-   発券状況テーブル
-   列幅を統一
-========================================= */
-
-.stats-table {
-    width: 100%;
-    table-layout: fixed;
-    border-collapse: collapse;
-}
-
 
 /* ID */
 .stats-table th:nth-child(1),
@@ -1403,6 +783,7 @@ button:disabled {
 .stats-table th:nth-child(3),
 .stats-table td:nth-child(3) {
     width: auto;
+
     text-align: left;
 }
 
@@ -1421,22 +802,369 @@ button:disabled {
 }
 
 
-/* セル */
+/* =========================================
+   セル
+========================================= */
+
 .stats-table th,
 .stats-table td {
     padding: 10px 5px;
+
+    border-bottom: 1px solid #e5e7eb;
+
     text-align: center;
+
     white-space: nowrap;
 }
 
 
-/* 賞品名 */
+.stats-table th {
+    background: #f5f7fa;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    color: #374151;
+}
+
+
+.stats-table td {
+    font-size: 14px;
+
+    color: #374151;
+}
+
+
+/* =========================================
+   ID
+========================================= */
+
+.stats-table td:first-child {
+    font-weight: 700;
+
+    color: #6b7280;
+}
+
+
+/* =========================================
+   等級
+========================================= */
+
+.stats-rank {
+    font-weight: 700;
+}
+
+
+/* =========================================
+   賞品名
+========================================= */
+
 .stats-table .stats-name {
     display: block;
+
     width: 100%;
+
+    min-width: 0;
+
     overflow: hidden;
+
     text-overflow: ellipsis;
+
     white-space: nowrap;
+
+    text-align: left;
+}
+
+
+/* =========================================
+   残り枚数
+========================================= */
+
+.stats-stock {
+    font-size: 20px;
+
+    font-weight: 700;
+}
+
+
+/* =========================================
+   発券枚数
+========================================= */
+
+.stats-issued {
+    font-size: 20px;
+
+    font-weight: 700;
+}
+
+
+/* =========================================
+   行ホバー
+========================================= */
+
+.stats-table tbody tr:hover {
+    background: #f9fafb;
+}
+
+
+/* =========================================
+   発券状況 期間フィルター
+========================================= */
+
+.stats-period-filter {
+    display: flex;
+
+    width: 100%;
+
+    gap: 6px;
+
+    padding: 5px;
+
+    margin-bottom: 18px;
+
+    background: #f1f3f4;
+
+    border-radius: 10px;
+}
+
+
+.stats-period-button {
+    flex: 1;
+
+    min-height: 42px;
+
+    padding: 8px 12px;
+
+    border-radius: 7px;
+
+    background: transparent;
+
+    color: #5f6368;
+
+    font-size: 14px;
+
+    font-weight: 500;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+/* 未選択 */
+.stats-period-button:not(.active) {
+    background: #e1e3e6;
+
+    color: #5f6368;
+}
+
+
+/* 選択中 */
+.stats-period-button.active {
+    background: #fff;
+
+    color: #202124;
+
+    font-weight: 600;
+
+    box-shadow:
+        0 1px 3px rgba(60, 64, 67, 0.15);
+}
+
+
+/* ホバー */
+.stats-period-button:not(.active):hover {
+    background: #d9dce0;
+}
+
+
+.stats-period-button.active:hover {
+    background: #fff;
+}
+
+
+/* クリック */
+.stats-period-button:active {
+    transform: scale(0.98);
+}
+
+
+/* フォーカス */
+.stats-period-button:focus-visible {
+    outline: 2px solid #1a73e8;
+
+    outline-offset: 1px;
+}
+
+
+/* =========================================
+   PC
+========================================= */
+
+@media (min-width: 768px) {
+
+    .admin {
+        padding: 30px;
+    }
+
+}
+
+
+/* =========================================
+   スマホ
+========================================= */
+
+@media (max-width: 767px) {
+
+    .admin {
+        padding: 12px;
+    }
+
+
+    /* ヘッダー */
+    .admin-header {
+        align-items: flex-start;
+    }
+
+
+    .admin-header h1 {
+        font-size: 23px;
+    }
+
+
+    .reload-button {
+        font-size: 12px;
+
+        padding: 9px 11px;
+    }
+
+
+    /* カード */
+    .admin-card {
+        padding: 17px;
+
+        border-radius: 10px;
+    }
+
+
+    /* セクション */
+    .section-title {
+        align-items: stretch;
+
+        flex-direction: column;
+    }
+
+
+    /* 追加ボタン */
+    .add-button {
+        width: 100%;
+    }
+
+
+    /* キャンペーン期間 */
+    .campaign-form {
+        align-items: stretch;
+
+        flex-direction: column;
+
+        gap: 0;
+    }
+
+
+    .period-mark {
+        display: none;
+    }
+
+
+    /* 賞品一覧 */
+    .coupon-list {
+        grid-template-columns: 1fr;
+    }
+
+
+    .coupon-stats {
+        grid-template-columns:
+            1fr 1fr;
+    }
+
+
+    /* 発券履歴フィルター */
+    .history-filter {
+        gap: 5px;
+
+        padding: 4px;
+
+        border-radius: 9px;
+    }
+
+
+    .history-filter-button {
+        min-height: 40px;
+
+        padding: 7px 5px;
+
+        border-radius: 6px;
+
+        font-size: 13px;
+    }
+
+
+    /* 発券状況フィルター */
+    .stats-period-filter {
+        gap: 5px;
+
+        padding: 4px;
+
+        border-radius: 9px;
+    }
+
+
+    .stats-period-button {
+        min-height: 40px;
+
+        padding: 7px 5px;
+
+        border-radius: 6px;
+
+        font-size: 13px;
+    }
+
+
+    /* 発券状況テーブル */
+    .stats-table th,
+    .stats-table td {
+        padding-left: 3px;
+
+        padding-right: 3px;
+    }
+
+
+    .stats-table th:nth-child(1),
+    .stats-table td:nth-child(1) {
+        width: 35px;
+    }
+
+
+    .stats-table th:nth-child(2),
+    .stats-table td:nth-child(2) {
+        width: 48px;
+    }
+
+
+    .stats-table th:nth-child(4),
+    .stats-table td:nth-child(4) {
+        width: 68px;
+    }
+
+
+    .stats-table th:nth-child(5),
+    .stats-table td:nth-child(5) {
+        width: 68px;
+    }
+
 }
 ```
-
