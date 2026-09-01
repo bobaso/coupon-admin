@@ -1541,21 +1541,13 @@ button:disabled {
    アイコン
 ========================================= */
 
-.admin-category-icon {
+.admin-category-icon img {
 
-    display: flex;
+    width: 32px;
 
-    align-items: center;
+    height: 32px;
 
-    justify-content: center;
-
-    width: 36px;
-
-    height: 36px;
-
-    font-size: 28px;
-
-    line-height: 1;
+    object-fit: contain;
 
 }
 
