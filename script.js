@@ -2068,9 +2068,9 @@ function renderMonthStats() {
 
             <th>賞品</th>
 
-            <th>残り枚数</th>
+            <th>残り</th>
 
-            <th>過去30日間の発券枚数</th>
+            <th>合計</th>
 
         </tr>
     `;
@@ -2199,9 +2199,9 @@ function renderAllStats() {
 
             <th>賞品</th>
 
-            <th>残り枚数</th>
+            <th>残り</th>
 
-            <th>全期間の発券枚数</th>
+            <th>合計</th>
 
         </tr>
     `;
