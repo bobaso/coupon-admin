@@ -68,7 +68,7 @@ let historyData = [];
 
 let historyFilter = "all";
 
-let statsPeriod = "today";
+let statsPeriod = "month";
 
 /* =========================================
    メッセージ
@@ -1024,110 +1024,98 @@ renderCouponStats();
 }
 
 /* =========================================
-   発券数：期間別
+   開催期間内の月一覧
 ========================================= */
 
-function getIssuedCount(
-    couponId,
-    period
-) {
+function getCampaignMonths() {
 
-    const now =
-        new Date();
+    if (
+        !startDate.value ||
+        !endDate.value
+    ) {
+
+        return [];
+
+    }
 
 
-    /*
-     * 日本時間の現在時刻
-     */
-
-    const currentTime =
+    const start =
         new Date(
-            now.toLocaleString(
-                "en-US",
-                {
-                    timeZone: "Asia/Tokyo"
-                }
-            )
+            startDate.value + "T00:00:00"
+        );
+
+    const end =
+        new Date(
+            endDate.value + "T00:00:00"
         );
 
 
-    /*
-     * 全期間
-     */
+    if (
+        Number.isNaN(start.getTime()) ||
+        Number.isNaN(end.getTime())
+    ) {
 
-    if (period === "all") {
-
-        return historyData.filter(
-            item =>
-                Number(item.coupon_id) ===
-                Number(couponId)
-        ).length;
+        return [];
 
     }
 
 
-    /*
-     * 集計開始日時
-     */
-
-    const startTime =
-        new Date(currentTime);
+    const months = [];
 
 
-    /*
-     * 今日
-     */
-
-    if (period === "today") {
-
-        startTime.setHours(
-            0,
-            0,
-            0,
-            0
+    const current =
+        new Date(
+            start.getFullYear(),
+            start.getMonth(),
+            1
         );
 
-    }
 
-
-    /*
-     * 1週間
-     *
-     * 今日を含む過去7日間
-     */
-
-    else if (period === "week") {
-
-        startTime.setDate(
-            startTime.getDate() - 6
+    const last =
+        new Date(
+            end.getFullYear(),
+            end.getMonth(),
+            1
         );
 
-        startTime.setHours(
-            0,
-            0,
-            0,
-            0
+
+    while (current <= last) {
+
+        months.push({
+
+            year:
+                current.getFullYear(),
+
+            month:
+                current.getMonth(),
+
+            label:
+                `${current.getFullYear()}年${current.getMonth() + 1}月`
+
+        });
+
+
+        current.setMonth(
+            current.getMonth() + 1
         );
 
     }
 
 
-    /*
-     * 1ヶ月
-     */
+    return months;
 
-    else if (period === "month") {
-
-        startTime.setMonth(
-            startTime.getMonth() - 1
-        );
-
-    }
+}
 
 
-    /*
-     * 発券数を集計
-     */
+/* =========================================
+   指定月の発券数
+========================================= */
+
+function getMonthlyIssuedCount(
+    couponId,
+    year,
+    month
+) {
 
     return historyData.filter(
         item => {
@@ -1147,7 +1135,7 @@ function getIssuedCount(
 
 
             /*
-             * 発券日時なし
+             * 発券日時がない
              */
 
             if (!item.issued_at) {
@@ -1182,7 +1170,7 @@ function getIssuedCount(
 
 
             /*
-             * 日本時間
+             * 日本時間へ変換
              */
 
             const issuedJapanTime =
@@ -1198,22 +1186,20 @@ function getIssuedCount(
 
 
             /*
-             * 指定期間内
+             * 指定された年月か確認
              */
 
             return (
-                issuedJapanTime >=
-                startTime &&
-                issuedJapanTime <=
-                currentTime
+                issuedJapanTime.getFullYear() ===
+                    year &&
+                issuedJapanTime.getMonth() ===
+                    month
             );
 
         }
     ).length;
 
 }
-
-
 /* =========================================
    1週間：曜日別発券数
 ========================================= */
@@ -1393,9 +1379,7 @@ function getWeeklyIssuedCounts(
 }
 
 
-/* =========================================
-   発券状況表示
-========================================= */
+
 
 /* =========================================
    発券状況表示
@@ -1415,11 +1399,23 @@ function renderCouponStats() {
 
     /*
      * =====================================
-     * 1週間
+     * 開催期間の月別集計
      * =====================================
      */
 
-    if (statsPeriod === "week") {
+    const campaignMonths =
+        getCampaignMonths();
+
+
+    /*
+     * =====================================
+     * 月が取得できない場合
+     * =====================================
+     */
+
+    if (
+        campaignMonths.length === 0
+    ) {
 
         couponStatsHead.innerHTML = `
             <tr>
@@ -1427,196 +1423,24 @@ function renderCouponStats() {
                 <th>等級</th>
                 <th>賞品</th>
                 <th>残り枚数</th>
-                <th>月</th>
-                <th>火</th>
-                <th>水</th>
-                <th>木</th>
-                <th>金</th>
-                <th>土</th>
-                <th>日</th>
-                <th>合計</th>
             </tr>
         `;
 
 
-        /*
-         * 賞品なし
-         */
+        couponStatsBody.innerHTML = `
 
-        if (
-            coupons.length === 0
-        ) {
+            <tr>
 
-            couponStatsBody.innerHTML = `
+                <td
+                    colspan="4"
+                    class="loading"
+                >
+                    キャンペーン期間を設定してください。
+                </td>
 
-                <tr>
+            </tr>
 
-                    <td
-                        colspan="12"
-                        class="loading"
-                    >
-                        賞品がありません。
-                    </td>
-
-                </tr>
-
-            `;
-
-            return;
-
-        }
-
-
-        /*
-         * 賞品表示
-         */
-
-        couponStatsBody.innerHTML =
-            coupons
-                .map(
-                    coupon => {
-
-                        const weekly =
-                            getWeeklyIssuedCounts(
-                                coupon.id
-                            );
-
-
-                        /*
-                         * 合計
-                         */
-
-                        const total =
-                            Object.values(
-                                weekly
-                            ).reduce(
-                                (
-                                    sum,
-                                    count
-                                ) =>
-                                    sum + count,
-                                0
-                            );
-
-
-                        /*
-                         * 等級デザイン
-                         */
-
-                        let designClass =
-                            "rank-3";
-
-
-                        if (
-                            coupon.rank ===
-                            "1等"
-                        ) {
-
-                            designClass =
-                                "rank-1";
-
-                        } else if (
-                            coupon.rank ===
-                            "2等"
-                        ) {
-
-                            designClass =
-                                "rank-2";
-
-                        }
-
-
-                        return `
-
-                            <tr>
-
-                                <td>
-                                    ${Number(
-                                        coupon.id
-                                    )}
-                                </td>
-
-                                <td>
-                                    <span
-                                        class="stats-rank ${designClass}"
-                                    >
-                                        ${escapeHTML(
-                                            coupon.rank
-                                        )}
-                                    </span>
-                                </td>
-
-                                <td>
-                                    <span
-                                        class="stats-name"
-                                    >
-                                        ${escapeHTML(
-                                            coupon.name
-                                        )}
-                                    </span>
-                                </td>
-
-                                <td>
-
-                                    <strong
-                                        class="stats-stock"
-                                    >
-                                        ${Number(
-                                            coupon.stock
-                                        )}
-                                    </strong>
-
-                                    <span>
-                                        枚
-                                    </span>
-
-                                </td>
-
-                                <td>
-                                    ${weekly[1]}
-                                </td>
-
-                                <td>
-                                    ${weekly[2]}
-                                </td>
-
-                                <td>
-                                    ${weekly[3]}
-                                </td>
-
-                                <td>
-                                    ${weekly[4]}
-                                </td>
-
-                                <td>
-                                    ${weekly[5]}
-                                </td>
-
-                                <td>
-                                    ${weekly[6]}
-                                </td>
-
-                                <td>
-                                    ${weekly[0]}
-                                </td>
-
-                                <td>
-
-                                    <strong
-                                        class="stats-issued"
-                                    >
-                                        ${total}
-                                    </strong>
-
-                                </td>
-
-                            </tr>
-
-                        `;
-
-                    }
-                )
-                .join("");
+        `;
 
         return;
 
@@ -1625,23 +1449,39 @@ function renderCouponStats() {
 
     /*
      * =====================================
-     * 今日・1ヶ月・全期間
+     * ヘッダー
      * =====================================
      */
 
     couponStatsHead.innerHTML = `
         <tr>
+
             <th>ID</th>
+
             <th>等級</th>
+
             <th>賞品</th>
+
+            ${campaignMonths
+                .map(
+                    month => `
+                        <th>
+                            ${month.label}
+                        </th>
+                    `
+                )
+                .join("")}
+
             <th>残り枚数</th>
-            <th>発券枚数</th>
+
         </tr>
     `;
 
 
     /*
+     * =====================================
      * 賞品なし
+     * =====================================
      */
 
     if (
@@ -1653,7 +1493,10 @@ function renderCouponStats() {
             <tr>
 
                 <td
-                    colspan="5"
+                    colspan="${
+                        4 +
+                        campaignMonths.length
+                    }"
                     class="loading"
                 >
                     賞品がありません。
@@ -1669,20 +1512,15 @@ function renderCouponStats() {
 
 
     /*
+     * =====================================
      * 賞品表示
+     * =====================================
      */
 
     couponStatsBody.innerHTML =
         coupons
             .map(
                 coupon => {
-
-                    const issuedCount =
-                        getIssuedCount(
-                            coupon.id,
-                            statsPeriod
-                        );
-
 
                     /*
                      * 等級デザイン
@@ -1711,6 +1549,52 @@ function renderCouponStats() {
                     }
 
 
+                    /*
+                     * =================================
+                     * 月別発券数
+                     * =================================
+                     */
+
+                    const monthlyHTML =
+                        campaignMonths
+                            .map(
+                                month => {
+
+                                    const count =
+                                        getMonthlyIssuedCount(
+                                            coupon.id,
+                                            month.year,
+                                            month.month
+                                        );
+
+
+                                    return `
+                                        <td>
+
+                                            <strong
+                                                class="stats-issued"
+                                            >
+                                                ${count}
+                                            </strong>
+
+                                            <span>
+                                                枚
+                                            </span>
+
+                                        </td>
+                                    `;
+
+                                }
+                            )
+                            .join("");
+
+
+                    /*
+                     * =================================
+                     * 行
+                     * =================================
+                     */
+
                     return `
 
                         <tr>
@@ -1720,6 +1604,7 @@ function renderCouponStats() {
                                     coupon.id
                                 )}
                             </td>
+
 
                             <td>
 
@@ -1733,6 +1618,7 @@ function renderCouponStats() {
 
                             </td>
 
+
                             <td>
 
                                 <span
@@ -1744,6 +1630,10 @@ function renderCouponStats() {
                                 </span>
 
                             </td>
+
+
+                            ${monthlyHTML}
+
 
                             <td>
 
@@ -1761,20 +1651,6 @@ function renderCouponStats() {
 
                             </td>
 
-                            <td>
-
-                                <strong
-                                    class="stats-issued"
-                                >
-                                    ${issuedCount}
-                                </strong>
-
-                                <span>
-                                    枚
-                                </span>
-
-                            </td>
-
                         </tr>
 
                     `;
@@ -1784,6 +1660,16 @@ function renderCouponStats() {
             .join("");
 
 }
+
+
+    /*
+     * =====================================
+     * 1週間
+     * =====================================
+     */
+
+    if (statsPeriod === "week") {
+
 /* =========================================
    発券履歴表示
 ========================================= */
