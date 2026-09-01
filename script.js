@@ -2927,8 +2927,8 @@ statsPeriodButtons.forEach(
             }
         );
 
-       /* =========================================
-   管理カテゴリー切り替え
+/* =========================================
+   管理カテゴリ切り替え
 ========================================= */
 
 const adminCategoryButtons =
@@ -2936,67 +2936,68 @@ const adminCategoryButtons =
         ".admin-category-button"
     );
 
-
 const adminCategoryContents =
     document.querySelectorAll(
         ".admin-category-content"
     );
 
 
-function switchAdminCategory(
-    category
-) {
-
-    /*
-     * ボタンの選択状態
-     */
-
-    adminCategoryButtons.forEach(
-        button => {
-
-            button.classList.toggle(
-                "active",
-                button.dataset.category === category
-            );
-
-        }
-    );
-
-
-    /*
-     * コンテンツ表示切り替え
-     */
-
-    adminCategoryContents.forEach(
-        content => {
-
-            content.classList.toggle(
-                "is-hidden",
-                content.dataset.categoryContent !== category
-            );
-
-        }
-    );
-
-}
-
-
-/*
- * カテゴリーボタン クリック
- */
-
 adminCategoryButtons.forEach(
     button => {
 
         button.addEventListener(
             "click",
-            () => {
+            function () {
 
                 const category =
-                    button.dataset.category;
+                    this.dataset.category;
 
-                switchAdminCategory(
-                    category
+
+                /* =====================================
+                   ボタンの選択状態
+                ====================================== */
+
+                adminCategoryButtons.forEach(
+                    item => {
+
+                        item.classList.remove(
+                            "active"
+                        );
+
+                    }
+                );
+
+
+                this.classList.add(
+                    "active"
+                );
+
+
+                /* =====================================
+                   コンテンツ切り替え
+                ====================================== */
+
+                adminCategoryContents.forEach(
+                    content => {
+
+                        const contentCategory =
+                            content.dataset.categoryContent;
+
+
+                        if (
+                            contentCategory ===
+                            category
+                        ) {
+
+                            content.hidden = false;
+
+                        } else {
+
+                            content.hidden = true;
+
+                        }
+
+                    }
                 );
 
             }
@@ -3006,15 +3007,26 @@ adminCategoryButtons.forEach(
 );
 
 
-/*
- * 初期表示
- *
- * 発券データを表示
- */
+/* =========================================
+   初期表示
+   発券データを表示
+========================================= */
 
-switchAdminCategory(
-    "stats"
-);
+adminCategoryContents.forEach(
+    content => {
+
+        if (
+            content.dataset.categoryContent ===
+            "stats"
+        ) {
+
+            content.hidden = false;
+
+        } else {
+
+            content.hidden = true;
+
+        }
 
     }
 );
