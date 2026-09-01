@@ -2698,9 +2698,9 @@ document
 
 
 /* =========================================
-   日付表示
-   D1に保存されている日本時間を
-   日本時間として表示
+   日付
+   Cloudflare Worker / D1に保存された
+   日本時間をそのまま日本時間で表示
 ========================================= */
 
 function formatDate(value) {
@@ -2712,58 +2712,102 @@ function formatDate(value) {
     }
 
 
+    const dateString =
+        String(value).trim();
+
+
     /*
-     * 日本時間としてDateを作成
+     * =====================================
+     * D1に保存されている日時
+     * =====================================
      */
 
-    const date =
-        parseJapanDate(
-            value
+    const match =
+        dateString.match(
+            /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?/
         );
 
 
-    /*
-     * 日付として認識できない場合
-     */
+    if (!match) {
 
-    if (!date) {
+        /*
+         * ISO形式などの場合
+         */
 
-        return value;
+        const date =
+            new Date(
+                dateString
+            );
+
+
+        if (
+            Number.isNaN(
+                date.getTime()
+            )
+        ) {
+
+            return value;
+
+        }
+
+
+        return date.toLocaleString(
+            "ja-JP",
+            {
+
+                timeZone:
+                    "Asia/Tokyo",
+
+                year:
+                    "numeric",
+
+                month:
+                    "2-digit",
+
+                day:
+                    "2-digit",
+
+                hour:
+                    "2-digit",
+
+                minute:
+                    "2-digit",
+
+                second:
+                    "2-digit"
+
+            }
+        );
 
     }
 
 
     /*
-     * 日本時間で表示
+     * =====================================
+     * 日本時間としてそのまま表示
+     * =====================================
      */
 
-    return date.toLocaleString(
-        "ja-JP",
-        {
+    const year =
+        match[1];
 
-            timeZone:
-                "Asia/Tokyo",
+    const month =
+        match[2];
 
-            year:
-                "numeric",
+    const day =
+        match[3];
 
-            month:
-                "2-digit",
+    const hour =
+        match[4];
 
-            day:
-                "2-digit",
+    const minute =
+        match[5];
 
-            hour:
-                "2-digit",
+    const second =
+        match[6] || "00";
 
-            minute:
-                "2-digit",
 
-            second:
-                "2-digit"
-
-        }
-    );
+    return `${year}/${month}/${day} ${hour}:${minute}:${second}`;
 
 }
 
