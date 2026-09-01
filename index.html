@@ -1,217 +1,245 @@
 <!DOCTYPE html>
+
 <html lang="ja">
 
 <head>
 
-    <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+<meta charset="UTF-8">
 
-    <title>クーポン抽選 管理画面</title>
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
-    <link
-        rel="stylesheet"
-        href="style.css"
-    >
+<title>クーポン抽選 管理画面</title>
+
+<link
+    rel="stylesheet"
+    href="style.css"
+>
+
 
 </head>
-
 
 <body>
 
 <div class="admin">
 
-    <!-- =========================================
-         ヘッダー
-    ========================================== -->
 
-    <header class="admin-header">
+<!-- =========================================
+     ヘッダー
+========================================== -->
+
+<header class="admin-header">
+
+    <div>
+
+        <h1>
+            クーポン抽選システム
+        </h1>
+
+        <span>
+            管理画面
+        </span>
+
+    </div>
+
+
+    <button
+        type="button"
+        class="reload-button"
+        id="reloadButton"
+    >
+        データ更新
+    </button>
+
+</header>
+
+
+
+<!-- =========================================
+     メッセージ
+========================================== -->
+
+<div
+    id="message"
+    class="message"
+    hidden
+></div>
+
+
+
+<!-- =========================================
+     キャンペーン設定
+========================================== -->
+
+<section class="admin-card">
+
+    <div class="section-title">
 
         <div>
 
-            <h1>
-                クーポン抽選システム
-            </h1>
+            <h2>
+                キャンペーン設定
+            </h2>
 
-            <span>
-                管理画面
-            </span>
+            <p>
+                開催期間を変更できます。
+                期間終了後は自動的にキャンペーン終了画面となり、
+                抽選ができなくなります。
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="campaign-form">
+
+
+        <!-- 開始日 -->
+
+        <div class="form-group">
+
+            <label for="startDate">
+                開始日
+            </label>
+
+            <input
+                type="date"
+                id="startDate"
+            >
 
         </div>
 
 
+        <div class="period-mark">
+            〜
+        </div>
+
+
+        <!-- 終了日 -->
+
+        <div class="form-group">
+
+            <label for="endDate">
+                終了日
+            </label>
+
+            <input
+                type="date"
+                id="endDate"
+            >
+
+        </div>
+
+    </div>
+
+
+    <button
+        type="button"
+        class="primary-button"
+        id="saveCampaignButton"
+    >
+        開催期間を保存
+    </button>
+
+</section>
+
+
+
+<!-- =========================================
+     賞品管理
+========================================== -->
+
+<section class="admin-card">
+
+
+    <!-- タイトル -->
+
+    <div class="section-title">
+
+        <div>
+
+            <h2>
+                賞品管理
+            </h2>
+
+            <p>
+                賞品情報を変更し、最後にまとめて保存します。
+            </p>
+
+        </div>
+
+
+        <!-- 賞品追加 -->
+
         <button
             type="button"
-            class="reload-button"
-            id="reloadButton"
+            class="add-button"
+            id="addCouponButton"
         >
-            データ更新
+            ＋ 賞品を追加
         </button>
 
-    </header>
+    </div>
 
 
-    <!-- =========================================
-         メッセージ
-    ========================================== -->
+
+    <!-- =====================================
+         当選確率合計
+    ====================================== -->
+
+    <div class="probability-summary">
+
+        <span>
+            当選確率合計
+        </span>
+
+        <strong id="probabilityTotal">
+            0%
+        </strong>
+
+    </div>
+
+
+
+    <!-- =====================================
+         賞品一覧
+    ====================================== -->
 
     <div
-        id="message"
-        class="message"
-        hidden
-    ></div>
+        id="couponList"
+        class="coupon-list"
+    >
 
-
-    <!-- =========================================
-         キャンペーン設定
-    ========================================== -->
-
-    <section class="admin-card">
-
-        <div class="section-title">
-
-            <div>
-
-                <h2>
-                    キャンペーン設定
-                </h2>
-
-                <p>
-                    開催期間を変更できます。（期間終了後自動的にキャンペーン終了画面になり抽選ができなくなります）
-                </p>
-
-            </div>
-
+        <div class="loading">
+            読み込み中...
         </div>
 
-
-        <div class="campaign-form">
-
-            <div class="form-group">
-
-                <label for="startDate">
-                    開始日
-                </label>
-
-                <input
-                    type="date"
-                    id="startDate"
-                >
-
-            </div>
+    </div>
 
 
-            <div class="period-mark">
-                〜
-            </div>
 
+    <!-- =====================================
+         一括保存
+    ====================================== -->
 
-            <div class="form-group">
-
-                <label for="endDate">
-                    終了日
-                </label>
-
-                <input
-                    type="date"
-                    id="endDate"
-                >
-
-            </div>
-
-        </div>
-
+    <div class="coupon-save-area">
 
         <button
             type="button"
-            class="primary-button"
-            id="saveCampaignButton"
+            class="save-coupons-button"
+            id="saveCouponsButton"
         >
-            開催期間を保存
+            クーポン設定を保存
         </button>
 
-    </section>
+    </div>
 
+</section>
 
-    <!-- =========================================
-         賞品管理
-    ========================================== -->
-
-    <section class="admin-card">
-
-        <div class="section-title">
-
-            <div>
-
-                <h2>
-                    賞品管理
-                </h2>
-
-                <p>
-                    賞品情報を変更し、最後にまとめて保存します。
-                </p>
-
-            </div>
-
-
-            <button
-                type="button"
-                class="add-button"
-                id="addCouponButton"
-            >
-                ＋ 賞品を追加
-            </button>
-
-        </div>
-
-
-        <!-- 確率合計 -->
-
-        <div class="probability-summary">
-
-            <span>
-                当選確率合計
-            </span>
-
-            <strong id="probabilityTotal">
-                0%
-            </strong>
-
-        </div>
-
-
-        <!-- 賞品一覧 -->
-
-        <div
-            id="couponList"
-            class="coupon-list"
-        >
-
-            <div class="loading">
-                読み込み中...
-            </div>
-
-        </div>
-
-
-        <!-- 一括保存 -->
-
-        <div class="coupon-save-area">
-
-            <button
-                type="button"
-                class="save-coupons-button"
-                id="saveCouponsButton"
-            >
-                クーポン設定を保存
-            </button>
-
-        </div>
-
-    </section>
 
 
 <!-- =========================================
@@ -219,6 +247,11 @@
 ========================================== -->
 
 <section class="admin-card">
+
+
+    <!-- =====================================
+         タイトル
+    ====================================== -->
 
     <div class="section-title">
 
@@ -229,10 +262,13 @@
             </h2>
 
             <p>
-                賞品ごとの残り枚数と発券数を確認できます。
+                賞品ごとの残り枚数と発券枚数を確認できます。
             </p>
 
         </div>
+
+
+        <!-- 更新ボタン -->
 
         <button
             type="button"
@@ -245,40 +281,60 @@
     </div>
 
 
+
     <!-- =====================================
          発券期間切り替え
     ====================================== -->
-<div class="stats-period-filter">
 
-    <button
-        class="stats-period-button active"
-        data-stats-period="today"
-    >
-        今日
-    </button>
+    <div class="stats-period-filter">
 
-    <button
-        class="stats-period-button"
-        data-stats-period="week"
-    >
-        1週間
-    </button>
 
-    <button
-        class="stats-period-button"
-        data-stats-period="month"
-    >
-        1ヶ月
-    </button>
+        <!-- 今日 -->
 
-    <button
-        class="stats-period-button"
-        data-stats-period="all"
-    >
-        全期間
-    </button>
+        <button
+            type="button"
+            class="stats-period-button active"
+            data-stats-period="today"
+        >
+            今日
+        </button>
 
-</div>
+
+        <!-- 1週間 -->
+
+        <button
+            type="button"
+            class="stats-period-button"
+            data-stats-period="week"
+        >
+            1週間
+        </button>
+
+
+        <!-- 1ヶ月 -->
+
+        <button
+            type="button"
+            class="stats-period-button"
+            data-stats-period="month"
+        >
+            1ヶ月
+        </button>
+
+
+        <!-- 全期間 -->
+
+        <button
+            type="button"
+            class="stats-period-button"
+            data-stats-period="all"
+        >
+            全期間
+        </button>
+
+    </div>
+
+
 
     <!-- =====================================
          発券状況テーブル
@@ -288,22 +344,47 @@
 
         <table class="stats-table">
 
-           <thead id="couponStatsHead">
-    <tr>
-        <th>ID</th>
-        <th>等級</th>
-        <th>賞品</th>
-        <th>残り枚数</th>
-        <th>発券枚数</th>
-    </tr>
-</thead>
+
+            <!-- テーブルヘッダー -->
+
+            <thead id="couponStatsHead">
+
+                <tr>
+
+                    <th>
+                        ID
+                    </th>
+
+                    <th>
+                        等級
+                    </th>
+
+                    <th>
+                        賞品
+                    </th>
+
+                    <th>
+                        残り枚数
+                    </th>
+
+                    <th>
+                        発券枚数
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+
+            <!-- テーブル本体 -->
 
             <tbody id="couponStatsBody">
 
                 <tr>
 
                     <td
-                        colspan="6"
+                        colspan="5"
                         class="loading"
                     >
                         読み込み中...
@@ -312,6 +393,7 @@
                 </tr>
 
             </tbody>
+
 
         </table>
 
@@ -326,6 +408,11 @@
 ========================================== -->
 
 <section class="admin-card">
+
+
+    <!-- =====================================
+         タイトル
+    ====================================== -->
 
     <div class="section-title">
 
@@ -344,11 +431,15 @@
     </div>
 
 
+
     <!-- =====================================
          履歴フィルター
     ====================================== -->
 
     <div class="history-filter">
+
+
+        <!-- すべて -->
 
         <button
             type="button"
@@ -358,6 +449,9 @@
             すべて
         </button>
 
+
+        <!-- 未使用 -->
+
         <button
             type="button"
             class="history-filter-button"
@@ -365,6 +459,9 @@
         >
             未使用
         </button>
+
+
+        <!-- 使用済み -->
 
         <button
             type="button"
@@ -377,6 +474,7 @@
     </div>
 
 
+
     <!-- =====================================
          発券履歴テーブル
     ====================================== -->
@@ -385,26 +483,44 @@
 
         <table class="history-table">
 
+
+            <!-- ヘッダー -->
+
             <thead>
 
                 <tr>
 
-                    <th>ID</th>
+                    <th>
+                        ID
+                    </th>
 
-                    <th>等級</th>
+                    <th>
+                        等級
+                    </th>
 
-                    <th>賞品</th>
+                    <th>
+                        賞品
+                    </th>
 
-                    <th>発券日時</th>
+                    <th>
+                        発券日時
+                    </th>
 
-                    <th>状態</th>
+                    <th>
+                        状態
+                    </th>
 
-                    <th>使用日時</th>
+                    <th>
+                        使用日時
+                    </th>
 
                 </tr>
 
             </thead>
 
+
+
+            <!-- 本体 -->
 
             <tbody id="historyBody">
 
@@ -421,6 +537,7 @@
 
             </tbody>
 
+
         </table>
 
     </div>
@@ -428,10 +545,11 @@
 </section>
 
 
-
-
 </div>
 
+<!-- =========================================
+     JavaScript
+========================================== -->
 
 <script src="script.js"></script>
 
