@@ -1,10 +1,4 @@
 /* =========================================
-   クーポン抽選 管理画面
-   script.js
-========================================= */
-
-
-/* =========================================
    Cloudflare Worker
 ========================================= */
 
@@ -46,14 +40,22 @@ const historyBody =
 const message =
     document.getElementById("message");
 
+/* =========================================
+   発券状況DOM
+========================================= */
+
 const couponStatsBody =
-    document.getElementById("couponStatsBody");
-
+    document.getElementById(
+        "couponStatsBody"
+    );
 const couponStatsHead =
-    document.getElementById("couponStatsHead");
-
+    document.getElementById(
+        "couponStatsHead"
+    );
 const reloadStatsButton =
-    document.getElementById("reloadStatsButton");
+    document.getElementById(
+        "reloadStatsButton"
+    );
 
 
 /* =========================================
@@ -66,32 +68,13 @@ let historyData = [];
 
 let historyFilter = "all";
 
-let statsPeriod = "today";
-
-
-/* =========================================
-   初期化
-========================================= */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
-
-        loadAll();
-
-    }
-);
-
+let statsPeriod = "month";
 
 /* =========================================
-   メッセージ表示
+   メッセージ
 ========================================= */
 
 function showMessage(text, error = false) {
-
-    if (!message) {
-        return;
-    }
 
     message.textContent = text;
 
@@ -102,24 +85,18 @@ function showMessage(text, error = false) {
         error
     );
 
-    clearTimeout(
-        showMessage.timer
-    );
 
-    showMessage.timer =
-        setTimeout(
-            () => {
+    setTimeout(() => {
 
-                message.hidden = true;
+        message.hidden = true;
 
-            },
-            4000
-        );
+    }, 4000);
+
 }
 
 
 /* =========================================
-   API通信
+   API
 ========================================= */
 
 async function apiFetch(
@@ -127,59 +104,37 @@ async function apiFetch(
     options = {}
 ) {
 
-    const fetchOptions = {
-        ...options,
-        headers: {
-            "Content-Type":
-                "application/json",
-
-            ...(options.headers || {})
-        }
-    };
-
-
     const response =
         await fetch(
             API_URL + path,
-            fetchOptions
+            {
+                ...options,
+
+                headers: {
+
+                    "Content-Type":
+                        "application/json",
+
+                    ...(options.headers || {})
+
+                }
+
+            }
         );
 
 
-    let data = null;
-
-
-    try {
-
-        data =
-            await response.json();
-
-    } catch (error) {
-
-        throw new Error(
-            "APIから正しいデータを取得できませんでした。"
-        );
-
-    }
-
-
-    if (!response.ok) {
-
-        throw new Error(
-            data?.error ||
-            `APIエラーが発生しました。(${response.status})`
-        );
-
-    }
+    const data =
+        await response.json();
 
 
     if (
-        data &&
+        !response.ok ||
         data.success === false
     ) {
 
         throw new Error(
             data.error ||
-            "APIエラーが発生しました。"
+            "APIエラーが発生しました"
         );
 
     }
@@ -188,7 +143,6 @@ async function apiFetch(
     return data;
 
 }
-
 
 /* =========================================
    キャンペーン取得
@@ -203,44 +157,27 @@ async function loadCampaign() {
 
 
     if (
-        data &&
-        data.campaign
+        data.campaign &&
+        data.campaign.start_date
     ) {
 
-        if (
-            data.campaign.start_date
-        ) {
+        startDate.value =
+            data.campaign.start_date;
 
-            startDate.value =
-                String(
-                    data.campaign.start_date
-                ).substring(
-                    0,
-                    10
-                );
-
-        }
+    }
 
 
-        if (
-            data.campaign.end_date
-        ) {
+    if (
+        data.campaign &&
+        data.campaign.end_date
+    ) {
 
-            endDate.value =
-                String(
-                    data.campaign.end_date
-                ).substring(
-                    0,
-                    10
-                );
-
-        }
+        endDate.value =
+            data.campaign.end_date;
 
     }
 
 }
-
-
 /* =========================================
    キャンペーン保存
 ========================================= */
@@ -257,7 +194,7 @@ async function saveCampaign() {
     if (!start || !end) {
 
         showMessage(
-            "開始日と終了日を入力してください。",
+            "開始日と終了日を入力してください",
             true
         );
 
@@ -269,7 +206,7 @@ async function saveCampaign() {
     if (start > end) {
 
         showMessage(
-            "終了日は開始日以降にしてください。",
+            "終了日は開始日以降にしてください",
             true
         );
 
@@ -278,7 +215,8 @@ async function saveCampaign() {
     }
 
 
-    saveCampaignButton.disabled = true;
+    saveCampaignButton.disabled =
+        true;
 
     saveCampaignButton.textContent =
         "保存中...";
@@ -286,46 +224,44 @@ async function saveCampaign() {
 
     try {
 
-        await apiFetch(
-            "/admin/campaign",
-            {
-                method: "PUT",
+await apiFetch(
+    "/admin/campaign",
+    {
 
-                body:
-                    JSON.stringify({
-                        start_date: start,
-                        end_date: end
-                    })
-            }
-        );
+        method: "PUT",
+
+        body: JSON.stringify({
+
+            start_date: start,
+
+            end_date: end
+
+        })
+
+    }
+);
 
 
         showMessage(
-            "キャンペーン期間を保存しました。"
+            "キャンペーン期間を保存しました"
         );
 
 
     } catch (error) {
-
-        console.error(
-            "キャンペーン保存エラー:",
-            error
-        );
 
         showMessage(
             error.message,
             true
         );
 
-    } finally {
-
-        saveCampaignButton.disabled =
-            false;
-
-        saveCampaignButton.textContent =
-            "開催期間を保存";
-
     }
+
+
+    saveCampaignButton.disabled =
+        false;
+
+    saveCampaignButton.textContent =
+        "開催期間を保存";
 
 }
 
@@ -349,67 +285,36 @@ async function loadCoupons() {
         );
 
 
-    const serverCoupons =
-        Array.isArray(
-            data.coupons
-        )
-            ? data.coupons
-            : [];
-
-
     coupons =
-        serverCoupons.map(
-            coupon => ({
+        (data.coupons || [])
+            .map(coupon => ({
 
                 id:
-                    coupon.id ?? null,
+                    coupon.id,
 
                 rank:
-                    String(
-                        coupon.rank ?? ""
-                    ),
+                    coupon.rank,
 
                 name:
-                    String(
-                        coupon.name ?? ""
-                    ),
+                    coupon.name,
 
                 probability:
-                    toNumber(
+                    Number(
                         coupon.probability
                     ),
 
                 stock:
-                    toNumber(
+                    Number(
                         coupon.stock
                     ),
 
                 created_at:
-                    coupon.created_at ?? null
+                    coupon.created_at
 
-            })
-        );
-
-
-    renderCoupons();
-
-}
+            }));
 
 
-/* =========================================
-   数値変換
-========================================= */
-
-function toNumber(value) {
-
-    const number =
-        Number(value);
-
-
-    return Number.isFinite(number)
-        ? number
-        : 0;
-
+renderCoupons();
 }
 
 
@@ -419,18 +324,7 @@ function toNumber(value) {
 
 function renderCoupons() {
 
-    if (
-        !couponList
-    ) {
-
-        return;
-
-    }
-
-
-    if (
-        coupons.length === 0
-    ) {
+    if (coupons.length === 0) {
 
         couponList.innerHTML = `
             <div class="loading">
@@ -448,10 +342,7 @@ function renderCoupons() {
     couponList.innerHTML =
         coupons
             .map(
-                (
-                    coupon,
-                    index
-                ) =>
+                (coupon, index) =>
                     createCouponHTML(
                         coupon,
                         index
@@ -474,54 +365,49 @@ function createCouponHTML(
     index
 ) {
 
-    const rank =
-        String(
-            coupon.rank || ""
-        )
-        .replace(
-            /等/g,
-            ""
-        );
-
-
-    const isNew =
-        coupon.isNew === true
+    const newClass =
+        coupon.isNew
             ? "new-item"
             : "";
 
 
     return `
+
         <div
-            class="coupon-item ${isNew}"
+            class="coupon-item ${newClass}"
             data-index="${index}"
         >
 
-            <div class="coupon-rank-label">
-                等級
-            </div>
+  <div class="coupon-rank-label">
+    等級
+</div>
 
-            <div class="rank-input-area">
+<div class="rank-input-area">
 
-                <input
-                    type="number"
-                    class="coupon-input coupon-rank-input"
-                    value="${escapeHTML(rank)}"
-                    data-index="${index}"
-                    placeholder="例：1"
-                    min="1"
-                    step="1"
-                >
+    <input
+        type="number"
+        class="coupon-input coupon-rank-input"
+        value="${escapeHTML(
+            String(coupon.rank)
+                .replace("等", "")
+        )}"
+        data-index="${index}"
+        placeholder="例：1"
+        min="1"
+        step="1"
+    >
 
-                <span class="rank-suffix">
-                    等
-                </span>
+    <span class="rank-suffix">
+        等
+    </span>
 
-            </div>
+</div>
 
 
             <div class="coupon-rank-label">
                 賞品名
             </div>
+
 
             <input
                 type="text"
@@ -543,10 +429,10 @@ function createCouponHTML(
                     <input
                         type="number"
                         class="coupon-number-input coupon-probability-input"
-                        value="${toNumber(coupon.probability)}"
-                        data-index="${index}"
+                        value="${coupon.probability}"
                         min="0"
                         step="1"
+                        data-index="${index}"
                     >
 
                 </div>
@@ -561,10 +447,10 @@ function createCouponHTML(
                     <input
                         type="number"
                         class="coupon-number-input coupon-stock-input"
-                        value="${toNumber(coupon.stock)}"
-                        data-index="${index}"
+                        value="${coupon.stock}"
                         min="0"
                         step="1"
+                        data-index="${index}"
                     >
 
                 </div>
@@ -581,210 +467,198 @@ function createCouponHTML(
             </button>
 
         </div>
+
     `;
 
 }
 
 
 /* =========================================
-   賞品入力変更
+   入力変更
 ========================================= */
 
-if (couponList) {
+couponList.addEventListener(
+    "input",
+    event => {
 
-    couponList.addEventListener(
-        "input",
-        event => {
-
-            const target =
-                event.target;
-
-
-            const index =
-                Number(
-                    target.dataset.index
-                );
-
-
-            if (
-                !Number.isInteger(index) ||
-                !coupons[index]
-            ) {
-
-                return;
-
-            }
-
-
-            if (
-                target.classList.contains(
-                    "coupon-rank-input"
-                )
-            ) {
-
-                coupons[index].rank =
-                    target.value;
-
-            }
-
-
-            if (
-                target.classList.contains(
-                    "coupon-name-input"
-                )
-            ) {
-
-                coupons[index].name =
-                    target.value;
-
-            }
-
-
-            if (
-                target.classList.contains(
-                    "coupon-probability-input"
-                )
-            ) {
-
-                coupons[index].probability =
-                    toNumber(
-                        target.value
-                    );
-
-                updateProbabilityTotal();
-
-            }
-
-
-            if (
-                target.classList.contains(
-                    "coupon-stock-input"
-                )
-            ) {
-
-                coupons[index].stock =
-                    toNumber(
-                        target.value
-                    );
-
-            }
-
-        }
-    );
-
-
-    couponList.addEventListener(
-        "click",
-        event => {
-
-            const button =
-                event.target.closest(
-                    "[data-delete-index]"
-                );
-
-
-            if (!button) {
-                return;
-            }
-
-
-            const index =
-                Number(
-                    button.dataset.deleteIndex
-                );
-
-
-            if (
-                !Number.isInteger(index) ||
-                !coupons[index]
-            ) {
-
-                return;
-
-            }
-
-
-            const coupon =
-                coupons[index];
-
-
-            const rank =
-                normalizeRank(
-                    coupon.rank
-                );
-
-
-            const confirmed =
-                confirm(
-                    `${rank}「${coupon.name}」を削除しますか？\n\n「クーポン設定を保存」を押すまでサーバー上のデータは変更されません。`
-                );
-
-
-            if (!confirmed) {
-                return;
-            }
-
-
-            coupons.splice(
-                index,
-                1
+        const index =
+            Number(
+                event.target.dataset.index
             );
 
 
-            renderCoupons();
+        if (
+            !Number.isInteger(index) ||
+            !coupons[index]
+        ) {
+
+            return;
 
         }
-    );
+
+
+       if (
+    event.target.classList.contains(
+        "coupon-rank-input"
+    )
+) {
+
+    coupons[index].rank =
+        event.target.value
+            .replace("等", "");
 
 }
+
+        if (
+            event.target.classList.contains(
+                "coupon-name-input"
+            )
+        ) {
+
+            coupons[index].name =
+                event.target.value;
+
+        }
+
+
+        if (
+            event.target.classList.contains(
+                "coupon-probability-input"
+            )
+        ) {
+
+            coupons[index].probability =
+                Number(
+                    event.target.value
+                ) || 0;
+
+            updateProbabilityTotal();
+
+        }
+
+
+        if (
+            event.target.classList.contains(
+                "coupon-stock-input"
+            )
+        ) {
+
+            coupons[index].stock =
+                Number(
+                    event.target.value
+                ) || 0;
+
+        }
+
+    }
+);
+
+
+/* =========================================
+   賞品削除
+========================================= */
+
+couponList.addEventListener(
+    "click",
+    event => {
+
+        const button =
+            event.target.closest(
+                "[data-delete-index]"
+            );
+
+
+        if (!button) {
+
+            return;
+
+        }
+
+
+        const index =
+            Number(
+                button.dataset.deleteIndex
+            );
+
+
+        if (
+            !Number.isInteger(index) ||
+            !coupons[index]
+        ) {
+
+            return;
+
+        }
+
+
+        const coupon =
+            coupons[index];
+
+
+        const confirmed =
+            confirm(
+                `${coupon.rank}「${coupon.name}」を削除しますか？\n\n「クーポン設定を保存」を押すまでD1からは削除されません。`
+            );
+
+
+        if (!confirmed) {
+
+            return;
+
+        }
+
+
+        coupons.splice(
+            index,
+            1
+        );
+
+
+        renderCoupons();
+
+    }
+);
 
 
 /* =========================================
    賞品追加
 ========================================= */
 
-if (addCouponButton) {
+addCouponButton.addEventListener(
+    "click",
+    () => {
 
-    addCouponButton.addEventListener(
-        "click",
-        () => {
+        coupons.push({
 
-            coupons.push({
+            id: null,
 
-                id: null,
+            rank: "",
 
-                rank: "",
+            name: "",
 
-                name: "",
+            probability: 0,
 
-                probability: 0,
+            stock: 0,
 
-                stock: 0,
+            isNew: true
 
-                isNew: true
-
-            });
+        });
 
 
-            renderCoupons();
+        renderCoupons();
 
 
-            const items =
-                couponList.querySelectorAll(
-                    ".coupon-item"
-                );
+        const items =
+            couponList.querySelectorAll(
+                ".coupon-item"
+            );
 
 
-            const lastItem =
-                items[
-                    items.length - 1
-                ];
+        const lastItem =
+            items[items.length - 1];
 
 
-            if (!lastItem) {
-                return;
-            }
-
+        if (lastItem) {
 
             lastItem.scrollIntoView({
                 behavior: "smooth",
@@ -800,39 +674,18 @@ if (addCouponButton) {
 
             if (rankInput) {
 
-                setTimeout(
-                    () => {
+                setTimeout(() => {
 
-                        rankInput.focus();
+                    rankInput.focus();
 
-                    },
-                    300
-                );
+                }, 300);
 
             }
 
         }
-    );
 
-}
-
-
-/* =========================================
-   等級整形
-========================================= */
-
-function normalizeRank(value) {
-
-    return String(
-        value ?? ""
-    )
-        .replace(
-            /等/g,
-            ""
-        )
-        .trim();
-
-}
+    }
+);
 
 
 /* =========================================
@@ -841,19 +694,11 @@ function normalizeRank(value) {
 
 function updateProbabilityTotal() {
 
-    if (!probabilityTotal) {
-        return;
-    }
-
-
     const total =
         coupons.reduce(
-            (
-                sum,
-                coupon
-            ) =>
+            (sum, coupon) =>
                 sum +
-                toNumber(
+                Number(
                     coupon.probability
                 ),
             0
@@ -864,34 +709,26 @@ function updateProbabilityTotal() {
         `${total}%`;
 
 
-    const parent =
-        probabilityTotal.parentElement;
-
-
-    if (!parent) {
-        return;
-    }
-
-
-    parent.classList.remove(
-        "is-valid",
-        "is-invalid"
-    );
-
-
-    if (
-        total === 100
-    ) {
-
-        parent.classList.add(
-            "is-valid"
+    probabilityTotal.parentElement
+        .classList.remove(
+            "is-valid",
+            "is-invalid"
         );
+
+
+    if (total === 100) {
+
+        probabilityTotal.parentElement
+            .classList.add(
+                "is-valid"
+            );
 
     } else {
 
-        parent.classList.add(
-            "is-invalid"
-        );
+        probabilityTotal.parentElement
+            .classList.add(
+                "is-invalid"
+            );
 
     }
 
@@ -899,27 +736,25 @@ function updateProbabilityTotal() {
 
 
 /* =========================================
-   クーポン保存
+   クーポン一括保存
 ========================================= */
 
-if (saveCouponsButton) {
-
-    saveCouponsButton.addEventListener(
-        "click",
-        saveAllCoupons
-    );
-
-}
+saveCouponsButton.addEventListener(
+    "click",
+    saveAllCoupons
+);
 
 
 async function saveAllCoupons() {
 
-    if (
-        coupons.length === 0
-    ) {
+    /*
+     * 賞品が0件
+     */
+
+    if (coupons.length === 0) {
 
         showMessage(
-            "賞品を1つ以上登録してください。",
+            "賞品を1つ以上登録してください",
             true
         );
 
@@ -928,9 +763,9 @@ async function saveAllCoupons() {
     }
 
 
-    /* -------------------------
-       入力チェック
-    ------------------------- */
+    /*
+     * 入力チェック
+     */
 
     for (
         let i = 0;
@@ -942,16 +777,12 @@ async function saveAllCoupons() {
             coupons[i];
 
 
-        const rank =
-            normalizeRank(
-                coupon.rank
-            );
-
-
-        if (!rank) {
+        if (
+            !coupon.rank.trim()
+        ) {
 
             showMessage(
-                `${i + 1}番目の賞品の等級を入力してください。`,
+                `${i + 1}番目の賞品の等級を入力してください`,
                 true
             );
 
@@ -961,12 +792,11 @@ async function saveAllCoupons() {
 
 
         if (
-            !/^\d+$/.test(rank) ||
-            Number(rank) < 1
+            !coupon.name.trim()
         ) {
 
             showMessage(
-                `${i + 1}番目の賞品の等級を正しく入力してください。`,
+                `${coupon.rank}の賞品名を入力してください`,
                 true
             );
 
@@ -975,39 +805,19 @@ async function saveAllCoupons() {
         }
 
 
-        const name =
-            String(
-                coupon.name ?? ""
-            ).trim();
-
-
-        if (!name) {
-
-            showMessage(
-                `${rank}等の賞品名を入力してください。`,
-                true
-            );
-
-            return;
-
-        }
-
-
-        const probability =
+        if (
+            !Number.isFinite(
+                Number(
+                    coupon.probability
+                )
+            ) ||
             Number(
                 coupon.probability
-            );
-
-
-        if (
-            !Number.isFinite(
-                probability
-            ) ||
-            probability < 0
+            ) < 0
         ) {
 
             showMessage(
-                `${rank}等の当選確率を確認してください。`,
+                `${coupon.rank}の当選確率を確認してください`,
                 true
             );
 
@@ -1016,21 +826,19 @@ async function saveAllCoupons() {
         }
 
 
-        const stock =
-            Number(
-                coupon.stock
-            );
-
-
         if (
             !Number.isFinite(
-                stock
+                Number(
+                    coupon.stock
+                )
             ) ||
-            stock < 0
+            Number(
+                coupon.stock
+            ) < 0
         ) {
 
             showMessage(
-                `${rank}等の残り枚数を確認してください。`,
+                `${coupon.rank}の残り枚数を確認してください`,
                 true
             );
 
@@ -1041,16 +849,13 @@ async function saveAllCoupons() {
     }
 
 
-    /* -------------------------
-       確率合計
-    ------------------------- */
+    /*
+     * 確率合計
+     */
 
     const total =
         coupons.reduce(
-            (
-                sum,
-                coupon
-            ) =>
+            (sum, coupon) =>
                 sum +
                 Number(
                     coupon.probability
@@ -1059,9 +864,7 @@ async function saveAllCoupons() {
         );
 
 
-    if (
-        total !== 100
-    ) {
+    if (total !== 100) {
 
         showMessage(
             `当選確率の合計が ${total}% です。100%にしてください。`,
@@ -1073,9 +876,9 @@ async function saveAllCoupons() {
     }
 
 
-    /* -------------------------
-       保存確認
-    ------------------------- */
+    /*
+     * 保存確認
+     */
 
     const confirmed =
         confirm(
@@ -1084,9 +887,15 @@ async function saveAllCoupons() {
 
 
     if (!confirmed) {
+
         return;
+
     }
 
+
+    /*
+     * 保存中
+     */
 
     saveCouponsButton.disabled =
         true;
@@ -1097,44 +906,9 @@ async function saveAllCoupons() {
 
     try {
 
-        const saveData =
-            coupons.map(
-                coupon => {
-
-                    const rank =
-                        normalizeRank(
-                            coupon.rank
-                        );
-
-
-                    return {
-
-                        id:
-                            coupon.id,
-
-                        rank:
-                            `${rank}等`,
-
-                        name:
-                            String(
-                                coupon.name ?? ""
-                            ).trim(),
-
-                        probability:
-                            Number(
-                                coupon.probability
-                            ),
-
-                        stock:
-                            Number(
-                                coupon.stock
-                            )
-
-                    };
-
-                }
-            );
-
+        /*
+         * Workerへ一括送信
+         */
 
         await apiFetch(
             "/admin/coupons",
@@ -1142,61 +916,78 @@ async function saveAllCoupons() {
 
                 method: "PUT",
 
-                body:
-                    JSON.stringify({
-                        coupons: saveData
-                    })
+                body: JSON.stringify({
+
+                    coupons:
+                        coupons.map(
+                            coupon => ({
+
+                                id:
+                                    coupon.id,
+
+                                rank:
+    `${String(coupon.rank).replace("等", "").trim()}等`,
+
+                                name:
+                                    coupon.name.trim(),
+
+                                probability:
+                                    Number(
+                                        coupon.probability
+                                    ),
+
+                                stock:
+                                    Number(
+                                        coupon.stock
+                                    )
+
+                            })
+                        )
+
+                })
 
             }
         );
 
 
         showMessage(
-            "クーポン設定を保存しました。"
+            "クーポン設定を保存しました"
         );
 
 
-        await loadCoupons();
+        /*
+         * 最新データを再取得
+         */
 
-        renderCouponStats();
+        await loadCoupons();
 
 
     } catch (error) {
 
-        console.error(
-            "クーポン保存エラー:",
-            error
-        );
-
+        console.error(error);
 
         showMessage(
             error.message,
             true
         );
 
-    } finally {
-
-        saveCouponsButton.disabled =
-            false;
-
-        saveCouponsButton.textContent =
-            "クーポン設定を保存";
-
     }
+
+
+    saveCouponsButton.disabled =
+        false;
+
+    saveCouponsButton.textContent =
+        "クーポン設定を保存";
 
 }
 
 
 /* =========================================
-   発券履歴取得
+   発券履歴
 ========================================= */
 
 async function loadHistory() {
-
-    if (!historyBody) {
-        return;
-    }
-
 
     historyBody.innerHTML = `
         <tr>
@@ -1216,154 +1007,125 @@ async function loadHistory() {
         );
 
 
-    historyData =
-        Array.isArray(
-            data.history
-        )
-            ? data.history
-            : [];
+
+historyData =
+    data.history || [];
+
+renderHistory();
+
+/*
+ * 発券状況も更新
+ */
+
+renderCouponStats();
 
 
-    renderHistory();
-
-    renderCouponStats();
 
 }
 
-
 /* =========================================
-   日本時間変換
+   開催期間内の月一覧
 ========================================= */
 
-function getJapanDate(value) {
+function getCampaignMonths() {
 
-    if (!value) {
-        return null;
-    }
+    if (
+        !startDate.value ||
+        !endDate.value
+    ) {
 
-
-    const stringValue =
-        String(value).trim();
-
-
-    /*
-     * YYYY-MM-DD HH:mm:ss
-     */
-
-    const match =
-        stringValue.match(
-            /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?/
-        );
-
-
-    if (match) {
-
-        const year =
-            Number(match[1]);
-
-        const month =
-            Number(match[2]);
-
-        const day =
-            Number(match[3]);
-
-        const hour =
-            Number(match[4]);
-
-        const minute =
-            Number(match[5]);
-
-        const second =
-            Number(match[6] || 0);
-
-
-        /*
-         * Cloudflare / DBから
-         * タイムゾーンなしで来る日時は
-         * 日本時間として扱う
-         */
-
-        return new Date(
-            year,
-            month - 1,
-            day,
-            hour,
-            minute,
-            second
-        );
+        return [];
 
     }
 
 
-    /*
-     * ISO形式
-     */
-
-    const date =
+    const start =
         new Date(
-            stringValue
+            startDate.value + "T00:00:00"
+        );
+
+    const end =
+        new Date(
+            endDate.value + "T00:00:00"
         );
 
 
     if (
-        Number.isNaN(
-            date.getTime()
-        )
+        Number.isNaN(start.getTime()) ||
+        Number.isNaN(end.getTime())
     ) {
 
-        return null;
+        return [];
 
     }
 
 
-    return date;
+    const months = [];
+
+
+    const current =
+        new Date(
+            start.getFullYear(),
+            start.getMonth(),
+            1
+        );
+
+
+    const last =
+        new Date(
+            end.getFullYear(),
+            end.getMonth(),
+            1
+        );
+
+
+    while (current <= last) {
+
+        months.push({
+
+            year:
+                current.getFullYear(),
+
+            month:
+                current.getMonth(),
+
+            label:
+                `${current.getFullYear()}年${current.getMonth() + 1}月`
+
+        });
+
+
+        current.setMonth(
+            current.getMonth() + 1
+        );
+
+    }
+
+
+    return months;
 
 }
 
 
 /* =========================================
-   現在時刻
+   指定月の発券数
 ========================================= */
 
-function getJapanNow() {
-
-    const now =
-        new Date();
-
-
-    return new Date(
-        now.toLocaleString(
-            "en-US",
-            {
-                timeZone:
-                    "Asia/Tokyo"
-            }
-        )
-    );
-
-}
-
-
-/* =========================================
-   発券数集計
-========================================= */
-
-function countIssued(
+function getMonthlyIssuedCount(
     couponId,
-    startDateValue = null
+    year,
+    month
 ) {
-
-    const now =
-        getJapanNow();
-
 
     return historyData.filter(
         item => {
 
+            /*
+             * クーポンID
+             */
+
             if (
-                Number(
-                    item.coupon_id
-                ) !==
+                Number(item.coupon_id) !==
                 Number(couponId)
             ) {
 
@@ -1372,19 +1134,34 @@ function countIssued(
             }
 
 
-            const issued =
-                getJapanDate(
-                    item.issued_at
+            /*
+             * 発券日時がない
+             */
+
+            if (!item.issued_at) {
+
+                return false;
+
+            }
+
+
+            /*
+             * 発券日時をDate化
+             */
+
+            const issuedTime =
+                new Date(
+                    item.issued_at.replace(
+                        " ",
+                        "T"
+                    )
                 );
 
 
-            if (!issued) {
-                return false;
-            }
-
-
             if (
-                issued > now
+                Number.isNaN(
+                    issuedTime.getTime()
+                )
             ) {
 
                 return false;
@@ -1392,43 +1169,79 @@ function countIssued(
             }
 
 
-            if (
-                startDateValue &&
-                issued < startDateValue
-            ) {
+            /*
+             * 日本時間へ変換
+             */
 
-                return false;
+            const issuedJapanTime =
+                new Date(
+                    issuedTime.toLocaleString(
+                        "en-US",
+                        {
+                            timeZone:
+                                "Asia/Tokyo"
+                        }
+                    )
+                );
 
-            }
 
+            /*
+             * 指定された年月か確認
+             */
 
-            return true;
+            return (
+                issuedJapanTime.getFullYear() ===
+                    year &&
+                issuedJapanTime.getMonth() ===
+                    month
+            );
 
         }
     ).length;
 
 }
-
-
 /* =========================================
-   今日の発券数
+   1週間：曜日別発券数
 ========================================= */
 
-function getTodayIssuedCount(
+function getWeeklyIssuedCounts(
     couponId
 ) {
 
     const now =
-        getJapanNow();
+        new Date();
 
 
-    const start =
+    /*
+     * 日本時間の現在時刻
+     */
+
+    const currentTime =
         new Date(
-            now
+            now.toLocaleString(
+                "en-US",
+                {
+                    timeZone:
+                        "Asia/Tokyo"
+                }
+            )
         );
 
 
-    start.setHours(
+    /*
+     * 今日を含む過去7日間
+     */
+
+    const startTime =
+        new Date(currentTime);
+
+
+    startTime.setDate(
+        startTime.getDate() - 6
+    );
+
+
+    startTime.setHours(
         0,
         0,
         0,
@@ -1436,157 +1249,136 @@ function getTodayIssuedCount(
     );
 
 
-    return countIssued(
-        couponId,
-        start
+    /*
+     * 曜日ごとの発券数
+     *
+     * 0 = 日曜日
+     * 1 = 月曜日
+     * 2 = 火曜日
+     * ...
+     * 6 = 土曜日
+     */
+
+    const counts = {
+
+        0: 0,
+        1: 0,
+        2: 0,
+        3: 0,
+        4: 0,
+        5: 0,
+        6: 0
+
+    };
+
+
+    /*
+     * 発券履歴を確認
+     */
+
+    historyData.forEach(
+        item => {
+
+            /*
+             * クーポンID
+             */
+
+            if (
+                Number(item.coupon_id) !==
+                Number(couponId)
+            ) {
+
+                return;
+
+            }
+
+
+            /*
+             * 発券日時がない
+             */
+
+            if (!item.issued_at) {
+
+                return;
+
+            }
+
+
+            /*
+             * 日時変換
+             */
+
+            const issuedTime =
+                new Date(
+                    item.issued_at.replace(
+                        " ",
+                        "T"
+                    )
+                );
+
+
+            if (
+                Number.isNaN(
+                    issuedTime.getTime()
+                )
+            ) {
+
+                return;
+
+            }
+
+
+            /*
+             * 日本時間に変換
+             */
+
+            const issuedJapanTime =
+                new Date(
+                    issuedTime.toLocaleString(
+                        "en-US",
+                        {
+                            timeZone:
+                                "Asia/Tokyo"
+                        }
+                    )
+                );
+
+
+            /*
+             * 過去7日間のみ
+             */
+
+            if (
+                issuedJapanTime <
+                startTime ||
+                issuedJapanTime >
+                currentTime
+            ) {
+
+                return;
+
+            }
+
+
+            /*
+             * 曜日を取得
+             */
+
+            const day =
+                issuedJapanTime.getDay();
+
+
+            counts[day]++;
+
+        }
     );
+
+
+    return counts;
 
 }
 
 
-/* =========================================
-   1週間の発券数
-========================================= */
-
-function getWeekIssuedCount(
-    couponId
-) {
-
-    const now =
-        getJapanNow();
-
-
-    const start =
-        new Date(
-            now
-        );
-
-
-    start.setDate(
-        start.getDate() - 6
-    );
-
-
-    start.setHours(
-        0,
-        0,
-        0,
-        0
-    );
-
-
-    return countIssued(
-        couponId,
-        start
-    );
-
-}
-
-
-/* =========================================
-   1ヶ月の発券数
-========================================= */
-
-function getMonthIssuedCount(
-    couponId
-) {
-
-    const now =
-        getJapanNow();
-
-
-    const start =
-        new Date(
-            now
-        );
-
-
-    start.setDate(
-        start.getDate() - 29
-    );
-
-
-    start.setHours(
-        0,
-        0,
-        0,
-        0
-    );
-
-
-    return countIssued(
-        couponId,
-        start
-    );
-
-}
-
-
-/* =========================================
-   全期間
-========================================= */
-
-function getAllIssuedCount(
-    couponId
-) {
-
-    return historyData.filter(
-        item =>
-            Number(
-                item.coupon_id
-            ) ===
-            Number(couponId)
-    ).length;
-
-}
-
-
-/* =========================================
-   発券数取得
-========================================= */
-
-function getIssuedCount(
-    couponId,
-    period
-) {
-
-    switch (period) {
-
-        case "today":
-
-            return getTodayIssuedCount(
-                couponId
-            );
-
-
-        case "week":
-
-            return getWeekIssuedCount(
-                couponId
-            );
-
-
-        case "month":
-
-            return getMonthIssuedCount(
-                couponId
-            );
-
-
-        case "all":
-
-            return getAllIssuedCount(
-                couponId
-            );
-
-
-        default:
-
-            return 0;
-
-    }
-
-}
 
 
 /* =========================================
@@ -1605,6 +1397,62 @@ function renderCouponStats() {
     }
 
 
+    /*
+     * =====================================
+     * 開催期間の月別集計
+     * =====================================
+     */
+
+    const campaignMonths =
+        getCampaignMonths();
+
+
+    /*
+     * =====================================
+     * 月が取得できない場合
+     * =====================================
+     */
+
+    if (
+        campaignMonths.length === 0
+    ) {
+
+        couponStatsHead.innerHTML = `
+            <tr>
+                <th>ID</th>
+                <th>等級</th>
+                <th>賞品</th>
+                <th>残り枚数</th>
+            </tr>
+        `;
+
+
+        couponStatsBody.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="4"
+                    class="loading"
+                >
+                    キャンペーン期間を設定してください。
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+
+    }
+
+
+    /*
+     * =====================================
+     * ヘッダー
+     * =====================================
+     */
+
     couponStatsHead.innerHTML = `
         <tr>
 
@@ -1614,29 +1462,48 @@ function renderCouponStats() {
 
             <th>賞品</th>
 
-            <th>残り枚数</th>
+            ${campaignMonths
+                .map(
+                    month => `
+                        <th>
+                            ${month.label}
+                        </th>
+                    `
+                )
+                .join("")}
 
-            <th>発券枚数</th>
+            <th>残り枚数</th>
 
         </tr>
     `;
 
+
+    /*
+     * =====================================
+     * 賞品なし
+     * =====================================
+     */
 
     if (
         coupons.length === 0
     ) {
 
         couponStatsBody.innerHTML = `
+
             <tr>
 
                 <td
-                    colspan="5"
+                    colspan="${
+                        4 +
+                        campaignMonths.length
+                    }"
                     class="loading"
                 >
                     賞品がありません。
                 </td>
 
             </tr>
+
         `;
 
         return;
@@ -1644,28 +1511,36 @@ function renderCouponStats() {
     }
 
 
+    /*
+     * =====================================
+     * 賞品表示
+     * =====================================
+     */
+
     couponStatsBody.innerHTML =
         coupons
             .map(
                 coupon => {
+
+                    /*
+                     * 等級デザイン
+                     */
 
                     let designClass =
                         "rank-3";
 
 
                     if (
-                        normalizeRank(
-                            coupon.rank
-                        ) === "1"
+                        coupon.rank ===
+                        "1等"
                     ) {
 
                         designClass =
                             "rank-1";
 
                     } else if (
-                        normalizeRank(
-                            coupon.rank
-                        ) === "2"
+                        coupon.rank ===
+                        "2等"
                     ) {
 
                         designClass =
@@ -1674,21 +1549,62 @@ function renderCouponStats() {
                     }
 
 
-                    const issuedCount =
-                        getIssuedCount(
-                            coupon.id,
-                            statsPeriod
-                        );
+                    /*
+                     * =================================
+                     * 月別発券数
+                     * =================================
+                     */
 
+                    const monthlyHTML =
+                        campaignMonths
+                            .map(
+                                month => {
+
+                                    const count =
+                                        getMonthlyIssuedCount(
+                                            coupon.id,
+                                            month.year,
+                                            month.month
+                                        );
+
+
+                                    return `
+                                        <td>
+
+                                            <strong
+                                                class="stats-issued"
+                                            >
+                                                ${count}
+                                            </strong>
+
+                                            <span>
+                                                枚
+                                            </span>
+
+                                        </td>
+                                    `;
+
+                                }
+                            )
+                            .join("");
+
+
+                    /*
+                     * =================================
+                     * 行
+                     * =================================
+                     */
 
                     return `
+
                         <tr>
 
                             <td>
-                                ${escapeHTML(
-                                    coupon.id ?? "-"
+                                ${Number(
+                                    coupon.id
                                 )}
                             </td>
+
 
                             <td>
 
@@ -1702,6 +1618,7 @@ function renderCouponStats() {
 
                             </td>
 
+
                             <td>
 
                                 <span
@@ -1714,12 +1631,16 @@ function renderCouponStats() {
 
                             </td>
 
+
+                            ${monthlyHTML}
+
+
                             <td>
 
                                 <strong
                                     class="stats-stock"
                                 >
-                                    ${toNumber(
+                                    ${Number(
                                         coupon.stock
                                     )}
                                 </strong>
@@ -1730,21 +1651,8 @@ function renderCouponStats() {
 
                             </td>
 
-                            <td>
-
-                                <strong
-                                    class="stats-issued"
-                                >
-                                    ${issuedCount}
-                                </strong>
-
-                                <span>
-                                    枚
-                                </span>
-
-                            </td>
-
                         </tr>
+
                     `;
 
                 }
@@ -1754,56 +1662,62 @@ function renderCouponStats() {
 }
 
 
+    /*
+     * =====================================
+     * 1週間
+     * =====================================
+     */
+
+    if (statsPeriod === "week") {
+
 /* =========================================
    発券履歴表示
 ========================================= */
 
 function renderHistory() {
 
-    if (!historyBody) {
-        return;
-    }
+    let filteredHistory;
 
 
-    let filteredHistory =
-        historyData;
+    /* =====================================
+       フィルター
+    ====================================== */
 
-
-    if (
-        historyFilter === "unused"
-    ) {
+    if (historyFilter === "unused") {
 
         filteredHistory =
             historyData.filter(
                 item =>
-                    Number(
-                        item.used
-                    ) !== 1
+                    Number(item.used) !== 1
             );
 
-    }
-
-
-    if (
+    } else if (
         historyFilter === "used"
     ) {
 
         filteredHistory =
             historyData.filter(
                 item =>
-                    Number(
-                        item.used
-                    ) === 1
+                    Number(item.used) === 1
             );
+
+    } else {
+
+        filteredHistory =
+            historyData;
 
     }
 
+
+    /* =====================================
+       データなし
+    ====================================== */
 
     if (
         filteredHistory.length === 0
     ) {
 
-        let text =
+        let messageText =
             "発券履歴がありません。";
 
 
@@ -1811,7 +1725,7 @@ function renderHistory() {
             historyFilter === "unused"
         ) {
 
-            text =
+            messageText =
                 "未使用のクーポンはありません。";
 
         }
@@ -1821,7 +1735,7 @@ function renderHistory() {
             historyFilter === "used"
         ) {
 
-            text =
+            messageText =
                 "使用済みのクーポンはありません。";
 
         }
@@ -1829,14 +1743,12 @@ function renderHistory() {
 
         historyBody.innerHTML = `
             <tr>
-
                 <td
                     colspan="6"
                     class="loading"
                 >
-                    ${escapeHTML(text)}
+                    ${messageText}
                 </td>
-
             </tr>
         `;
 
@@ -1844,6 +1756,10 @@ function renderHistory() {
 
     }
 
+
+    /* =====================================
+       表示
+    ====================================== */
 
     historyBody.innerHTML =
         filteredHistory
@@ -1859,74 +1775,69 @@ function renderHistory() {
    発券履歴HTML
 ========================================= */
 
-function createHistoryHTML(
-    item
-) {
+function createHistoryHTML(item) {
 
     const used =
-        Number(
-            item.used
-        ) === 1;
+        Number(item.used) === 1;
 
 
     return `
+
         <tr>
 
             <td>
-                ${escapeHTML(
-                    item.id ?? "-"
-                )}
+                ${Number(item.id)}
             </td>
 
-            <td>
-                ${escapeHTML(
-                    item.rank ?? "-"
-                )}
-            </td>
 
             <td>
-                ${escapeHTML(
-                    item.name ?? "-"
-                )}
+                ${escapeHTML(item.rank)}
             </td>
 
+
             <td>
-                ${formatDate(
-                    item.issued_at
-                )}
+                ${escapeHTML(item.name)}
             </td>
+
+
+            <td>
+                ${formatDate(item.issued_at)}
+            </td>
+
 
             <td>
 
                 ${
                     used
-                        ? `
-                            <span class="status used">
-                                使用済み
-                            </span>
-                        `
-                        : `
-                            <span class="status unused">
-                                未使用
-                            </span>
-                        `
+
+                    ? `
+                        <span class="status used">
+                            使用済み
+                        </span>
+                    `
+
+                    : `
+                        <span class="status unused">
+                            未使用
+                        </span>
+                    `
                 }
 
             </td>
+
 
             <td>
 
                 ${
                     item.used_at
-                        ? formatDate(
-                            item.used_at
-                        )
-                        : "-"
+                    ? formatDate(item.used_at)
+                    : "-"
                 }
 
             </td>
 
         </tr>
+
     `;
 
 }
@@ -1940,204 +1851,106 @@ document
     .querySelectorAll(
         ".history-filter-button"
     )
-    .forEach(
-        button => {
+    .forEach(button => {
 
-            button.addEventListener(
-                "click",
-                () => {
+        button.addEventListener(
+            "click",
+            () => {
 
-                    document
-                        .querySelectorAll(
-                            ".history-filter-button"
-                        )
-                        .forEach(
-                            item => {
+                /*
+                 * 選択中ボタン変更
+                 */
 
-                                item.classList.remove(
-                                    "active"
-                                );
+                document
+                    .querySelectorAll(
+                        ".history-filter-button"
+                    )
+                    .forEach(
+                        item => {
 
-                            }
-                        );
+                            item.classList.remove(
+                                "active"
+                            );
 
-
-                    button.classList.add(
-                        "active"
+                        }
                     );
 
 
-                    historyFilter =
-                        button.dataset.filter ||
-                        "all";
-
-
-                    renderHistory();
-
-                }
-            );
-
-        }
-    );
-
-
-/* =========================================
-   発券状況期間切り替え
-========================================= */
-
-document
-    .querySelectorAll(
-        "[data-stats-period]"
-    )
-    .forEach(
-        button => {
-
-            button.addEventListener(
-                "click",
-                () => {
-
-                    document
-                        .querySelectorAll(
-                            "[data-stats-period]"
-                        )
-                        .forEach(
-                            item => {
-
-                                item.classList.remove(
-                                    "active"
-                                );
-
-                            }
-                        );
-
-
-                    button.classList.add(
-                        "active"
-                    );
-
-
-                    statsPeriod =
-                        button.dataset.statsPeriod ||
-                        "today";
-
-
-                    renderCouponStats();
-
-                }
-            );
-
-        }
-    );
-
-
-/* =========================================
-   発券状況更新
-========================================= */
-
-if (
-    reloadStatsButton
-) {
-
-    reloadStatsButton.addEventListener(
-        "click",
-        async () => {
-
-            reloadStatsButton.disabled =
-                true;
-
-            reloadStatsButton.textContent =
-                "更新中...";
-
-
-            try {
-
-                await loadHistory();
-
-                showMessage(
-                    "発券状況を更新しました。"
+                button.classList.add(
+                    "active"
                 );
 
-            } catch (error) {
 
-                console.error(
-                    "発券状況更新エラー:",
-                    error
-                );
+                /*
+                 * フィルター変更
+                 */
 
-                showMessage(
-                    error.message,
-                    true
-                );
+                historyFilter =
+                    button.dataset.filter;
 
-            } finally {
 
-                reloadStatsButton.disabled =
-                    false;
+                /*
+                 * 再表示
+                 */
 
-                reloadStatsButton.textContent =
-                    "更新";
+                renderHistory();
 
             }
+        );
 
-        }
-    );
+    });
 
-}
+
 
 
 /* =========================================
-   日付表示
+   日付
 ========================================= */
 
-function formatDate(
-    value
-) {
+function formatDate(value) {
 
     if (!value) {
+
         return "-";
+
     }
 
 
     const date =
-        getJapanDate(
-            value
+        new Date(
+            value.replace(
+                " ",
+                "T"
+            )
         );
 
 
-    if (!date) {
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
 
-        return String(
-            value
-        );
+        return value;
 
     }
 
 
-    return new Intl.DateTimeFormat(
+    return date.toLocaleString(
         "ja-JP",
         {
 
-            timeZone:
-                "Asia/Tokyo",
+            year: "numeric",
 
-            year:
-                "numeric",
+            month: "2-digit",
 
-            month:
-                "2-digit",
+            day: "2-digit",
 
-            day:
-                "2-digit",
+            hour: "2-digit",
 
-            hour:
-                "2-digit",
-
-            minute:
-                "2-digit"
+            minute: "2-digit"
 
         }
-    ).format(
-        date
     );
 
 }
@@ -2147,36 +1960,32 @@ function formatDate(
    HTMLエスケープ
 ========================================= */
 
-function escapeHTML(
-    value
-) {
+function escapeHTML(value) {
 
-    return String(
-        value ?? ""
-    )
+    return String(value)
 
-        .replace(
-            /&/g,
+        .replaceAll(
+            "&",
             "&amp;"
         )
 
-        .replace(
-            /</g,
+        .replaceAll(
+            "<",
             "&lt;"
         )
 
-        .replace(
-            />/g,
+        .replaceAll(
+            ">",
             "&gt;"
         )
 
-        .replace(
-            /"/g,
+        .replaceAll(
+            '"',
             "&quot;"
         )
 
-        .replace(
-            /'/g,
+        .replaceAll(
+            "'",
             "&#039;"
         );
 
@@ -2191,31 +2000,19 @@ async function loadAll() {
 
     try {
 
-        /*
-         * 3つを同時取得
-         */
-
         await Promise.all([
+
             loadCampaign(),
+
             loadCoupons(),
+
             loadHistory()
+
         ]);
-
-
-        /*
-         * 最終的に発券状況を表示
-         */
-
-        renderCouponStats();
-
 
     } catch (error) {
 
-        console.error(
-            "データ読み込みエラー:",
-            error
-        );
-
+        console.error(error);
 
         showMessage(
             error.message,
@@ -2231,62 +2028,86 @@ async function loadAll() {
    データ更新
 ========================================= */
 
-if (
-    reloadButton
-) {
+reloadButton.addEventListener(
+    "click",
+    async () => {
 
-    reloadButton.addEventListener(
+        const confirmed =
+            confirm(
+                "現在画面上で変更している内容は破棄されます。\nデータを再読み込みしますか？"
+            );
+
+
+        if (!confirmed) {
+
+            return;
+
+        }
+
+
+        await loadAll();
+
+    }
+);
+
+
+/* =========================================
+   キャンペーン保存
+========================================= */
+
+saveCampaignButton.addEventListener(
+    "click",
+    saveCampaign
+);
+
+
+/* =========================================
+   初期読み込み
+========================================= */
+
+loadAll();
+
+/* =========================================
+   発券状況 更新ボタン
+========================================= */
+
+if (reloadStatsButton) {
+
+    reloadStatsButton.addEventListener(
         "click",
-        async () => {
+        async function () {
 
-            const confirmed =
-                confirm(
-                    "現在画面上で変更している内容は破棄されます。\nデータを再読み込みしますか？"
-                );
+            reloadStatsButton.disabled = true;
 
-
-            if (!confirmed) {
-                return;
-            }
-
-
-            reloadButton.disabled =
-                true;
-
-            reloadButton.textContent =
+            reloadStatsButton.textContent =
                 "更新中...";
-
 
             try {
 
                 await loadAll();
 
-
                 showMessage(
-                    "データを更新しました。"
+                    "発券状況を更新しました"
                 );
-
 
             } catch (error) {
 
                 console.error(
-                    "データ更新エラー:",
+                    "発券状況更新エラー:",
                     error
                 );
 
-
                 showMessage(
-                    error.message,
+                    "更新に失敗しました",
                     true
                 );
 
             } finally {
 
-                reloadButton.disabled =
-                    false;
+                reloadStatsButton.disabled = false;
 
-                reloadButton.textContent =
-                    "データ更新";
+                reloadStatsButton.textContent =
+                    "更新";
 
             }
 
@@ -2295,18 +2116,59 @@ if (
 
 }
 
-
 /* =========================================
-   キャンペーン保存
+   発券状況 期間切り替え
 ========================================= */
 
-if (
-    saveCampaignButton
-) {
-
-    saveCampaignButton.addEventListener(
-        "click",
-        saveCampaign
+const statsPeriodButtons =
+    document.querySelectorAll(
+        "[data-stats-period]"
     );
 
-}
+
+statsPeriodButtons.forEach(
+    button => {
+
+        button.addEventListener(
+            "click",
+            function () {
+
+                /*
+                 * 選択期間を変更
+                 */
+
+                statsPeriod =
+                    this.dataset.statsPeriod;
+
+
+                /*
+                 * ボタンの選択状態を変更
+                 */
+
+                statsPeriodButtons.forEach(
+                    btn => {
+
+                        btn.classList.remove(
+                            "active"
+                        );
+
+                    }
+                );
+
+
+                this.classList.add(
+                    "active"
+                );
+
+
+                /*
+                 * 発券状況を再表示
+                 */
+
+                renderCouponStats();
+
+            }
+        );
+
+    }
+);
