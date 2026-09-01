@@ -1149,57 +1149,29 @@ function getMonthlyIssuedCount(
              * 発券日時をDate化
              */
 
-            const issuedTime =
-                new Date(
-                    item.issued_at.replace(
-                        " ",
-                        "T"
-                    )
-                );
+ const issuedJapanTime =
+    parseJapanDate(
+        item.issued_at
+    );
 
 
-            if (
-                Number.isNaN(
-                    issuedTime.getTime()
-                )
-            ) {
+if (!issuedJapanTime) {
 
-                return false;
-
-            }
-
-
-            /*
-             * 日本時間へ変換
-             */
-
-            const issuedJapanTime =
-                new Date(
-                    issuedTime.toLocaleString(
-                        "en-US",
-                        {
-                            timeZone:
-                                "Asia/Tokyo"
-                        }
-                    )
-                );
-
-
-            /*
-             * 指定された年月か確認
-             */
-
-            return (
-                issuedJapanTime.getFullYear() ===
-                    year &&
-                issuedJapanTime.getMonth() ===
-                    month
-            );
-
-        }
-    ).length;
+    return false;
 
 }
+
+
+/*
+ * 指定された年月か確認
+ */
+
+return (
+    issuedJapanTime.getFullYear() ===
+        year &&
+    issuedJapanTime.getMonth() ===
+        month
+);
 /* =========================================
    1週間：曜日別発券数
 ========================================= */
@@ -1308,41 +1280,17 @@ function getWeeklyIssuedCounts(
              * 日時変換
              */
 
-            const issuedTime =
-                new Date(
-                    item.issued_at.replace(
-                        " ",
-                        "T"
-                    )
-                );
+const issuedJapanTime =
+    parseJapanDate(
+        item.issued_at
+    );
 
 
-            if (
-                Number.isNaN(
-                    issuedTime.getTime()
-                )
-            ) {
+if (!issuedJapanTime) {
 
-                return;
+    return;
 
-            }
-
-
-            /*
-             * 日本時間に変換
-             */
-
-            const issuedJapanTime =
-                new Date(
-                    issuedTime.toLocaleString(
-                        "en-US",
-                        {
-                            timeZone:
-                                "Asia/Tokyo"
-                        }
-                    )
-                );
-
+}
 
             /*
              * 過去7日間のみ
@@ -1577,36 +1525,17 @@ function getTodayIssuedCount(
             }
 
 
-            const issuedTime =
-                new Date(
-                    item.issued_at.replace(
-                        " ",
-                        "T"
-                    )
-                );
+const issuedJapanTime =
+    parseJapanDate(
+        item.issued_at
+    );
 
 
-            if (
-                Number.isNaN(
-                    issuedTime.getTime()
-                )
-            ) {
+if (!issuedJapanTime) {
 
-                return false;
+    return false;
 
-            }
-
-
-            const issuedJapanTime =
-                new Date(
-                    issuedTime.toLocaleString(
-                        "en-US",
-                        {
-                            timeZone:
-                                "Asia/Tokyo"
-                        }
-                    )
-                );
+}
 
 
             return (
@@ -1732,37 +1661,17 @@ function getWeekdayIssuedCounts(
             }
 
 
-            const issuedTime =
-                new Date(
-                    item.issued_at.replace(
-                        " ",
-                        "T"
-                    )
-                );
+const issuedJapanTime =
+    parseJapanDate(
+        item.issued_at
+    );
 
 
-            if (
-                Number.isNaN(
-                    issuedTime.getTime()
-                )
-            ) {
+if (!issuedJapanTime) {
 
-                return;
+    return;
 
-            }
-
-
-            const issuedJapanTime =
-                new Date(
-                    issuedTime.toLocaleString(
-                        "en-US",
-                        {
-                            timeZone:
-                                "Asia/Tokyo"
-                        }
-                    )
-                );
-
+}
 
             if (
                 issuedJapanTime <
@@ -2657,11 +2566,9 @@ document
 
     });
 
-
-
-
 /* =========================================
    日付
+   D1に保存されている日本時間をそのまま表示
 ========================================= */
 
 function formatDate(value) {
@@ -2672,80 +2579,25 @@ function formatDate(value) {
 
     }
 
-
-    const date =
-        new Date(
-            value.replace(
-                " ",
-                "T"
-            )
-        );
-
-
-    if (
-        Number.isNaN(
-            date.getTime()
-        )
-    ) {
-
-        return value;
-
-    }
-
-
-    return date.toLocaleString(
-        "ja-JP",
-        {
-
-            year: "numeric",
-
-            month: "2-digit",
-
-            day: "2-digit",
-
-            hour: "2-digit",
-
-            minute: "2-digit"
-
-        }
-    );
-
-}
-/* =========================================
-   日付
-   日本時間（Asia/Tokyo）で表示
-========================================= */
-
-function formatDate(value) {
-
-    if (!value) {
-
-        return "-";
-
-    }
-
-
-    /*
-     * APIから取得した日時
-     *
-     * 例：
-     * 2026-09-01 06:30:00
-     *
-     * Cloudflare Worker / D1 の日時は
-     * UTCとして扱う
-     */
-
-    let dateString =
+    const dateString =
         String(value).trim();
 
 
     /*
-     * 「2026-09-01 06:30:00」
-     * ↓
-     * 「2026-09-01T06:30:00Z」
+     * D1には日本時間として保存されているため
      *
-     * UTCとして明示
+     * 例：
+     * 2026-09-01 15:30:00
+     *
+     * ↓
+     * 2026-09-01T15:30:00+09:00
+     *
+     * として解釈する
      */
+
+    let dateStringWithTimezone =
+        dateString;
+
 
     if (
         /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}/.test(
@@ -2753,18 +2605,18 @@ function formatDate(value) {
         )
     ) {
 
-        dateString =
+        dateStringWithTimezone =
             dateString.replace(
                 " ",
                 "T"
-            ) + "Z";
+            ) + "+09:00";
 
     }
 
 
     const date =
         new Date(
-            dateString
+            dateStringWithTimezone
         );
 
 
@@ -2814,6 +2666,85 @@ function formatDate(value) {
 
         }
     );
+
+}
+/* =========================================
+   日本時間として日時を取得
+   D1には日本時間で保存されている前提
+========================================= */
+
+function parseJapanDate(value) {
+
+    if (!value) {
+
+        return null;
+
+    }
+
+
+    const dateString =
+        String(value).trim();
+
+
+    /*
+     * 2026-09-01 15:30:00
+     * ↓
+     * 2026-09-01T15:30:00+09:00
+     */
+
+    if (
+        /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}/.test(
+            dateString
+        )
+    ) {
+
+        const date =
+            new Date(
+                dateString.replace(
+                    " ",
+                    "T"
+                ) + "+09:00"
+            );
+
+
+        if (
+            Number.isNaN(
+                date.getTime()
+            )
+        ) {
+
+            return null;
+
+        }
+
+
+        return date;
+
+    }
+
+
+    /*
+     * その他の形式
+     */
+
+    const date =
+        new Date(
+            dateString
+        );
+
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return null;
+
+    }
+
+
+    return date;
 
 }
 /* =========================================
