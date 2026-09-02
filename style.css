@@ -412,15 +412,12 @@ button:disabled {
 
 
 .coupon-item {
-
     border: 1px solid #e1e4e8;
-
     border-radius: 10px;
-
     padding: 18px;
-
     position: relative;
-
+    height: 300px;
+    box-sizing: border-box;
 }
 
 
@@ -1591,19 +1588,14 @@ button:disabled {
 ========================================= */
 
 .lose-item {
-
     margin-top: 20px;
-
     border: 1px solid #e1e4e8;
-
     border-radius: 10px;
-
     padding: 18px;
-
     position: relative;
-
     background: #fff;
-
+    height: 300px;
+    box-sizing: border-box;
 }
 /* ハズレ文字とスイッチを左右に配置 */
 .lose-header {
@@ -1655,52 +1647,26 @@ button:disabled {
 ========================================= */
 
 .lose-probability-area {
-
     display: flex;
-
     align-items: center;
-
     gap: 6px;
-
     margin-top: 17px;
-
 }
-
 
 .lose-probability-area .coupon-stat-label {
-
     flex-shrink: 0;
-
 }
-
 
 .lose-probability-area .coupon-number-input {
-
     flex: 1;
-
     margin-bottom: 0;
-
 }
-
 
 .lose-probability-unit {
-
     flex-shrink: 0;
-
     font-size: 15px;
-
     font-weight: 700;
-
     color: #555;
-
-}
-.lose-item.is-disabled {
-    opacity: 0.55;
-}
-
-
-.lose-item.is-enabled {
-    opacity: 1;
 }
 /* =========================================
    ハズレ ON / OFF スイッチ
