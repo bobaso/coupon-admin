@@ -1654,69 +1654,96 @@ button:disabled {
 ========================================= */
 
 .lose-switch-area {
+
     margin-top: 0;
+
     margin-left: auto;
+
 }
 
 
-/* スイッチ本体 */
+/* =========================================
+   スイッチ本体
+========================================= */
 
 .switch {
-    border: solid 1px #ccc;
-    border-radius: 20px;
+
+    position: relative;
+
     display: inline-block;
-    height: 40px;
-    overflow: hidden;
-    user-select: none;
+
     width: 100px;
+
+    height: 40px;
+
+    border: 1px solid #ccc;
+
+    border-radius: 20px;
+
+    overflow: hidden;
+
+    background: #eee;
+
+    user-select: none;
+
 }
 
 
-/* チェックボックスは非表示 */
+/* =========================================
+   チェックボックスは非表示
+========================================= */
 
 .switch input[type="checkbox"] {
+
     display: none;
+
 }
 
 
-/* スイッチ内部 */
+/* =========================================
+   スイッチ内部
+========================================= */
 
 .switch .label {
+
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+
+    width: 140px;
+
+    height: 40px;
+
+    margin-left: -40px;
+
     cursor: pointer;
-    display: block;
 
-    /*
-       OFFのときは左端から開始
-    */
-    margin-left: -60px;
+    transition: margin-left 0.15s ease;
 
-    transition: margin 0.15s ease;
-
-    white-space: nowrap;
 }
 
 
-/* ONのとき */
-
-.switch input[type="checkbox"]:checked + .label {
-    margin-left: 0;
-}
-
-
-/* ON / OFF 共通 */
-
-.switch .label > * {
-    vertical-align: top;
-}
-
+/* =========================================
+   ON / OFF 共通
+========================================= */
 
 .switch .on,
 .switch .off {
-    display: inline-block;
+
+    display: block;
+
+    flex-shrink: 0;
+
+    width: 40px;
+
     height: 40px;
+
     line-height: 40px;
+
     text-align: center;
-    width: 80px;
+
 }
 
 
@@ -1725,10 +1752,13 @@ button:disabled {
 ========================================= */
 
 .switch .on {
-    background-color: #00f;
+
+    width: 80px;
+
+    background-color: #1677ff;
 
     background-image: linear-gradient(
-        top,
+        to bottom,
         hsl(214, 90%, 40%),
         hsl(214, 90%, 70%)
     );
@@ -1741,6 +1771,7 @@ button:disabled {
 
     text-shadow:
         -1px -1px rgba(0, 0, 0, .3);
+
 }
 
 
@@ -1749,28 +1780,34 @@ button:disabled {
 ========================================= */
 
 .switch .separator {
-    background-color: #eee;
 
-    border: solid 1px #999;
+    position: relative;
 
-    border-radius: 50%;
+    z-index: 2;
+
+    display: block;
+
+    flex-shrink: 0;
+
+    width: 40px;
+
+    height: 40px;
+
+    margin: 0 -20px;
 
     box-sizing: border-box;
+
+    background-color: #eee;
+
+    border: 1px solid #999;
+
+    border-radius: 50%;
 
     box-shadow:
         1px 2px #fff inset,
         -1px 2px #fff inset,
         1px 1px 5px rgba(0, 0, 0, .2);
 
-    display: inline-block;
-
-    height: 40px;
-
-    margin: 0 -20px;
-
-    position: relative;
-
-    width: 40px;
 }
 
 
@@ -1779,6 +1816,9 @@ button:disabled {
 ========================================= */
 
 .switch .off {
+
+    width: 80px;
+
     background-color: #eee;
 
     box-shadow:
@@ -1788,4 +1828,29 @@ button:disabled {
 
     text-shadow:
         1px 1px #fff;
+
+}
+
+
+/* =========================================
+   OFF状態
+   白い丸を左端へ
+========================================= */
+
+.switch input[type="checkbox"]:not(:checked) + .label {
+
+    margin-left: -40px;
+
+}
+
+
+/* =========================================
+   ON状態
+   白い丸を右側へ
+========================================= */
+
+.switch input[type="checkbox"]:checked + .label {
+
+    margin-left: 0;
+
 }
