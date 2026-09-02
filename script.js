@@ -1111,7 +1111,13 @@ const lastItem =
 
 function updateProbabilityTotal() {
 
-    const total =
+    /*
+     * =====================================
+     * 通常賞品の確率
+     * =====================================
+     */
+
+    const normalTotal =
         coupons.reduce(
             (sum, coupon) =>
                 sum +
@@ -1122,9 +1128,50 @@ function updateProbabilityTotal() {
         );
 
 
+    /*
+     * =====================================
+     * ハズレ確率
+     * =====================================
+     *
+     * ハズレがONの場合のみ加算
+     */
+
+    const loseTotal =
+        loseEnabled
+            ? Number(
+                loseProbability || 0
+            )
+            : 0;
+
+
+    /*
+     * =====================================
+     * 全体の確率
+     * =====================================
+     *
+     * 通常賞品 ＋ ハズレ
+     */
+
+    const total =
+        normalTotal +
+        loseTotal;
+
+
+    /*
+     * =====================================
+     * 表示
+     * =====================================
+     */
+
     probabilityTotal.textContent =
         `${total}%`;
 
+
+    /*
+     * =====================================
+     * 正常 / エラー表示
+     * =====================================
+     */
 
     probabilityTotal.parentElement
         .classList.remove(
@@ -1150,7 +1197,6 @@ function updateProbabilityTotal() {
     }
 
 }
-
 
 /* =========================================
    クーポン一括保存
