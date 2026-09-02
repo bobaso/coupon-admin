@@ -82,8 +82,8 @@ let statsPeriod = "month";
  * true  = ハズレ ON
  * false = ハズレ OFF
  *
- * 現時点では管理画面上だけで使用します。
- * D1には保存しません。
+ * D1のcampaign_settings.lose_enabled
+ * と連動します。
  */
 
 let loseEnabled = true;
@@ -202,7 +202,34 @@ async function loadCampaign() {
 
 }
 
+/* =========================================
+   ハズレ設定取得
+========================================= */
 
+async function loadLoseSetting() {
+
+    const data =
+        await apiFetch(
+            "/admin/lose"
+        );
+
+
+    /*
+     * Workerから取得した
+     * ハズレ設定を反映
+     */
+
+    loseEnabled =
+        data.lose_enabled === true;
+
+
+    /*
+     * 取得した設定を画面へ反映
+     */
+
+    renderCoupons();
+
+}
 /* =========================================
    キャンペーン保存
 ========================================= */
@@ -578,7 +605,7 @@ function createLoseHTML() {
 
 couponList.addEventListener(
     "change",
-    event => {
+    async event => {
 
         if (
             event.target.id !==
@@ -591,18 +618,84 @@ couponList.addEventListener(
 
 
         /*
-         * チェック状態を保存
+         * スイッチの状態を取得
          */
 
-        loseEnabled =
+        const newLoseEnabled =
             event.target.checked;
 
 
         /*
-         * ハズレ部分だけ再表示
+         * 現在の状態を一旦保存
          */
 
-        renderCoupons();
+        loseEnabled =
+            newLoseEnabled;
+
+
+        /*
+         * D1へ保存
+         */
+
+        try {
+
+            await apiFetch(
+                "/admin/lose",
+                {
+
+                    method: "PUT",
+
+                    body: JSON.stringify({
+
+                        lose_enabled:
+                            newLoseEnabled
+
+                    })
+
+                }
+            );
+
+
+            /*
+             * 保存成功後に再表示
+             */
+
+            renderCoupons();
+
+
+            showMessage(
+                newLoseEnabled
+                    ? "ハズレくじをONにしました"
+                    : "ハズレくじをOFFにしました"
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "ハズレ設定保存エラー:",
+                error
+            );
+
+
+            /*
+             * 保存に失敗した場合は
+             * 元の状態へ戻す
+             */
+
+            loseEnabled =
+                !newLoseEnabled;
+
+
+            renderCoupons();
+
+
+            showMessage(
+                error.message,
+                true
+            );
+
+        }
 
     }
 );
@@ -2917,6 +3010,8 @@ async function loadAll() {
         await Promise.all([
 
             loadCampaign(),
+
+            loadLoseSetting(),
 
             loadCoupons(),
 
