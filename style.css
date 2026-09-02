@@ -1591,9 +1591,19 @@ button:disabled {
 ========================================= */
 
 .lose-item {
+
     margin-top: 20px;
-    border: 2px dashed #999;
-    background: #f5f5f5;
+
+    border: 1px solid #e1e4e8;
+
+    border-radius: 10px;
+
+    padding: 18px;
+
+    position: relative;
+
+    background: #fff;
+
 }
 /* ハズレ文字とスイッチを左右に配置 */
 .lose-header {
