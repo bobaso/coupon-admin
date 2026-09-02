@@ -613,7 +613,7 @@ couponList.addEventListener(
 
         const confirmed =
             confirm(
-                `${coupon.rank}「${coupon.name}」を削除しますか？\n\n「クーポン設定を保存」を押すまでD1からは削除されません。`
+                `この賞品を削除しますか？\n\n『クーポン設定を保存』を押して消去内容を反映させてください。`
             );
 
 
