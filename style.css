@@ -1777,32 +1777,36 @@ button:disabled {
 }
 
 
-/* スライドするラベル */
+/* スイッチ内部 */
 
 .switch .label {
     cursor: pointer;
     display: block;
+
+    /*
+       OFFのときは左端から開始
+    */
     margin-left: -60px;
-    transition: margin 0.1s;
+
+    transition: margin 0.15s ease;
+
     white-space: nowrap;
 }
 
 
-/* ON */
+/* ONのとき */
 
 .switch input[type="checkbox"]:checked + .label {
     margin-left: 0;
 }
 
 
-/* ON / OFF / セパレーター */
+/* ON / OFF 共通 */
 
 .switch .label > * {
     vertical-align: top;
 }
 
-
-/* ON / OFF */
 
 .switch .on,
 .switch .off {
@@ -1814,10 +1818,13 @@ button:disabled {
 }
 
 
-/* ON側 */
+/* =========================================
+   ON側
+========================================= */
 
 .switch .on {
     background-color: #00f;
+
     background-image: linear-gradient(
         top,
         hsl(214, 90%, 40%),
@@ -1835,7 +1842,9 @@ button:disabled {
 }
 
 
-/* 中央の丸 */
+/* =========================================
+   中央の白い丸
+========================================= */
 
 .switch .separator {
     background-color: #eee;
@@ -1863,7 +1872,9 @@ button:disabled {
 }
 
 
-/* OFF側 */
+/* =========================================
+   OFF側
+========================================= */
 
 .switch .off {
     background-color: #eee;
