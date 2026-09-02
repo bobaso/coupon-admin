@@ -541,7 +541,7 @@ function createLoseHTML() {
             <div class="lose-header">
 
                 <div class="coupon-rank-label">
-                    ハズレ
+                    ハズレくじ
                 </div>
 
                 <div class="lose-switch-area">
