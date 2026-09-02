@@ -536,45 +536,41 @@ function createCouponHTML(
 
 function createLoseHTML() {
 
-    const enabledClass =
-        loseEnabled
-            ? "is-enabled"
-            : "is-disabled";
-
-
     return `
 
-        <div
-            class="coupon-item lose-item ${enabledClass}"
-        >
+        <div class="coupon-item lose-item">
 
             <div class="coupon-rank-label">
                 ハズレ
             </div>
 
 
-            <div class="lose-control">
+            <div class="lose-switch-area">
 
-                <span class="lose-status">
-                    ${
-                        loseEnabled
-                            ? "ON"
-                            : "OFF"
-                    }
-                </span>
+                <label class="switch">
 
+                    <input
+                        type="checkbox"
+                        id="loseToggle"
+                        ${loseEnabled ? "checked" : ""}
+                    >
 
-                <button
-                    type="button"
-                    class="lose-toggle-button"
-                    id="loseToggleButton"
-                >
-                    ${
-                        loseEnabled
-                            ? "OFFにする"
-                            : "ONにする"
-                    }
-                </button>
+                    <span class="label">
+
+                        <span class="on">
+                            ON
+                        </span>
+
+                        <span class="separator">
+                        </span>
+
+                        <span class="off">
+                            OFF
+                        </span>
+
+                    </span>
+
+                </label>
 
             </div>
 
@@ -599,16 +595,13 @@ function createLoseHTML() {
 ========================================= */
 
 couponList.addEventListener(
-    "click",
+    "change",
     event => {
 
-        const button =
-            event.target.closest(
-                "#loseToggleButton"
-            );
-
-
-        if (!button) {
+        if (
+            event.target.id !==
+            "loseToggle"
+        ) {
 
             return;
 
@@ -616,15 +609,15 @@ couponList.addEventListener(
 
 
         /*
-         * ON / OFF切り替え
+         * チェック状態を保存
          */
 
         loseEnabled =
-            !loseEnabled;
+            event.target.checked;
 
 
         /*
-         * 再表示
+         * ハズレ部分だけ再表示
          */
 
         renderCoupons();
