@@ -1705,6 +1705,13 @@ button:disabled {
 ========================================= */
 
 .switch .label {
+    cursor: pointer;
+    display: block;
+
+    /* OFF時は白丸を完全に左端へ */
+    margin-left: -80px;
+
+    white-space: nowrap;
 
     position: relative;
 
