@@ -753,6 +753,143 @@ couponList.addEventListener(
     }
 );
 /* =========================================
+   ハズレ当選確率
+========================================= */
+
+couponList.addEventListener(
+    "change",
+    async event => {
+
+        /*
+         * ハズレ確率入力欄以外は無視
+         */
+
+        if (
+            event.target.id !==
+            "loseProbability"
+        ) {
+
+            return;
+
+        }
+
+
+        /*
+         * 入力値を取得
+         */
+
+        let newProbability =
+            Number(
+                event.target.value
+            );
+
+
+        /*
+         * 数値チェック
+         */
+
+        if (
+            !Number.isFinite(newProbability)
+        ) {
+
+            newProbability = 0;
+
+        }
+
+
+        /*
+         * 0～100の範囲に制限
+         */
+
+        newProbability =
+            Math.max(
+                0,
+                Math.min(
+                    100,
+                    Math.floor(
+                        newProbability
+                    )
+                )
+            );
+
+
+        /*
+         * 画面の値を正規化
+         */
+
+        event.target.value =
+            newProbability;
+
+
+        /*
+         * 現在の状態を保存
+         */
+
+        const previousProbability =
+            loseProbability;
+
+
+        loseProbability =
+            newProbability;
+
+
+        /*
+         * D1へ保存
+         */
+
+        try {
+
+            await apiFetch(
+                "/admin/lose",
+                {
+
+                    method: "PUT",
+
+                    body: JSON.stringify({
+
+                        lose_probability:
+                            newProbability
+
+                    })
+
+                }
+            );
+
+
+            showMessage(
+                "ハズレ当選確率を保存しました"
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "ハズレ確率保存エラー:",
+                error
+            );
+
+
+            /*
+             * 保存失敗時は元に戻す
+             */
+
+            loseProbability =
+                previousProbability;
+
+
+            renderCoupons();
+
+
+            showMessage(
+                error.message,
+                true
+            );
+
+        }
+
+    }
+);
+/* =========================================
    入力変更
 ========================================= */
 
