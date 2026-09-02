@@ -1705,13 +1705,6 @@ button:disabled {
 ========================================= */
 
 .switch .label {
-    cursor: pointer;
-    display: block;
-
-    /* OFF時は白丸を完全に左端へ */
-    margin-left: -80px;
-
-    white-space: nowrap;
 
     position: relative;
 
@@ -1727,10 +1720,11 @@ button:disabled {
 
     cursor: pointer;
 
+    white-space: nowrap;
+
     transition: margin-left 0.15s ease;
 
 }
-
 
 /* =========================================
    ON / OFF 共通
@@ -1846,7 +1840,7 @@ button:disabled {
 
 .switch input[type="checkbox"]:not(:checked) + .label {
 
-    margin-left: -40px;
+    margin-left: -80px;
 
 }
 
