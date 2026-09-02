@@ -1840,7 +1840,7 @@ button:disabled {
 
 .switch input[type="checkbox"]:not(:checked) + .label {
 
-    margin-left: -80px;
+    margin-left: -60px;
 
 }
 
