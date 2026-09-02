@@ -87,7 +87,7 @@ let statsPeriod = "month";
  */
 
 let loseEnabled = true;
-
+let loseProbability = 0;
 
 /* =========================================
    メッセージ
@@ -215,8 +215,7 @@ async function loadLoseSetting() {
 
 
     /*
-     * Workerから取得した
-     * ハズレ設定を反映
+     * ON / OFF
      */
 
     loseEnabled =
@@ -224,7 +223,17 @@ async function loadLoseSetting() {
 
 
     /*
-     * 取得した設定を画面へ反映
+     * ハズレ確率
+     */
+
+    loseProbability =
+        Number(
+            data.lose_probability
+        ) || 0;
+
+
+    /*
+     * 画面へ反映
      */
 
     renderCoupons();
@@ -562,6 +571,7 @@ function createCouponHTML(
 ========================================= */
 
 function createLoseHTML() {
+
     return `
         <div class="coupon-item lose-item">
 
@@ -572,28 +582,71 @@ function createLoseHTML() {
                 </div>
 
                 <div class="lose-switch-area">
+
                     <label class="switch">
+
                         <input
                             type="checkbox"
                             id="loseToggle"
                             ${loseEnabled ? "checked" : ""}
                         >
+
                         <span class="label">
-                            <span class="on">ON</span>
+
+                            <span class="on">
+                                ON
+                            </span>
+
                             <span class="separator"></span>
-                            <span class="off">OFF</span>
+
+                            <span class="off">
+                                OFF
+                            </span>
+
                         </span>
+
                     </label>
+
                 </div>
 
             </div>
 
+
             <div class="lose-description">
+
                 ${
                     loseEnabled
                         ? "ハズレくじを有効にしています。"
                         : "ハズレくじを無効にしています。"
                 }
+
+            </div>
+
+
+            <!-- =================================
+                 ハズレ確率
+            ================================== -->
+
+            <div class="lose-probability-area">
+
+                <span class="coupon-stat-label">
+                    ハズレ当選確率（%）
+                </span>
+
+                <input
+                    type="number"
+                    id="loseProbability"
+                    class="coupon-number-input"
+                    value="${loseProbability}"
+                    min="0"
+                    max="100"
+                    step="1"
+                >
+
+                <span class="lose-probability-unit">
+                    %
+                </span>
+
             </div>
 
         </div>
