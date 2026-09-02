@@ -535,60 +535,42 @@ function createCouponHTML(
 ========================================= */
 
 function createLoseHTML() {
-
     return `
-
         <div class="coupon-item lose-item">
 
-            <div class="coupon-rank-label">
-                ハズレくじ
-            </div>
+            <div class="lose-header">
 
+                <div class="coupon-rank-label">
+                    ハズレ
+                </div>
 
-            <div class="lose-switch-area">
-
-                <label class="switch">
-
-                    <input
-                        type="checkbox"
-                        id="loseToggle"
-                        ${loseEnabled ? "checked" : ""}
-                    >
-
-                    <span class="label">
-
-                        <span class="on">
-                            ON
+                <div class="lose-switch-area">
+                    <label class="switch">
+                        <input
+                            type="checkbox"
+                            id="loseToggle"
+                            ${loseEnabled ? "checked" : ""}
+                        >
+                        <span class="label">
+                            <span class="on">ON</span>
+                            <span class="separator"></span>
+                            <span class="off">OFF</span>
                         </span>
-
-                        <span class="separator">
-                        </span>
-
-                        <span class="off">
-                            OFF
-                        </span>
-
-                    </span>
-
-                </label>
+                    </label>
+                </div>
 
             </div>
-
 
             <div class="lose-description">
-
                 ${
                     loseEnabled
-                        ? "ハズレを有効にしています。"
-                        : "ハズレを無効にしています。"
+                        ? "ハズレくじを有効にしています。"
+                        : "ハズレくじを無効にしています。"
                 }
-
             </div>
 
         </div>
-
     `;
-
 }
 /* =========================================
    ハズレ ON/OFF
