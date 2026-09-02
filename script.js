@@ -75,6 +75,21 @@ let statsPeriod = "month";
 
 
 /* =========================================
+   ハズレ設定
+========================================= */
+
+/*
+ * true  = ハズレ ON
+ * false = ハズレ OFF
+ *
+ * 現時点では管理画面上だけで使用します。
+ * D1には保存しません。
+ */
+
+let loseEnabled = true;
+
+
+/* =========================================
    メッセージ
 ========================================= */
 
@@ -339,32 +354,60 @@ async function loadCoupons() {
 
 function renderCoupons() {
 
-    if (coupons.length === 0) {
+    let couponHTML = "";
 
-        couponList.innerHTML = `
+
+    /*
+     * 通常の賞品
+     */
+
+    if (coupons.length > 0) {
+
+        couponHTML =
+            coupons
+                .map(
+                    (coupon, index) =>
+                        createCouponHTML(
+                            coupon,
+                            index
+                        )
+                )
+                .join("");
+
+    } else {
+
+        couponHTML = `
             <div class="loading">
                 賞品がありません。
             </div>
         `;
 
-        updateProbabilityTotal();
-
-        return;
-
     }
 
 
-    couponList.innerHTML =
-        coupons
-            .map(
-                (coupon, index) =>
-                    createCouponHTML(
-                        coupon,
-                        index
-                    )
-            )
-            .join("");
+    /*
+     * ハズレ
+     *
+     * 必ず一番最後に表示
+     */
 
+    couponHTML +=
+        createLoseHTML();
+
+
+    /*
+     * 表示
+     */
+
+    couponList.innerHTML =
+        couponHTML;
+
+
+    /*
+     * 確率合計
+     *
+     * ハズレはまだ確率計算に含めない
+     */
 
     updateProbabilityTotal();
 
@@ -487,7 +530,107 @@ function createCouponHTML(
 
 }
 
+/* =========================================
+   ハズレHTML
+========================================= */
 
+function createLoseHTML() {
+
+    const enabledClass =
+        loseEnabled
+            ? "is-enabled"
+            : "is-disabled";
+
+
+    return `
+
+        <div
+            class="coupon-item lose-item ${enabledClass}"
+        >
+
+            <div class="coupon-rank-label">
+                ハズレ
+            </div>
+
+
+            <div class="lose-control">
+
+                <span class="lose-status">
+                    ${
+                        loseEnabled
+                            ? "ON"
+                            : "OFF"
+                    }
+                </span>
+
+
+                <button
+                    type="button"
+                    class="lose-toggle-button"
+                    id="loseToggleButton"
+                >
+                    ${
+                        loseEnabled
+                            ? "OFFにする"
+                            : "ONにする"
+                    }
+                </button>
+
+            </div>
+
+
+            <div class="lose-description">
+
+                ${
+                    loseEnabled
+                        ? "ハズレを有効にしています。"
+                        : "ハズレを無効にしています。"
+                }
+
+            </div>
+
+        </div>
+
+    `;
+
+}
+/* =========================================
+   ハズレ ON/OFF
+========================================= */
+
+couponList.addEventListener(
+    "click",
+    event => {
+
+        const button =
+            event.target.closest(
+                "#loseToggleButton"
+            );
+
+
+        if (!button) {
+
+            return;
+
+        }
+
+
+        /*
+         * ON / OFF切り替え
+         */
+
+        loseEnabled =
+            !loseEnabled;
+
+
+        /*
+         * 再表示
+         */
+
+        renderCoupons();
+
+    }
+);
 /* =========================================
    入力変更
 ========================================= */
@@ -664,14 +807,14 @@ addCouponButton.addEventListener(
         renderCoupons();
 
 
-        const items =
-            couponList.querySelectorAll(
-                ".coupon-item"
-            );
+   const items =
+    couponList.querySelectorAll(
+        ".coupon-item:not(.lose-item)"
+    );
 
 
-        const lastItem =
-            items[items.length - 1];
+const lastItem =
+    items[items.length - 1];
 
 
         if (lastItem) {
