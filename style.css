@@ -1650,7 +1650,50 @@ button:disabled {
     color: #666;
 }
 
+/* =========================================
+   ハズレ確率
+========================================= */
 
+.lose-probability-area {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    margin-top: 17px;
+
+}
+
+
+.lose-probability-area .coupon-stat-label {
+
+    flex-shrink: 0;
+
+}
+
+
+.lose-probability-area .coupon-number-input {
+
+    flex: 1;
+
+    margin-bottom: 0;
+
+}
+
+
+.lose-probability-unit {
+
+    flex-shrink: 0;
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+    color: #555;
+
+}
 .lose-item.is-disabled {
     opacity: 0.55;
 }
