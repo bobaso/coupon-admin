@@ -541,7 +541,7 @@ function createLoseHTML() {
         <div class="coupon-item lose-item">
 
             <div class="coupon-rank-label">
-                ハズレ
+                ハズレくじ
             </div>
 
 
