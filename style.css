@@ -1684,3 +1684,56 @@ button:disabled {
     }
 
 }
+/* =========================================
+   ハズレ設定
+========================================= */
+
+.lose-item {
+    margin-top: 20px;
+    border: 2px dashed #999;
+    background: #f5f5f5;
+}
+
+
+.lose-control {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+
+.lose-status {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+
+.lose-toggle-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    background: #333;
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+
+.lose-description {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #666;
+}
+
+
+.lose-item.is-disabled {
+    opacity: 0.55;
+}
+
+
+.lose-item.is-enabled {
+    opacity: 1;
+}
