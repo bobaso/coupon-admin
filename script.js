@@ -1258,53 +1258,56 @@ function createLoseHTML() {
 
 
             <!-- =================================
-                 ハズレ確率
+                 ハズレ確率・残り枚数
             ================================== -->
 
-            <div class="lose-probability-area">
+            <div class="coupon-stats">
 
-                <span class="coupon-stat-label">
-                    当選確率（%）
-                </span>
+                <!-- 当選確率 -->
 
-                <input
-                    type="number"
-                    id="loseProbability"
-                    class="coupon-number-input"
-                    value="${loseProbability}"
-                    min="0"
-                    max="100"
-                    step="1"
-                >
+                <div class="coupon-stat">
 
-                <span class="lose-probability-unit">
-                    %
-                </span>
+                    <span class="coupon-stat-label">
+                        当選確率（%）
+                    </span>
+
+                    <input
+                        type="number"
+                        id="loseProbability"
+                        class="coupon-number-input coupon-probability-input"
+                        value="${loseProbability}"
+                        min="0"
+                        max="100"
+                        step="1"
+                    >
+
+                </div>
+
+
+                <!-- 残り枚数 -->
+
+                <div class="coupon-stat">
+
+                    <span class="coupon-stat-label">
+                        残り枚数
+                    </span>
+
+                    <input
+                        type="number"
+                        id="loseStock"
+                        class="coupon-number-input coupon-stock-input"
+                        value="${loseStock}"
+                        min="0"
+                        step="1"
+                    >
+
+                </div>
 
             </div>
-<!-- ハズレ残り枚数 -->
-<div class="lose-stock-area">
 
-    <span class="coupon-stat-label">
-        残り枚数
-    </span>
-
-    <input
-        type="number"
-        id="loseStock"
-        class="coupon-number-input"
-        value="${loseStock}"
-        min="0"
-        step="1"
-    >
-
-    <span class="lose-probability-unit">
-        枚
-    </span>
-
-</div>
         </div>
     `;
+
 }
 /* =========================================
    ハズレ ON/OFF
