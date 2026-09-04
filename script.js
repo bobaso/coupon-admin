@@ -7,6 +7,33 @@ const API_URL =
  
 const logoutButton =
     document.getElementById("logoutButton");
+
+logoutButton.addEventListener(
+    "click",
+    () => {
+
+        const confirmed =
+            confirm(
+                "ログアウトしますか？"
+            );
+
+        if (!confirmed) {
+
+            return;
+
+        }
+
+        localStorage.removeItem(
+            ADMIN_TOKEN_KEY
+        );
+
+        adminToken =
+            null;
+
+        location.reload();
+
+    }
+);
 /* =========================================
    DOM
 ========================================= */
