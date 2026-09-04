@@ -2186,7 +2186,351 @@ function getWeeklyIssuedCounts(
 
 }
 
+/* =========================================
+   ハズレ判定
+========================================= */
 
+function isLoseHistoryItem(item) {
+
+    return item.coupon_id === null ||
+           item.coupon_id === undefined;
+
+}
+
+
+/* =========================================
+   今日のハズレ発券数
+========================================= */
+
+function getTodayLoseCount() {
+
+    const japanNow =
+        getJapanNow();
+
+
+    const todayStart =
+        new Date(
+            japanNow
+        );
+
+
+    todayStart.setHours(
+        0,
+        0,
+        0,
+        0
+    );
+
+
+    const todayEnd =
+        new Date(
+            japanNow
+        );
+
+
+    todayEnd.setHours(
+        23,
+        59,
+        59,
+        999
+    );
+
+
+    return historyData.filter(
+        item => {
+
+            if (
+                !isLoseHistoryItem(item)
+            ) {
+
+                return false;
+
+            }
+
+
+            if (!item.issued_at) {
+
+                return false;
+
+            }
+
+
+            const issuedJapanTime =
+                parseJapanDate(
+                    item.issued_at
+                );
+
+
+            if (!issuedJapanTime) {
+
+                return false;
+
+            }
+
+
+            return (
+                issuedJapanTime >=
+                    todayStart &&
+                issuedJapanTime <=
+                    todayEnd
+            );
+
+        }
+    ).length;
+
+}
+
+
+/* =========================================
+   1週間のハズレ発券数
+========================================= */
+
+function getWeekdayLoseCounts() {
+
+    const currentTime =
+        getJapanNow();
+
+
+    const today =
+        new Date(
+            currentTime
+        );
+
+
+    today.setHours(
+        23,
+        59,
+        59,
+        999
+    );
+
+
+    const startTime =
+        new Date(
+            currentTime
+        );
+
+
+    startTime.setDate(
+        startTime.getDate() - 6
+    );
+
+
+    startTime.setHours(
+        0,
+        0,
+        0,
+        0
+    );
+
+
+    const counts = {
+
+        0: 0,
+        1: 0,
+        2: 0,
+        3: 0,
+        4: 0,
+        5: 0,
+        6: 0
+
+    };
+
+
+    historyData.forEach(
+        item => {
+
+            if (
+                !isLoseHistoryItem(item)
+            ) {
+
+                return;
+
+            }
+
+
+            if (!item.issued_at) {
+
+                return;
+
+            }
+
+
+            const issuedJapanTime =
+                parseJapanDate(
+                    item.issued_at
+                );
+
+
+            if (!issuedJapanTime) {
+
+                return;
+
+            }
+
+
+            if (
+                issuedJapanTime <
+                    startTime ||
+                issuedJapanTime >
+                    today
+            ) {
+
+                return;
+
+            }
+
+
+            const day =
+                issuedJapanTime.getDay();
+
+
+            counts[day]++;
+
+        }
+    );
+
+
+    return counts;
+
+}
+
+
+/* =========================================
+   指定月のハズレ発券数
+========================================= */
+
+function getMonthlyLoseCount(
+    year,
+    month
+) {
+
+    return historyData.filter(
+        item => {
+
+            if (
+                !isLoseHistoryItem(item)
+            ) {
+
+                return false;
+
+            }
+
+
+            if (!item.issued_at) {
+
+                return false;
+
+            }
+
+
+            const issuedJapanTime =
+                parseJapanDate(
+                    item.issued_at
+                );
+
+
+            if (!issuedJapanTime) {
+
+                return false;
+
+            }
+
+
+            return (
+                issuedJapanTime.getFullYear() ===
+                    year &&
+                issuedJapanTime.getMonth() ===
+                    month
+            );
+
+        }
+    ).length;
+
+}
+
+
+/* =========================================
+   全期間のハズレ発券数
+========================================= */
+
+function getAllLoseCount() {
+
+    return historyData.filter(
+        item =>
+            isLoseHistoryItem(item)
+    ).length;
+
+}
+
+
+/* =========================================
+   ハズレ 発券状況行
+========================================= */
+
+function createLoseStatsRow(
+    issuedCounts
+) {
+
+    const issuedHTML =
+        issuedCounts
+            .map(
+                count => `
+                    <td>
+
+                        <strong
+                            class="stats-issued"
+                        >
+                            ${count}
+                        </strong>
+
+                    </td>
+                `
+            )
+            .join("");
+
+
+    return `
+
+        <tr>
+
+            <td>
+                -
+            </td>
+
+            <td>
+                <span
+                    class="stats-rank"
+                >
+                    ハズレ
+                </span>
+            </td>
+
+            <td>
+                <span
+                    class="stats-name"
+                >
+                    ハズレ
+                </span>
+            </td>
+
+            ${issuedHTML}
+
+            <td>
+                <strong
+                    class="stats-stock"
+                >
+                    ${Number(
+                        loseStock
+                    )}
+                </strong>
+            </td>
+
+        </tr>
+
+    `;
+
+}
 /* =========================================
    発券状況表示
 ========================================= */
@@ -2552,25 +2896,36 @@ function renderStatsToday() {
     }
 
 
-    couponStatsBody.innerHTML =
-        coupons
-            .map(
-                coupon => {
+   const normalRows =
+    coupons
+        .map(
+            coupon => {
 
-                    const count =
-                        getTodayIssuedCount(
-                            coupon.id
-                        );
-
-
-                    return createStatsRow(
-                        coupon,
-                        [count]
+                const count =
+                    getTodayIssuedCount(
+                        coupon.id
                     );
 
-                }
-            )
-            .join("");
+
+                return createStatsRow(
+                    coupon,
+                    [count]
+                );
+
+            }
+        )
+        .join("");
+
+
+const loseRow =
+    createLoseStatsRow([
+        getTodayLoseCount()
+    ]);
+
+
+couponStatsBody.innerHTML =
+    normalRows +
+    loseRow;
 
 }
 
@@ -2632,153 +2987,206 @@ function renderStatsWeek() {
     }
 
 
-    couponStatsBody.innerHTML =
-        coupons
-            .map(
-                coupon => {
+    const normalRows =
+    coupons
+        .map(
+            coupon => {
 
-                    const counts =
-                        getWeekdayIssuedCounts(
-                            coupon.id
-                        );
-
-
-                    const monday =
-                        counts[1];
-
-                    const tuesday =
-                        counts[2];
-
-                    const wednesday =
-                        counts[3];
-
-                    const thursday =
-                        counts[4];
-
-                    const friday =
-                        counts[5];
-
-                    const saturday =
-                        counts[6];
-
-                    const sunday =
-                        counts[0];
+                const counts =
+                    getWeekdayIssuedCounts(
+                        coupon.id
+                    );
 
 
-                    const total =
-                        monday +
-                        tuesday +
-                        wednesday +
-                        thursday +
-                        friday +
-                        saturday +
-                        sunday;
+                const monday =
+                    counts[1];
+
+                const tuesday =
+                    counts[2];
+
+                const wednesday =
+                    counts[3];
+
+                const thursday =
+                    counts[4];
+
+                const friday =
+                    counts[5];
+
+                const saturday =
+                    counts[6];
+
+                const sunday =
+                    counts[0];
 
 
-                    return `
+                const total =
+                    monday +
+                    tuesday +
+                    wednesday +
+                    thursday +
+                    friday +
+                    saturday +
+                    sunday;
 
-                        <tr>
 
-                            <td>
+                return `
+
+                    <tr>
+
+                        <td>
+                            ${Number(
+                                coupon.id
+                            )}
+                        </td>
+
+                        <td>
+                            ${createStatsRankHTML(
+                                coupon
+                            )}
+                        </td>
+
+                        <td>
+                            ${createStatsNameHTML(
+                                coupon
+                            )}
+                        </td>
+
+                        <td>
+                            <strong
+                                class="stats-issued"
+                            >
+                                ${monday}
+                            </strong>
+                        </td>
+
+                        <td>
+                            <strong
+                                class="stats-issued"
+                            >
+                                ${tuesday}
+                            </strong>
+                        </td>
+
+                        <td>
+                            <strong
+                                class="stats-issued"
+                            >
+                                ${wednesday}
+                            </strong>
+                        </td>
+
+                        <td>
+                            <strong
+                                class="stats-issued"
+                            >
+                                ${thursday}
+                            </strong>
+                        </td>
+
+                        <td>
+                            <strong
+                                class="stats-issued"
+                            >
+                                ${friday}
+                            </strong>
+                        </td>
+
+                        <td>
+                            <strong
+                                class="stats-issued"
+                            >
+                                ${saturday}
+                            </strong>
+                        </td>
+
+                        <td>
+                            <strong
+                                class="stats-issued"
+                            >
+                                ${sunday}
+                            </strong>
+                        </td>
+
+                        <td>
+                            <strong
+                                class="stats-issued"
+                            >
+                                ${total}
+                            </strong>
+                        </td>
+
+                        <td>
+                            <strong
+                                class="stats-stock"
+                            >
                                 ${Number(
-                                    coupon.id
+                                    coupon.stock
                                 )}
-                            </td>
+                            </strong>
+                        </td>
 
-                            <td>
-                                ${createStatsRankHTML(
-                                    coupon
-                                )}
-                            </td>
+                    </tr>
 
-                            <td>
-                                ${createStatsNameHTML(
-                                    coupon
-                                )}
-                            </td>
+                `;
 
-                            <td>
-                                <strong
-                                    class="stats-issued"
-                                >
-                                    ${monday}
-                                </strong>
-                            </td>
+            }
+        )
+        .join("");
 
-                            <td>
-                                <strong
-                                    class="stats-issued"
-                                >
-                                    ${tuesday}
-                                </strong>
-                            </td>
 
-                            <td>
-                                <strong
-                                    class="stats-issued"
-                                >
-                                    ${wednesday}
-                                </strong>
-                            </td>
+const loseCounts =
+    getWeekdayLoseCounts();
 
-                            <td>
-                                <strong
-                                    class="stats-issued"
-                                >
-                                    ${thursday}
-                                </strong>
-                            </td>
 
-                            <td>
-                                <strong
-                                    class="stats-issued"
-                                >
-                                    ${friday}
-                                </strong>
-                            </td>
+const loseMonday =
+    loseCounts[1];
 
-                            <td>
-                                <strong
-                                    class="stats-issued"
-                                >
-                                    ${saturday}
-                                </strong>
-                            </td>
+const loseTuesday =
+    loseCounts[2];
 
-                            <td>
-                                <strong
-                                    class="stats-issued"
-                                >
-                                    ${sunday}
-                                </strong>
-                            </td>
+const loseWednesday =
+    loseCounts[3];
 
-                            <td>
-                                <strong
-                                    class="stats-issued"
-                                >
-                                    ${total}
-                                </strong>
-                            </td>
+const loseThursday =
+    loseCounts[4];
 
-                            <td>
-                                <strong
-                                    class="stats-stock"
-                                >
-                                    ${Number(
-                                        coupon.stock
-                                    )}
-                                </strong>
-                            </td>
+const loseFriday =
+    loseCounts[5];
 
-                        </tr>
+const loseSaturday =
+    loseCounts[6];
 
-                    `;
+const loseSunday =
+    loseCounts[0];
 
-                }
-            )
-            .join("");
 
+const loseTotal =
+    loseMonday +
+    loseTuesday +
+    loseWednesday +
+    loseThursday +
+    loseFriday +
+    loseSaturday +
+    loseSunday;
+
+
+const loseRow =
+    createLoseStatsRow([
+        loseMonday,
+        loseTuesday,
+        loseWednesday,
+        loseThursday,
+        loseFriday,
+        loseSaturday,
+        loseSunday,
+        loseTotal
+    ]);
+
+
+couponStatsBody.innerHTML =
+    normalRows +
+    loseRow;
 }
 
 
@@ -2841,97 +3249,183 @@ function renderStatsMonth(
     }
 
 
-    couponStatsBody.innerHTML =
-        coupons
-            .map(
-                coupon => {
+ const normalRows =
+    coupons
+        .map(
+            coupon => {
 
-                    let total = 0;
-
-
-                    const monthlyHTML =
-                        campaignMonths
-                            .map(
-                                month => {
-
-                                    const count =
-                                        getMonthlyIssuedCount(
-                                            coupon.id,
-                                            month.year,
-                                            month.month
-                                        );
+                let total = 0;
 
 
-                                    total += count;
+                const monthlyHTML =
+                    campaignMonths
+                        .map(
+                            month => {
+
+                                const count =
+                                    getMonthlyIssuedCount(
+                                        coupon.id,
+                                        month.year,
+                                        month.month
+                                    );
 
 
-                                    return `
-                                        <td>
-
-                                            <strong
-                                                class="stats-issued"
-                                            >
-                                                ${count}
-                                            </strong>
-
-                                        </td>
-                                    `;
-
-                                }
-                            )
-                            .join("");
+                                total += count;
 
 
-                    return `
+                                return `
+                                    <td>
 
-                        <tr>
+                                        <strong
+                                            class="stats-issued"
+                                        >
+                                            ${count}
+                                        </strong>
 
-                            <td>
+                                    </td>
+                                `;
+
+                            }
+                        )
+                        .join("");
+
+
+                return `
+
+                    <tr>
+
+                        <td>
+                            ${Number(
+                                coupon.id
+                            )}
+                        </td>
+
+                        <td>
+                            ${createStatsRankHTML(
+                                coupon
+                            )}
+                        </td>
+
+                        <td>
+                            ${createStatsNameHTML(
+                                coupon
+                            )}
+                        </td>
+
+                        ${monthlyHTML}
+
+                        <td>
+                            <strong
+                                class="stats-issued"
+                            >
+                                ${total}
+                            </strong>
+                        </td>
+
+                        <td>
+                            <strong
+                                class="stats-stock"
+                            >
                                 ${Number(
-                                    coupon.id
+                                    coupon.stock
                                 )}
-                            </td>
+                            </strong>
+                        </td>
 
-                            <td>
-                                ${createStatsRankHTML(
-                                    coupon
-                                )}
-                            </td>
+                    </tr>
 
-                            <td>
-                                ${createStatsNameHTML(
-                                    coupon
-                                )}
-                            </td>
+                `;
 
-                            ${monthlyHTML}
+            }
+        )
+        .join("");
 
-                            <td>
-                                <strong
-                                    class="stats-issued"
-                                >
-                                    ${total}
-                                </strong>
-                            </td>
 
-                            <td>
-                                <strong
-                                    class="stats-stock"
-                                >
-                                    ${Number(
-                                        coupon.stock
-                                    )}
-                                </strong>
-                            </td>
+const loseMonthlyHTML =
+    campaignMonths
+        .map(
+            month => {
 
-                        </tr>
+                return `
+                    <td>
 
-                    `;
+                        <strong
+                            class="stats-issued"
+                        >
+                            ${getMonthlyLoseCount(
+                                month.year,
+                                month.month
+                            )}
+                        </strong>
 
-                }
-            )
-            .join("");
+                    </td>
+                `;
 
+            }
+        )
+        .join("");
+
+
+const loseTotal =
+    campaignMonths.reduce(
+        (sum, month) =>
+            sum +
+            getMonthlyLoseCount(
+                month.year,
+                month.month
+            ),
+        0
+    );
+
+
+const loseRow = `
+
+    <tr>
+
+        <td>
+            -
+        </td>
+
+        <td>
+            <span class="stats-rank">
+                ハズレ
+            </span>
+        </td>
+
+        <td>
+            <span class="stats-name">
+                ハズレ
+            </span>
+        </td>
+
+        ${loseMonthlyHTML}
+
+        <td>
+            <strong
+                class="stats-issued"
+            >
+                ${loseTotal}
+            </strong>
+        </td>
+
+        <td>
+            <strong
+                class="stats-stock"
+            >
+                ${Number(
+                    loseStock
+                )}
+            </strong>
+        </td>
+
+    </tr>
+
+`;
+
+
+couponStatsBody.innerHTML =
+    normalRows +
+    loseRow;
 }
 
 
@@ -2978,31 +3472,42 @@ function renderStatsAll() {
     }
 
 
-    couponStatsBody.innerHTML =
-        coupons
-            .map(
-                coupon => {
+ const normalRows =
+    coupons
+        .map(
+            coupon => {
 
-                    const total =
-                        historyData.filter(
-                            item =>
-                                Number(
-                                    item.coupon_id
-                                ) ===
-                                Number(
-                                    coupon.id
-                                )
-                        ).length;
+                const total =
+                    historyData.filter(
+                        item =>
+                            Number(
+                                item.coupon_id
+                            ) ===
+                            Number(
+                                coupon.id
+                            )
+                    ).length;
 
 
-                    return createStatsRow(
-                        coupon,
-                        [total]
-                    );
+                return createStatsRow(
+                    coupon,
+                    [total]
+                );
 
-                }
-            )
-            .join("");
+            }
+        )
+        .join("");
+
+
+const loseRow =
+    createLoseStatsRow([
+        getAllLoseCount()
+    ]);
+
+
+couponStatsBody.innerHTML =
+    normalRows +
+    loseRow;
 
 }
 
