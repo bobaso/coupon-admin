@@ -5,7 +5,8 @@
 const API_URL =
     "https://coupon-api.yoshioka-mwork.workers.dev";
  
-
+const logoutButton =
+    document.getElementById("logoutButton");
 /* =========================================
    DOM
 ========================================= */
