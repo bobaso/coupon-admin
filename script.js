@@ -82,6 +82,82 @@ const instagramRetrySwitch =
         "instagramRetrySwitch"
     );
 /* =========================================
+   Instagram引き直し設定取得
+========================================= */
+
+async function loadInstagramRetrySetting() {
+
+    const data =
+        await apiFetch(
+            "/admin/instagram-retry"
+        );
+
+    instagramRetryEnabled =
+        data.instagram_retry_enabled;
+
+    instagramRetrySwitch.checked =
+        instagramRetryEnabled;
+}
+/* =========================================
+   Instagram引き直し設定変更
+========================================= */
+
+instagramRetrySwitch.addEventListener(
+    "change",
+    async () => {
+
+        const newValue =
+            instagramRetrySwitch.checked;
+
+        try {
+
+            const data =
+                await apiFetch(
+                    "/admin/instagram-retry",
+                    {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+                        body: JSON.stringify({
+                            instagram_retry_enabled:
+                                newValue
+                        })
+                    }
+                );
+
+            instagramRetryEnabled =
+                data.instagram_retry_enabled;
+
+            instagramRetrySwitch.checked =
+                instagramRetryEnabled;
+
+            showMessage(
+                instagramRetryEnabled
+                    ? "Instagram引き直しをONにしました"
+                    : "Instagram引き直しをOFFにしました"
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Instagram引き直し設定保存エラー:",
+                error
+            );
+
+            instagramRetrySwitch.checked =
+                instagramRetryEnabled;
+
+            alert(
+                "設定の保存に失敗しました。"
+            );
+
+        }
+
+    }
+);
+/* =========================================
    発券状況DOM
 ========================================= */
 
@@ -4849,6 +4925,9 @@ async function loadAll() {
             loadCampaign(),
 
             loadLoseSetting(),
+
+           loadInstagramRetrySetting(),
+           
 
             loadCoupons(),
 
