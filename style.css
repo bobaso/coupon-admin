@@ -1667,30 +1667,111 @@ button:disabled {
 }
 
 /* =========================================
-   ハズレ確率
+   ハズレくじ
+   当選確率・残り枚数
 ========================================= */
 
-.lose-probability-area {
-    display: flex;
-    align-items: center;
-    gap: 6px;
+.lose-stats {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 10px;
+
     margin-top: 17px;
+
 }
 
-.lose-probability-area .coupon-stat-label {
-    flex-shrink: 0;
+
+/* =========================================
+   各項目
+========================================= */
+
+.lose-stat {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 6px;
+
 }
 
-.lose-probability-area .coupon-number-input {
-    flex: 1;
+
+/* =========================================
+   項目ラベル
+========================================= */
+
+.lose-stat-label {
+
+    font-size: 12px;
+
+    color: #777;
+
+    font-weight: 700;
+
+}
+
+
+/* =========================================
+   入力欄
+========================================= */
+
+.lose-stat .coupon-number-input {
+
+    width: 100%;
+
+    height: 40px;
+
+    padding: 0 9px;
+
+    border: 1px solid #d5d9df;
+
+    border-radius: 7px;
+
+    font-size: 15px;
+
     margin-bottom: 0;
+
 }
+
+
+.lose-stat .coupon-number-input:focus {
+
+    outline: none;
+
+    border-color: #1677ff;
+
+}
+
+
+/* =========================================
+   「%」などの単位
+========================================= */
+
+.lose-stat-input {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+}
+
 
 .lose-probability-unit {
+
     flex-shrink: 0;
+
     font-size: 15px;
+
     font-weight: 700;
+
     color: #555;
+
 }
 /* =========================================
    ハズレ ON / OFF スイッチ
