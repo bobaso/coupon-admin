@@ -105,6 +105,7 @@ let drawMode = "daily";
 
 let loseEnabled = true;
 let loseProbability = 0;
+let loseStock = 0;
 
 /* =========================================
    メッセージ
@@ -285,7 +286,14 @@ async function loadLoseSetting() {
         Number(
             data.lose_probability
         ) || 0;
+    /*
+     * ハズレ残り枚数
+     */
 
+    loseStock =
+        Number(
+            data.lose_stock
+        ) || 0;
 
     /*
      * 画面へ反映
@@ -703,7 +711,27 @@ function createLoseHTML() {
                 </span>
 
             </div>
+<!-- ハズレ残り枚数 -->
+<div class="lose-stock-area">
 
+    <span class="coupon-stat-label">
+        残り枚数
+    </span>
+
+    <input
+        type="number"
+        id="loseStock"
+        class="coupon-number-input"
+        value="${loseStock}"
+        min="0"
+        step="1"
+    >
+
+    <span class="lose-probability-unit">
+        枚
+    </span>
+
+</div>
         </div>
     `;
 }
@@ -930,6 +958,138 @@ couponList.addEventListener(
 
             loseProbability =
                 previousProbability;
+
+
+            renderCoupons();
+
+
+            showMessage(
+                error.message,
+                true
+            );
+
+        }
+
+    }
+);
+/* =========================================
+   ハズレ残り枚数
+========================================= */
+
+couponList.addEventListener(
+    "change",
+    async event => {
+
+        /*
+         * ハズレ残り枚数入力欄以外は無視
+         */
+
+        if (
+            event.target.id !==
+            "loseStock"
+        ) {
+
+            return;
+
+        }
+
+
+        /*
+         * 入力値を取得
+         */
+
+        let newLoseStock =
+            Number(
+                event.target.value
+            );
+
+
+        /*
+         * 数値チェック
+         */
+
+        if (
+            !Number.isFinite(newLoseStock) ||
+            newLoseStock < 0
+        ) {
+
+            newLoseStock = 0;
+
+        }
+
+
+        /*
+         * 小数点以下を切り捨て
+         */
+
+        newLoseStock =
+            Math.floor(
+                newLoseStock
+            );
+
+
+        /*
+         * 画面の値を正規化
+         */
+
+        event.target.value =
+            newLoseStock;
+
+
+        /*
+         * 現在の状態を保存
+         */
+
+        const previousLoseStock =
+            loseStock;
+
+
+        loseStock =
+            newLoseStock;
+
+
+        /*
+         * D1へ保存
+         */
+
+        try {
+
+            await apiFetch(
+                "/admin/lose",
+                {
+
+                    method: "PUT",
+
+                    body: JSON.stringify({
+
+                        lose_stock:
+                            newLoseStock
+
+                    })
+
+                }
+            );
+
+
+            showMessage(
+                "ハズレ残り枚数を保存しました"
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "ハズレ残り枚数保存エラー:",
+                error
+            );
+
+
+            /*
+             * 保存失敗時は元に戻す
+             */
+
+            loseStock =
+                previousLoseStock;
 
 
             renderCoupons();
