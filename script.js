@@ -3350,6 +3350,50 @@ async function changeDrawMode(
 
 
     /*
+     * 開始日・終了日を確認
+     */
+
+    const startDateValue =
+        startDate.value;
+
+    const endDateValue =
+        endDate.value;
+
+
+    if (
+        !startDateValue ||
+        !endDateValue
+    ) {
+
+        showMessage(
+            "開始日と終了日を入力してください",
+            true
+        );
+
+        /*
+         * スイッチを元の状態へ戻す
+         */
+
+        if (dailyModeSwitch) {
+
+            dailyModeSwitch.checked =
+                drawMode === "daily";
+
+        }
+
+        if (testModeSwitch) {
+
+            testModeSwitch.checked =
+                drawMode === "test";
+
+        }
+
+        return;
+
+    }
+
+
+    /*
      * 現在のモードを保存
      */
 
@@ -3389,6 +3433,10 @@ async function changeDrawMode(
 
         /*
          * D1へ保存
+         *
+         * Workerは
+         * 開始日・終了日・抽選モード
+         * の3つを必要とする
          */
 
         await apiFetch(
@@ -3398,6 +3446,12 @@ async function changeDrawMode(
                 method: "PUT",
 
                 body: JSON.stringify({
+
+                    start_date:
+                        startDateValue,
+
+                    end_date:
+                        endDateValue,
 
                     draw_mode:
                         newMode
