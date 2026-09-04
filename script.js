@@ -77,6 +77,10 @@ const dailyModeSwitch =
 const testModeSwitch =
     document.getElementById("testModeSwitch");
 
+const instagramRetrySwitch =
+    document.getElementById(
+        "instagramRetrySwitch"
+    );
 /* =========================================
    発券状況DOM
 ========================================= */
@@ -134,7 +138,7 @@ let drawMode = "daily";
 let loseEnabled = true;
 let loseProbability = 0;
 let loseStock = 0;
-
+let instagramRetryEnabled = false;
 /* =========================================
    メッセージ
 ========================================= */
