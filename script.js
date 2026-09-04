@@ -693,7 +693,7 @@ function createLoseHTML() {
             <div class="lose-probability-area">
 
                 <span class="coupon-stat-label">
-                    ハズレ当選確率（%）
+                    当選確率（%）
                 </span>
 
                 <input
