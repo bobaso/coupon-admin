@@ -39,7 +39,15 @@ const historyBody =
 
 const message =
     document.getElementById("message");
+/* =========================================
+   抽選モードDOM
+========================================= */
 
+const dailyModeSwitch =
+    document.getElementById("dailyModeSwitch");
+
+const testModeSwitch =
+    document.getElementById("testModeSwitch");
 
 /* =========================================
    発券状況DOM
@@ -73,7 +81,16 @@ let historyFilter = "all";
 
 let statsPeriod = "month";
 
+/* =========================================
+   抽選モード
+========================================= */
 
+/*
+ * daily = 通常モード
+ * test  = テストモード
+ */
+
+let drawMode = "daily";
 /* =========================================
    ハズレ設定
 ========================================= */
@@ -197,6 +214,44 @@ async function loadCampaign() {
 
         endDate.value =
             data.campaign.end_date;
+
+    }
+
+
+    /* =====================================
+       抽選モード取得
+    ====================================== */
+
+    if (
+        data.campaign &&
+        (
+            data.campaign.draw_mode === "daily" ||
+            data.campaign.draw_mode === "test"
+        )
+    ) {
+
+        drawMode =
+            data.campaign.draw_mode;
+
+    }
+
+
+    /* =====================================
+       スイッチへ反映
+    ====================================== */
+
+    if (dailyModeSwitch) {
+
+        dailyModeSwitch.checked =
+            drawMode === "daily";
+
+    }
+
+
+    if (testModeSwitch) {
+
+        testModeSwitch.checked =
+            drawMode === "test";
 
     }
 
@@ -3272,7 +3327,218 @@ function escapeHTML(
 
 }
 
+/* =========================================
+   抽選モード切り替え
+========================================= */
 
+async function changeDrawMode(
+    newMode
+) {
+
+    /*
+     * daily または test 以外は拒否
+     */
+
+    if (
+        newMode !== "daily" &&
+        newMode !== "test"
+    ) {
+
+        return;
+
+    }
+
+
+    /*
+     * 現在のモードを保存
+     */
+
+    const previousMode =
+        drawMode;
+
+
+    /*
+     * 画面上のモードを変更
+     */
+
+    drawMode =
+        newMode;
+
+
+    /*
+     * 片方だけONにする
+     */
+
+    if (dailyModeSwitch) {
+
+        dailyModeSwitch.checked =
+            newMode === "daily";
+
+    }
+
+
+    if (testModeSwitch) {
+
+        testModeSwitch.checked =
+            newMode === "test";
+
+    }
+
+
+    try {
+
+        /*
+         * D1へ保存
+         */
+
+        await apiFetch(
+            "/admin/campaign",
+            {
+
+                method: "PUT",
+
+                body: JSON.stringify({
+
+                    draw_mode:
+                        newMode
+
+                })
+
+            }
+        );
+
+
+        /*
+         * 保存成功
+         */
+
+        showMessage(
+            newMode === "daily"
+                ? "通常モードに変更しました"
+                : "テストモードに変更しました"
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "抽選モード保存エラー:",
+            error
+        );
+
+
+        /*
+         * 保存失敗
+         *
+         * 元のモードへ戻す
+         */
+
+        drawMode =
+            previousMode;
+
+
+        if (dailyModeSwitch) {
+
+            dailyModeSwitch.checked =
+                previousMode === "daily";
+
+        }
+
+
+        if (testModeSwitch) {
+
+            testModeSwitch.checked =
+                previousMode === "test";
+
+        }
+
+
+        showMessage(
+            error.message,
+            true
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   通常モード
+========================================= */
+
+if (dailyModeSwitch) {
+
+    dailyModeSwitch.addEventListener(
+        "change",
+        function () {
+
+            /*
+             * ONにしたときだけ
+             * 通常モードへ変更
+             */
+
+            if (this.checked) {
+
+                changeDrawMode(
+                    "daily"
+                );
+
+            } else {
+
+                /*
+                 * OFFにはしない
+                 *
+                 * 必ずどちらか一方をON
+                 */
+
+                this.checked = true;
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   テストモード
+========================================= */
+
+if (testModeSwitch) {
+
+    testModeSwitch.addEventListener(
+        "change",
+        function () {
+
+            /*
+             * ONにしたときだけ
+             * テストモードへ変更
+             */
+
+            if (this.checked) {
+
+                changeDrawMode(
+                    "test"
+                );
+
+            } else {
+
+                /*
+                 * OFFにはしない
+                 *
+                 * 必ずどちらか一方をON
+                 */
+
+                this.checked = true;
+
+            }
+
+        }
+    );
+
+}
 /* =========================================
    全データ読み込み
 ========================================= */
