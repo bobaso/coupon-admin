@@ -1874,3 +1874,52 @@ button:disabled {
     margin-left: 0;
 
 }
+/* =========================================
+   抽選モード設定
+========================================= */
+
+.draw-mode-settings {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 16px;
+
+    margin-top: 10px;
+
+}
+
+
+/* =========================================
+   抽選モード1行
+========================================= */
+
+.draw-mode-row {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    width: 100%;
+
+    min-height: 40px;
+
+}
+
+
+/* =========================================
+   抽選モード文字
+========================================= */
+
+.draw-mode-label {
+
+    font-size: 20px;
+
+    font-weight: bold;
+
+    color: #333;
+
+}
