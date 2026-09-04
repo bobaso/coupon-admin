@@ -728,29 +728,6 @@ async function apiFetch(
 
 }
 
-
-    const data =
-        await response.json();
-
-
-    if (
-        !response.ok ||
-        data.success === false
-    ) {
-
-        throw new Error(
-            data.error ||
-            "APIエラーが発生しました"
-        );
-
-    }
-
-
-    return data;
-
-}
-
-
 /* =========================================
    キャンペーン取得
 ========================================= */
