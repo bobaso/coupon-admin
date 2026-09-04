@@ -134,7 +134,501 @@ function showMessage(
 
 }
 
+/* =========================================
+   管理画面 認証
+========================================= */
 
+const ADMIN_TOKEN_KEY =
+    "coupon_admin_token";
+
+
+let adminToken =
+    localStorage.getItem(
+        ADMIN_TOKEN_KEY
+    );
+
+
+/* =========================================
+   ログイン画面
+========================================= */
+
+function createLoginScreen() {
+
+    const existing =
+        document.getElementById(
+            "adminLoginScreen"
+        );
+
+    if (existing) {
+
+        return;
+
+    }
+
+
+    const style =
+        document.createElement("style");
+
+    style.id =
+        "adminLoginStyle";
+
+    style.textContent = `
+
+        #adminLoginScreen {
+
+            position: fixed;
+
+            inset: 0;
+
+            z-index: 99999;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding: 20px;
+
+            background: #ffffff;
+
+        }
+
+
+        .admin-login-box {
+
+            width: 100%;
+
+            max-width: 380px;
+
+            text-align: center;
+
+        }
+
+
+        .admin-login-title {
+
+            margin-bottom: 12px;
+
+            font-size: 26px;
+
+            font-weight: 700;
+
+        }
+
+
+        .admin-login-description {
+
+            margin-bottom: 28px;
+
+            font-size: 15px;
+
+            line-height: 1.7;
+
+        }
+
+
+        .admin-pin-input {
+
+            width: 100%;
+
+            height: 58px;
+
+            padding: 0 15px;
+
+            border: 1px solid #cccccc;
+
+            border-radius: 10px;
+
+            font-size: 24px;
+
+            text-align: center;
+
+            letter-spacing: 8px;
+
+            outline: none;
+
+        }
+
+
+        .admin-pin-input:focus {
+
+            border-color: #333333;
+
+        }
+
+
+        .admin-login-button {
+
+            width: 100%;
+
+            height: 58px;
+
+            margin-top: 15px;
+
+            border: none;
+
+            border-radius: 10px;
+
+            background: #222222;
+
+            color: #ffffff;
+
+            font-size: 18px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+        }
+
+
+        .admin-login-button:disabled {
+
+            opacity: 0.5;
+
+            cursor: default;
+
+        }
+
+
+        .admin-login-error {
+
+            min-height: 24px;
+
+            margin-top: 15px;
+
+            color: #d32f2f;
+
+            font-size: 14px;
+
+        }
+
+    `;
+
+
+    document.head.appendChild(
+        style
+    );
+
+
+    const screen =
+        document.createElement("div");
+
+    screen.id =
+        "adminLoginScreen";
+
+
+    screen.innerHTML = `
+
+        <div class="admin-login-box">
+
+            <div class="admin-login-title">
+                管理画面ログイン
+            </div>
+
+            <div class="admin-login-description">
+                管理画面を開くには<br>
+                4桁の暗証番号を入力してください。
+            </div>
+
+            <input
+                type="password"
+                id="adminPinInput"
+                class="admin-pin-input"
+                inputmode="numeric"
+                pattern="[0-9]*"
+                maxlength="4"
+                autocomplete="off"
+                placeholder="••••"
+            >
+
+            <button
+                type="button"
+                id="adminLoginButton"
+                class="admin-login-button"
+            >
+                ログイン
+            </button>
+
+            <div
+                id="adminLoginError"
+                class="admin-login-error"
+            ></div>
+
+        </div>
+
+    `;
+
+
+    document.body.appendChild(
+        screen
+    );
+
+
+    const pinInput =
+        document.getElementById(
+            "adminPinInput"
+        );
+
+    const loginButton =
+        document.getElementById(
+            "adminLoginButton"
+        );
+
+    const errorElement =
+        document.getElementById(
+            "adminLoginError"
+        );
+
+
+    /*
+     * 数字以外を入力できないようにする
+     */
+
+    pinInput.addEventListener(
+        "input",
+        () => {
+
+            pinInput.value =
+                pinInput.value
+                    .replace(/\D/g, "")
+                    .slice(0, 4);
+
+        }
+    );
+
+
+    /*
+     * ログイン処理
+     */
+
+    async function login() {
+
+        const pin =
+            pinInput.value.trim();
+
+
+        if (
+            !/^\d{4}$/.test(pin)
+        ) {
+
+            errorElement.textContent =
+                "4桁の数字を入力してください";
+
+            return;
+
+        }
+
+
+        loginButton.disabled =
+            true;
+
+        loginButton.textContent =
+            "ログイン中...";
+
+        errorElement.textContent =
+            "";
+
+
+        try {
+
+            const response =
+                await fetch(
+                    API_URL + "/admin/login",
+                    {
+
+                        method: "POST",
+
+                        headers: {
+
+                            "Content-Type":
+                                "application/json"
+
+                        },
+
+                        body:
+                            JSON.stringify({
+                                pin
+                            })
+
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (
+                !response.ok ||
+                data.success === false
+            ) {
+
+                throw new Error(
+                    data.error ||
+                    "ログインに失敗しました"
+                );
+
+            }
+
+
+            /*
+             * PINそのものは保存しない
+             *
+             * Workerから発行された
+             * 認証トークンだけ保存
+             */
+
+            adminToken =
+                data.token;
+
+
+            localStorage.setItem(
+                ADMIN_TOKEN_KEY,
+                adminToken
+            );
+
+
+            /*
+             * ログイン画面を削除
+             */
+
+            screen.remove();
+
+
+            /*
+             * 管理画面を読み込む
+             */
+
+            loadAll();
+
+
+        } catch (error) {
+
+            console.error(
+                "管理画面ログインエラー:",
+                error
+            );
+
+
+            errorElement.textContent =
+                error.message;
+
+
+            pinInput.value = "";
+
+            pinInput.focus();
+
+
+        } finally {
+
+            loginButton.disabled =
+                false;
+
+            loginButton.textContent =
+                "ログイン";
+
+        }
+
+    }
+
+
+    loginButton.addEventListener(
+        "click",
+        login
+    );
+
+
+    pinInput.addEventListener(
+        "keydown",
+        event => {
+
+            if (
+                event.key === "Enter"
+            ) {
+
+                login();
+
+            }
+
+        }
+    );
+
+
+    setTimeout(
+        () => {
+
+            pinInput.focus();
+
+        },
+        100
+    );
+
+}
+
+
+/* =========================================
+   ログアウト
+========================================= */
+
+function logoutAdmin() {
+
+    localStorage.removeItem(
+        ADMIN_TOKEN_KEY
+    );
+
+
+    adminToken =
+        null;
+
+
+    location.reload();
+
+}
+
+
+/* =========================================
+   管理画面表示
+========================================= */
+
+function showAdminScreen() {
+
+    const loginScreen =
+        document.getElementById(
+            "adminLoginScreen"
+        );
+
+
+    if (loginScreen) {
+
+        loginScreen.remove();
+
+    }
+
+}
+
+
+/* =========================================
+   ログイン状態確認
+========================================= */
+
+function checkAdminLogin() {
+
+    if (!adminToken) {
+
+        createLoginScreen();
+
+        return false;
+
+    }
+
+
+    showAdminScreen();
+
+    return true;
+
+}
 /* =========================================
    API
 ========================================= */
@@ -144,23 +638,95 @@ async function apiFetch(
     options = {}
 ) {
 
+    const headers = {
+
+        "Content-Type":
+            "application/json",
+
+        ...(options.headers || {})
+
+    };
+
+
+    /*
+     * 管理APIには認証トークンを付ける
+     */
+
+    if (
+        adminToken &&
+        path.startsWith("/admin/") &&
+        path !== "/admin/login"
+    ) {
+
+        headers.Authorization =
+            `Bearer ${adminToken}`;
+
+    }
+
+
     const response =
         await fetch(
             API_URL + path,
             {
                 ...options,
-
-                headers: {
-
-                    "Content-Type":
-                        "application/json",
-
-                    ...(options.headers || {})
-
-                }
-
+                headers
             }
         );
+
+
+    /*
+     * 認証切れ
+     */
+
+    if (
+        response.status === 401 &&
+        path.startsWith("/admin/")
+    ) {
+
+        localStorage.removeItem(
+            ADMIN_TOKEN_KEY
+        );
+
+
+        adminToken =
+            null;
+
+
+        alert(
+            "ログインの有効期限が切れました。\nもう一度ログインしてください。"
+        );
+
+
+        location.reload();
+
+
+        throw new Error(
+            "ログインの有効期限が切れました"
+        );
+
+    }
+
+
+    const data =
+        await response.json();
+
+
+    if (
+        !response.ok ||
+        data.success === false
+    ) {
+
+        throw new Error(
+            data.error ||
+            "APIエラーが発生しました"
+        );
+
+    }
+
+
+    return data;
+
+}
 
 
     const data =
@@ -4333,9 +4899,13 @@ saveCampaignButton.addEventListener(
    初期読み込み
 ========================================= */
 
-loadAll();
+if (
+    checkAdminLogin()
+) {
 
+    loadAll();
 
+}
 /* =========================================
    発券状況 更新ボタン
 ========================================= */
