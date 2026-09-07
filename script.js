@@ -596,7 +596,10 @@ function createLoginScreen() {
                 ADMIN_TOKEN_KEY,
                 adminToken
             );
-
+console.log(
+    "ログイン取得トークン:",
+    adminToken
+);
 
             /*
              * ログイン画面を削除
