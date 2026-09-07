@@ -773,7 +773,12 @@ async function apiFetch(
             `Bearer ${adminToken}`;
 
     }
-
+console.log(
+    "API送信トークンあり:",
+    !!adminToken,
+    "API:",
+    path
+);
 
     const response =
         await fetch(
