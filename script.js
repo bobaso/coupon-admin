@@ -965,6 +965,7 @@ async function loadLoseSetting() {
    キャンペーン保存
 ========================================= */
 
+
 async function saveCampaign() {
 
     const start =
@@ -1019,7 +1020,10 @@ async function saveCampaign() {
                         start,
 
                     end_date:
-                        end
+                        end,
+
+                    draw_mode:
+                        campaignDrawMode
 
                 })
 
@@ -1049,6 +1053,8 @@ async function saveCampaign() {
         "開催期間を保存";
 
 }
+
+
 
 
 /* =========================================
