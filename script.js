@@ -1022,9 +1022,6 @@ async function saveCampaign() {
                     end_date:
                         end,
 
-                    draw_mode:
-                        campaignDrawMode
-
                 })
 
             }
