@@ -80,11 +80,13 @@ const testModeSwitch =
 const instagramRetrySwitch =
     document.getElementById(
         "instagramRetrySwitch"
-       const instagramRetryUrl =
+    );
+
+const instagramRetryUrl =
     document.getElementById(
         "instagramRetryUrl"
     );
-    );
+    
 /* =========================================
    Instagram引き直し設定取得
 ========================================= */
