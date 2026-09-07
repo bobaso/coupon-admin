@@ -80,6 +80,10 @@ const testModeSwitch =
 const instagramRetrySwitch =
     document.getElementById(
         "instagramRetrySwitch"
+       const instagramRetryUrl =
+    document.getElementById(
+        "instagramRetryUrl"
+    );
     );
 /* =========================================
    Instagram引き直し設定取得
@@ -97,6 +101,10 @@ async function loadInstagramRetrySetting() {
 
     instagramRetrySwitch.checked =
         instagramRetryEnabled;
+
+    instagramRetryUrl.value =
+        data.instagram_retry_url ||
+        "https://www.instagram.com/umakitack/";
 }
 /* =========================================
    Instagram引き直し設定変更
@@ -108,6 +116,9 @@ instagramRetrySwitch.addEventListener(
 
         const newValue =
             instagramRetrySwitch.checked;
+
+        const retryUrl =
+            instagramRetryUrl.value.trim();
 
         try {
 
@@ -121,8 +132,13 @@ instagramRetrySwitch.addEventListener(
                                 "application/json"
                         },
                         body: JSON.stringify({
+
                             instagram_retry_enabled:
-                                newValue
+                                newValue,
+
+                            instagram_retry_url:
+                                retryUrl
+
                         })
                     }
                 );
@@ -133,16 +149,19 @@ instagramRetrySwitch.addEventListener(
             instagramRetrySwitch.checked =
                 instagramRetryEnabled;
 
+            instagramRetryUrl.value =
+                data.instagram_retry_url;
+
             showMessage(
                 instagramRetryEnabled
-                    ? "Instagram引き直しをONにしました"
-                    : "Instagram引き直しをOFFにしました"
+                    ? "SNS引き直しをONにしました"
+                    : "SNS引き直しをOFFにしました"
             );
 
         } catch (error) {
 
             console.error(
-                "Instagram引き直し設定保存エラー:",
+                "SNS引き直し設定保存エラー:",
                 error
             );
 
@@ -150,8 +169,70 @@ instagramRetrySwitch.addEventListener(
                 instagramRetryEnabled;
 
             alert(
+                error.message ||
                 "設定の保存に失敗しました。"
             );
+
+        }
+
+    }
+);
+instagramRetryUrl.addEventListener(
+    "change",
+    async () => {
+
+        const retryUrl =
+            instagramRetryUrl.value.trim();
+
+        try {
+
+            const data =
+                await apiFetch(
+                    "/admin/instagram-retry",
+                    {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+                        body: JSON.stringify({
+
+                            instagram_retry_enabled:
+                                instagramRetryEnabled,
+
+                            instagram_retry_url:
+                                retryUrl
+
+                        })
+                    }
+                );
+
+            instagramRetryEnabled =
+                data.instagram_retry_enabled;
+
+            instagramRetrySwitch.checked =
+                instagramRetryEnabled;
+
+            instagramRetryUrl.value =
+                data.instagram_retry_url;
+
+            showMessage(
+                "SNSフォロー先URLを保存しました"
+            );
+
+        } catch (error) {
+
+            console.error(
+                "SNSフォロー先URL保存エラー:",
+                error
+            );
+
+            alert(
+                error.message ||
+                "URLの保存に失敗しました。"
+            );
+
+            await loadInstagramRetrySetting();
 
         }
 
