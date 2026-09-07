@@ -298,8 +298,6 @@ let loseEnabled = true;
 let loseProbability = 0;
 let loseStock = 0;
 let instagramRetryEnabled = false;
-let instagramRetryUrl =
-    "https://www.instagram.com/umakitack/";
 /* =========================================
    メッセージ
 ========================================= */
