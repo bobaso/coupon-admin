@@ -5373,3 +5373,86 @@ const token =
         }
     );
 }
+/* =========================================
+   システム利用データを初期化
+========================================= */
+
+const initializeSystemDataButton =
+    document.getElementById("initializeSystemDataButton");
+
+if (initializeSystemDataButton) {
+
+    initializeSystemDataButton.addEventListener(
+        "click",
+        async () => {
+
+            const confirmed =
+                confirm(
+                    "システム利用データを初期化します。\n\n" +
+                    "・すべての発券データ\n" +
+                    "・すべての通常抽選記録\n" +
+                    "・すべてのSNS引き直し記録\n" +
+                    "を削除します。\n\n" +
+                    "さらに、賞品とハズレの在庫を初期枚数に戻します。\n\n" +
+                    "この操作は元に戻せません。\n\n" +
+                    "本当に初期化しますか？"
+                );
+
+            if (!confirmed) {
+                return;
+            }
+
+            try {
+
+                const token =
+                    localStorage.getItem(ADMIN_TOKEN_KEY);
+
+                if (!token) {
+                    alert("管理画面にログインしてください。");
+                    return;
+                }
+
+                const response =
+                    await fetch(
+                        `${API_URL}/admin/reset-system-data`,
+                        {
+                            method: "POST",
+                            headers: {
+                                "Authorization":
+                                    `Bearer ${token}`
+                            }
+                        }
+                    );
+
+                const data =
+                    await response.json();
+
+                if (!response.ok || !data.success) {
+                    throw new Error(
+                        data.error ||
+                        "システム利用データの初期化に失敗しました。"
+                    );
+                }
+
+                alert(
+                    "システム利用データを初期化しました。"
+                );
+
+                /* 最新の在庫数を画面に反映 */
+                await loadAll();
+
+            } catch (error) {
+
+                console.error(
+                    "システム利用データ初期化エラー:",
+                    error
+                );
+
+                alert(
+                    error.message ||
+                    "システム利用データの初期化に失敗しました。"
+                );
+            }
+        }
+    );
+}
