@@ -2028,13 +2028,4 @@ button:disabled {
     color: #333;
 
 }
-/* =========================================
-   SNS設定
-========================================= */
 
-.sns-settings {
-    max-width: 430px;
-    width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-}
