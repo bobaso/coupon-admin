@@ -5297,3 +5297,79 @@ adminCategoryButtons.forEach(
 renderAdminCategory(
     "stats"
 );
+/* =========================================
+   今日の抽選券をリセット
+========================================= */
+
+const resetTodayDrawsButton =
+    document.getElementById("resetTodayDrawsButton");
+
+if (resetTodayDrawsButton) {
+
+    resetTodayDrawsButton.addEventListener(
+        "click",
+        async () => {
+
+            const confirmed =
+                confirm(
+                    "今日の通常抽選記録をリセットします。\n\n" +
+                    "賞品の在庫や発券履歴は戻りません。\n" +
+                    "今日もう一度抽選できる状態になります。\n\n" +
+                    "実行しますか？"
+                );
+
+            if (!confirmed) {
+                return;
+            }
+
+            try {
+
+                const token =
+                    localStorage.getItem("adminToken");
+
+                if (!token) {
+                    alert("管理画面にログインしてください。");
+                    return;
+                }
+
+                const response =
+                    await fetch(
+                        `${API_URL}/admin/reset-today-draw`,
+                        {
+                            method: "POST",
+                            headers: {
+                                "Authorization":
+                                    `Bearer ${token}`
+                            }
+                        }
+                    );
+
+                const data =
+                    await response.json();
+
+                if (!response.ok || !data.success) {
+                    throw new Error(
+                        data.error ||
+                        "今日の抽選券のリセットに失敗しました。"
+                    );
+                }
+
+                alert(
+                    "今日の抽選券をリセットしました。"
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "今日の抽選券リセットエラー:",
+                    error
+                );
+
+                alert(
+                    error.message ||
+                    "リセットに失敗しました。"
+                );
+            }
+        }
+    );
+}
