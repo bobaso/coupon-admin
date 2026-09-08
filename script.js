@@ -5324,8 +5324,8 @@ if (resetTodayDrawsButton) {
 
             try {
 
-                const token =
-                    localStorage.getItem("adminToken");
+const token =
+    localStorage.getItem(ADMIN_TOKEN_KEY);
 
                 if (!token) {
                     alert("管理画面にログインしてください。");
