@@ -5456,3 +5456,140 @@ if (initializeSystemDataButton) {
         }
     );
 }
+/* =========================================
+   パスワード再設定
+========================================= */
+
+const newAdminPassword =
+    document.getElementById("newAdminPassword");
+
+const changeAdminPasswordButton =
+    document.getElementById(
+        "changeAdminPasswordButton"
+    );
+
+if (
+    newAdminPassword &&
+    changeAdminPasswordButton
+) {
+
+    changeAdminPasswordButton.addEventListener(
+        "click",
+        async () => {
+
+            const newPassword =
+                newAdminPassword.value.trim();
+
+
+            /* 4桁数字チェック */
+
+            if (!/^\d{4}$/.test(newPassword)) {
+
+                alert(
+                    "パスワードは4桁の数字で入力してください。"
+                );
+
+                newAdminPassword.focus();
+
+                return;
+            }
+
+
+            /* 変更確認 */
+
+            const confirmed =
+                confirm(
+                    "coupon-adminのログインパスワードを変更します。\n\n" +
+                    "新しいパスワード：" +
+                    newPassword +
+                    "\n\n" +
+                    "変更しますか？"
+                );
+
+            if (!confirmed) {
+                return;
+            }
+
+
+            try {
+
+                const token =
+                    localStorage.getItem(
+                        ADMIN_TOKEN_KEY
+                    );
+
+
+                if (!token) {
+
+                    alert(
+                        "管理画面にログインしてください。"
+                    );
+
+                    return;
+                }
+
+
+                const response =
+                    await fetch(
+                        `${API_URL}/admin/change-pin`,
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Authorization":
+                                    `Bearer ${token}`,
+
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body: JSON.stringify({
+                                pin: newPassword
+                            })
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                if (
+                    !response.ok ||
+                    !data.success
+                ) {
+
+                    throw new Error(
+                        data.error ||
+                        "パスワードの変更に失敗しました。"
+                    );
+                }
+
+
+                alert(
+                    "パスワードを変更しました。"
+                );
+
+
+                /* 入力欄を空にする */
+
+                newAdminPassword.value = "";
+
+
+            } catch (error) {
+
+                console.error(
+                    "パスワード変更エラー:",
+                    error
+                );
+
+                alert(
+                    error.message ||
+                    "パスワードの変更に失敗しました。"
+                );
+            }
+
+        }
+    );
+
+}
