@@ -291,6 +291,8 @@
             </div>
 
         </div>
+
+
         <!-- =====================================
              管理データ操作
         ====================================== -->
@@ -315,8 +317,48 @@
             </button>
 
         </div>
-    </section>
 
+
+        <!-- =====================================
+             パスワード再設定
+        ====================================== -->
+
+        <div class="admin-password-settings">
+
+            <div class="admin-password-title">
+                パスワード再設定
+            </div>
+
+            <p class="admin-password-description">
+                coupon-adminへのログインに使用する4桁のパスワードを変更できます。
+            </p>
+
+            <div class="admin-password-form">
+
+                <input
+                    type="password"
+                    id="newAdminPassword"
+                    class="admin-password-input"
+                    inputmode="numeric"
+                    maxlength="4"
+                    pattern="[0-9]{4}"
+                    placeholder="4桁の数字"
+                    autocomplete="new-password"
+                >
+
+                <button
+                    type="button"
+                    class="admin-primary-button"
+                    id="changeAdminPasswordButton"
+                >
+                    パスワードを変更
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
 
 <!-- =========================================
      SNS設定
